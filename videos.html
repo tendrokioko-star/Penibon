@@ -15,6 +15,8 @@ body{
  background:#0b1020;
  color:white;
 }
+#protectedContent{display:none}
+#loading{text-align:center;padding:60px;color:#42e8c5}
 header{
  background:#151d35;
  padding:17px;
@@ -24,20 +26,9 @@ header{
  flex-wrap:wrap;
  gap:12px;
 }
-.logo{
- font-size:25px;
- font-weight:bold;
- color:#42e8c5;
-}
-nav{
- display:flex;
- gap:15px;
- flex-wrap:wrap;
-}
-nav a{
- color:white;
- text-decoration:none;
-}
+.logo{font-size:25px;font-weight:bold;color:#42e8c5}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none}
 nav a:hover{color:#42e8c5}
 .hero{
  text-align:center;
@@ -46,39 +37,23 @@ nav a:hover{color:#42e8c5}
 }
 .hero h1{font-size:32px}
 .hero p{color:#d5d9ec;line-height:1.6}
-main{
- max-width:1050px;
- margin:auto;
- padding:20px 15px;
-}
+main{max-width:1050px;margin:auto;padding:20px 15px}
 .search{
- width:100%;
- padding:14px;
- border-radius:10px;
- border:1px solid #35435f;
- background:#18213a;
- color:white;
- font-size:16px;
+ width:100%;padding:14px;border-radius:10px;
+ border:1px solid #35435f;background:#18213a;
+ color:white;font-size:16px;
 }
 .categories{
- display:flex;
- gap:9px;
- overflow-x:auto;
- margin:18px 0;
- padding-bottom:8px;
+ display:flex;gap:9px;overflow-x:auto;
+ margin:18px 0;padding-bottom:8px;
 }
 .categories button{
- background:#202c49;
- color:white;
- border:0;
- padding:11px 17px;
- border-radius:22px;
- white-space:nowrap;
- cursor:pointer;
+ background:#202c49;color:white;border:0;
+ padding:11px 17px;border-radius:22px;
+ white-space:nowrap;cursor:pointer;
 }
 .categories button.active{
- background:#42e8c5;
- color:#10152b;
+ background:#42e8c5;color:#10152b;
 }
 .grid{
  display:grid;
@@ -86,71 +61,53 @@ main{
  gap:18px;
 }
 .card{
- background:#18213a;
- border:1px solid #293653;
- border-radius:13px;
- overflow:hidden;
+ background:#18213a;border:1px solid #293653;
+ border-radius:13px;overflow:hidden;
 }
 .video-frame{
- width:100%;
- aspect-ratio:16/9;
- background:#050814;
+ width:100%;aspect-ratio:16/9;background:#050814;
 }
-.video-frame iframe{
- width:100%;
- height:100%;
- border:0;
-}
+.video-frame iframe{width:100%;height:100%;border:0}
 .info{padding:15px}
 .info h3{margin:0 0 8px}
-.info p{
- color:#bdc8df;
- font-size:13px;
- line-height:1.5;
-}
-.tag{
- color:#42e8c5;
- font-size:12px;
-}
+.info p{color:#bdc8df;font-size:13px;line-height:1.5}
+.tag{color:#42e8c5;font-size:12px}
 .empty{
- display:none;
- text-align:center;
- padding:30px;
- color:#bdc8df;
+ display:none;text-align:center;
+ padding:30px;color:#bdc8df;
 }
 .note{
- background:#18213a;
- padding:17px;
- border-radius:12px;
- margin-top:25px;
- color:#bdc8df;
- line-height:1.6;
+ background:#18213a;padding:17px;
+ border-radius:12px;margin-top:25px;
+ color:#bdc8df;line-height:1.6;
 }
-.back{
- display:inline-block;
- margin:22px 0;
- color:#42e8c5;
- text-decoration:none;
+.logout{
+ background:#d94158;color:white;border:0;
+ padding:10px 16px;border-radius:7px;
+ font-weight:bold;cursor:pointer;
 }
 footer{
- background:#151d35;
- text-align:center;
- padding:25px;
- color:#aeb8d0;
- font-size:13px;
+ background:#151d35;text-align:center;
+ padding:25px;color:#aeb8d0;font-size:13px;
 }
 </style>
 </head>
 
 <body>
 
+<div id="loading">Checking your PENIBON account...</div>
+
+<div id="protectedContent">
+
 <header>
  <div class="logo">PENIBON</div>
  <nav>
   <a href="index.html">Home</a>
   <a href="videos.html">Videos</a>
-  <a href="index.html#games">Games</a>
-  <a href="index.html#discover">Discover</a>
+  <a href="games.html">Games</a>
+  <a href="discover.html">Discover</a>
+  <a href="creator.html">Creator Studio</a>
+  <button class="logout" id="logoutButton">Logout</button>
  </nav>
 </header>
 
@@ -164,20 +121,15 @@ footer{
 
 <h2>Explore Videos</h2>
 
-<input
- class="search"
- id="search"
- type="search"
- placeholder="Search videos..."
- oninput="filterVideos()"
->
+<input class="search" id="search" type="search"
+ placeholder="Search videos...">
 
 <div class="categories">
- <button class="active" onclick="chooseCategory('All',this)">All</button>
- <button onclick="chooseCategory('Entertainment',this)">Entertainment</button>
- <button onclick="chooseCategory('Music',this)">Music</button>
- <button onclick="chooseCategory('Education',this)">Education</button>
- <button onclick="chooseCategory('Comedy',this)">Comedy</button>
+ <button class="active" data-category="All">All</button>
+ <button data-category="Entertainment">Entertainment</button>
+ <button data-category="Music">Music</button>
+ <button data-category="Education">Education</button>
+ <button data-category="Comedy">Comedy</button>
 </div>
 
 <div class="grid" id="videoGrid">
@@ -230,8 +182,6 @@ footer{
  <p>These sample videos are embedded from YouTube. PENIBON does not own them.</p>
 </div>
 
-<a class="back" href="index.html">← Back to PENIBON Home</a>
-
 </main>
 
 <footer>
@@ -239,7 +189,49 @@ footer{
  <p>WATCH • PLAY • DISCOVER</p>
 </footer>
 
-<script>
+</div>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+import {
+ getAuth,
+ onAuthStateChanged,
+ signOut
+} from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+ authDomain: "penibon-b9f0f.firebaseapp.com",
+ projectId: "penibon-b9f0f",
+ storageBucket: "penibon-b9f0f.firebasestorage.app",
+ messagingSenderId: "770060676311",
+ appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+ if (user) {
+  document.getElementById("loading").style.display="none";
+  document.getElementById("protectedContent").style.display="block";
+ } else {
+  window.location.replace("account.html");
+ }
+});
+
+document.getElementById("logoutButton").addEventListener("click", async () => {
+ try {
+  await signOut(auth);
+  window.location.replace("account.html");
+ } catch(error) {
+  alert("Unable to log out. Please try again.");
+ }
+});
+
 let selectedCategory="All";
 
 function chooseCategory(category,button){
@@ -253,9 +245,7 @@ function chooseCategory(category,button){
 }
 
 function filterVideos(){
- const search=document.getElementById("search")
- .value.toLowerCase();
-
+ const search=document.getElementById("search").value.toLowerCase();
  const cards=document.querySelectorAll(".card");
  let visible=0;
 
@@ -278,6 +268,14 @@ function filterVideos(){
  document.getElementById("empty").style.display=
   visible===0?"block":"none";
 }
+
+document.getElementById("search").addEventListener("input",filterVideos);
+
+document.querySelectorAll(".categories button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  chooseCategory(button.dataset.category,button);
+ });
+});
 </script>
 
 </body>
