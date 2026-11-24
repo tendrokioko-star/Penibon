@@ -1,1 +1,133 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10152b">
+<title>Videos | PENIBON</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1020;color:white;font-family:Arial,sans-serif}
+header{background:#151d35;padding:17px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:24px;font-weight:bold;color:#42e8c5}
+header a{color:white;text-decoration:none}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+main{max-width:1000px;margin:auto;padding:20px 15px}
+h1{color:#42e8c5}
+.search{width:100%;padding:14px;border-radius:10px;border:1px solid #35435f;background:#18213a;color:white;font-size:16px}
+.categories{display:flex;gap:9px;overflow-x:auto;margin:18px 0}
+.categories button{background:#202c49;color:white;border:0;padding:11px 16px;border-radius:20px;white-space:nowrap}
+.categories button.active{background:#42e8c5;color:#10152b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:17px}
+.card{background:#18213a;border-radius:13px;overflow:hidden;border:1px solid #293653}
+.thumb{height:135px;background:linear-gradient(135deg,#243d70,#613c83);display:flex;align-items:center;justify-content:center;font-size:48px}
+.info{padding:14px}
+.info h3{margin:0 0 8px}
+.info p{color:#bdc8df;font-size:13px}
+.watch{background:#42e8c5;color:#10152b;border:0;padding:10px 15px;border-radius:20px;font-weight:bold}
+.empty{text-align:center;color:#bdc8df;padding:30px;display:none}
+.back{display:inline-block;margin:18px 0;color:#42e8c5;text-decoration:none}
+footer{text-align:center;padding:25px;color:#aeb8d0}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">PENIBON</div>
+<nav>
+<a href="index.html">Home</a>
+<a href="videos.html">Videos</a>
+<a href="index.html#games">Games</a>
+</nav>
+</header>
+
+<main>
+<h1>🎬 Explore Videos</h1>
+<p>Discover entertainment and creators on PENIBON.</p>
+
+<input class="search" id="search" placeholder="Search videos..." oninput="filterVideos()">
+
+<div class="categories">
+<button class="active" onclick="chooseCategory('All',this)">All</button>
+<button onclick="chooseCategory('Entertainment',this)">Entertainment</button>
+<button onclick="chooseCategory('Music',this)">Music</button>
+<button onclick="chooseCategory('Comedy',this)">Comedy</button>
+<button onclick="chooseCategory('Education',this)">Education</button>
+</div>
+
+<div class="grid" id="videoGrid">
+<div class="card" data-category="Entertainment">
+<div class="thumb">🎬</div>
+<div class="info">
+<h3>Entertainment</h3>
+<p>Discover entertaining content.</p>
+<button class="watch" onclick="demoMessage()">Explore</button>
+</div>
+</div>
+
+<div class="card" data-category="Music">
+<div class="thumb">🎵</div>
+<div class="info">
+<h3>Music</h3>
+<p>Explore music and performances.</p>
+<button class="watch" onclick="demoMessage()">Explore</button>
+</div>
+</div>
+
+<div class="card" data-category="Comedy">
+<div class="thumb">😂</div>
+<div class="info">
+<h3>Comedy</h3>
+<p>Enjoy funny moments and jokes.</p>
+<button class="watch" onclick="demoMessage()">Explore</button>
+</div>
+</div>
+
+<div class="card" data-category="Education">
+<div class="thumb">📚</div>
+<div class="info">
+<h3>Education</h3>
+<p>Learn something new.</p>
+<button class="watch" onclick="demoMessage()">Explore</button>
+</div>
+</div>
+</div>
+
+<p class="empty" id="empty">No matching categories found.</p>
+<a class="back" href="index.html">← Back to PENIBON Home</a>
+</main>
+
+<footer>© 2026 PENIBON · WATCH • PLAY • DISCOVER</footer>
+
+<script>
+let selectedCategory="All";
+
+function chooseCategory(category,button){
+selectedCategory=category;
+document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+filterVideos();
+}
+
+function filterVideos(){
+const search=document.getElementById("search").value.toLowerCase();
+const cards=document.querySelectorAll(".card");
+let visible=0;
+
+cards.forEach(card=>{
+const matchesCategory=selectedCategory==="All"||card.dataset.category===selectedCategory;
+const matchesSearch=card.innerText.toLowerCase().includes(search);
+card.style.display=matchesCategory&&matchesSearch?"block":"none";
+if(matchesCategory&&matchesSearch)visible++;
+});
+
+document.getElementById("empty").style.display=visible?"none":"block";
+}
+
+function demoMessage(){
+alert("PENIBON video library is coming soon!");
+}
+</script>
+</body>
+</html>
