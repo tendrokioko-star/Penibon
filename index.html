@@ -4,129 +4,202 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#10152b">
 <title>PENIBON - Watch, Play, Discover</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:white}
-header{padding:18px;background:#151d35;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.logo{font-size:25px;font-weight:bold;color:#42e8c5}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#080d25;
+  color:white;
+}
+#site{display:none}
+header{
+  background:#111b35;
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:15px;
+}
+.logo{font-size:27px;font-weight:bold;color:#42d6ff}
 nav{display:flex;gap:15px;flex-wrap:wrap}
-nav a{color:white;text-decoration:none;font-size:14px}
-nav a:hover{color:#42e8c5}
-.hero{padding:55px 20px;text-align:center;background:linear-gradient(135deg,#182c55,#492b72)}
-.hero h1{font-size:38px;margin:0 0 12px}
-.hero p{color:#d5d9ec;line-height:1.6}
-.button,.card-link{display:inline-block;background:#42e8c5;color:#10152b;padding:12px 20px;border-radius:25px;text-decoration:none;font-weight:bold;margin-top:12px}
-main{padding:22px 16px;max-width:1100px;margin:auto}
-h2{color:#42e8c5}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:15px}
-.card{background:#18213a;border:1px solid #293653;border-radius:14px;padding:22px 14px;text-align:center}
-.emoji{font-size:35px}
-.card h3{margin-bottom:7px}
-.card p{color:#b9c3df;font-size:13px;line-height:1.5}
-.card-link{font-size:13px;padding:10px 16px}
-footer{padding:25px;margin-top:35px;text-align:center;color:#aeb8d0;background:#151d35;font-size:13px}
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:14px;
+}
+nav a:hover{color:#42d6ff}
+.hero{
+  text-align:center;
+  padding:75px 20px;
+  background:linear-gradient(135deg,#10254c,#124c70);
+}
+.hero h1{font-size:38px;margin:0 0 15px}
+.hero p{font-size:18px;color:#d2e7ff}
+.hero button{
+  background:#12a9df;
+  border:0;
+  color:white;
+  padding:14px 25px;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  margin-top:15px;
+}
+section{padding:35px 20px}
+.section-title{text-align:center;font-size:27px}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  max-width:1000px;
+  margin:25px auto;
+}
+.card{
+  background:#14213e;
+  padding:25px;
+  border-radius:14px;
+  text-align:center;
+}
+.card h3{color:#42d6ff}
+.card p{color:#c5d2e7;line-height:1.5}
+.card a{
+  display:inline-block;
+  background:#168bd2;
+  padding:11px 18px;
+  border-radius:7px;
+  color:white;
+  text-decoration:none;
+  margin-top:10px;
+}
+footer{
+  text-align:center;
+  padding:25px;
+  background:#111b35;
+  color:#b7c8df;
+}
+#loading{
+  text-align:center;
+  padding:60px 20px;
+  color:#42d6ff;
+}
 </style>
 </head>
+
 <body>
 
+<div id="loading">Checking your PENIBON account...</div>
+
+<div id="site">
+
 <header>
-<div class="logo">PENIBON</div>
-<nav>
-<a href="index.html">Home</a>
-<a href="videos.html">Videos</a>
-<a href="#games">Games</a>
-<a href="#discover">Discover</a>
-<a href="creator.html">Creator Studio</a>
-</nav>
+  <div class="logo">PENIBON</div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="videos.html">Videos</a>
+    <a href="games.html">Games</a>
+    <a href="discover.html">Discover</a>
+    <a href="creator.html">Creator Studio</a>
+  </nav>
 </header>
 
-<section class="hero">
-<h1>Welcome to PENIBON</h1>
-<p>WATCH • PLAY • DISCOVER</p>
-<p>Your entertainment. Your community. Your world.</p>
-<a class="button" href="videos.html">Explore Videos</a>
-<a class="button" href="creator.html">Creator Studio</a>
+<div class="hero">
+  <h1>Welcome to PENIBON</h1>
+  <p>WATCH • PLAY • DISCOVER</p>
+  <p>Your entertainment. Your community. Your world.</p>
+  <button onclick="location.href='videos.html'">
+    Explore PENIBON
+  </button>
+</div>
+
+<section>
+  <h2 class="section-title">Explore PENIBON</h2>
+
+  <div class="cards">
+
+    <div class="card">
+      <h3>Videos</h3>
+      <p>Watch entertaining videos and discover exciting content.</p>
+      <a href="videos.html">Explore Videos</a>
+    </div>
+
+    <div class="card">
+      <h3>Games & Challenges</h3>
+      <p>Play games, test your skills and enjoy exciting challenges.</p>
+      <a href="games.html">Play Games</a>
+    </div>
+
+    <div class="card">
+      <h3>Discover</h3>
+      <p>Explore love, entertainment, technology and inspiration.</p>
+      <a href="discover.html">Discover More</a>
+    </div>
+
+    <div class="card">
+      <h3>Creator Studio</h3>
+      <p>Prepare your videos and explore your creator journey.</p>
+      <a href="creator.html">Open Creator Studio</a>
+    </div>
+
+  </div>
 </section>
-
-<main>
-
-<section id="videos">
-<h2>🎬 Videos</h2>
-<div class="grid">
-<div class="card">
-<div class="emoji">📱</div>
-<h3>Short Videos</h3>
-<p>Discover entertaining videos.</p>
-<a class="card-link" href="videos.html">Watch Videos</a>
-</div>
-
-<div class="card">
-<div class="emoji">🌟</div>
-<h3>Popular Videos</h3>
-<p>Explore featured content.</p>
-<a class="card-link" href="videos.html">Explore</a>
-</div>
-
-<div class="card">
-<div class="emoji">🎥</div>
-<h3>Creators</h3>
-<p>Share your creativity with others.</p>
-<a class="card-link" href="creator.html">Create Videos</a>
-</div>
-</div>
-</section>
-
-<section id="games">
-<h2>🎮 Games & Challenges</h2>
-<div class="grid">
-<div class="card">
-<div class="emoji">🧠</div>
-<h3>Brain Games</h3>
-<p>Challenge your mind.</p>
-</div>
-<div class="card">
-<div class="emoji">❓</div>
-<h3>Quizzes</h3>
-<p>Test your knowledge.</p>
-</div>
-<div class="card">
-<div class="emoji">🏆</div>
-<h3>Daily Challenges</h3>
-<p>Take on something new every day.</p>
-</div>
-</div>
-</section>
-
-<section id="discover">
-<h2>🌍 Discover</h2>
-<div class="grid">
-<div class="card">
-<div class="emoji">📰</div>
-<h3>News & Stories</h3>
-<p>Discover interesting stories.</p>
-</div>
-<div class="card">
-<div class="emoji">👥</div>
-<h3>Community</h3>
-<p>Connect with the PENIBON community.</p>
-</div>
-<div class="card">
-<div class="emoji">🎨</div>
-<h3>Creator Studio</h3>
-<p>Prepare your videos for PENIBON.</p>
-<a class="card-link" href="creator.html">Open Studio</a>
-</div>
-</div>
-</section>
-
-</main>
 
 <footer>
-<p>© 2026 PENIBON. All rights reserved.</p>
-<p>WATCH • PLAY • DISCOVER</p>
+  <p>© 2026 PENIBON. All rights reserved.</p>
+  <p>Your entertainment. Your community. Your world.</p>
+  <button id="logoutButton" style="padding:10px 20px;border:0;border-radius:7px;background:#168bd2;color:white;font-weight:bold">
+    Logout
+  </button>
 </footer>
+
+</div>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+  authDomain: "penibon-b9f0f.firebaseapp.com",
+  projectId: "penibon-b9f0f",
+  storageBucket: "penibon-b9f0f.firebasestorage.app",
+  messagingSenderId: "770060676311",
+  appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("site").style.display = "block";
+  } else {
+    window.location.replace("account.html");
+  }
+});
+
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    window.location.replace("account.html");
+  } catch (error) {
+    alert("Unable to log out. Please try again.");
+  }
+});
+</script>
 
 </body>
 </html>
