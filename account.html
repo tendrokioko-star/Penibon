@@ -1,1 +1,233 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PENIBON - Account</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;min-height:100vh;background:#080d19;color:white;
+ font-family:Arial,sans-serif;display:flex;align-items:center;
+ justify-content:center;padding:18px
+}
+.container{
+ width:100%;max-width:420px;background:#142139;
+ border:1px solid #293c5d;border-radius:18px;padding:25px;
+ box-shadow:0 12px 40px #0006
+}
+h1{text-align:center;color:#61e6ff;margin:0}
+.subtitle{text-align:center;color:#b8c6dd;margin:10px 0 25px}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tabs button{flex:1}
+button{
+ border:0;border-radius:9px;padding:13px;background:#16b9d5;
+ color:#07121c;font-size:15px;font-weight:bold;cursor:pointer
+}
+.tabs button.active{background:#16b9d5}
+.tabs button:not(.active){background:#334967;color:white}
+label{display:block;margin:14px 0 7px;color:#d7e5f5}
+input{
+ width:100%;padding:13px;border-radius:9px;
+ border:1px solid #526783;background:#091426;color:white;
+ font-size:16px
+}
+input:focus{outline:2px solid #16b9d5}
+.main-button{width:100%;margin-top:20px}
+#message{min-height:40px;text-align:center;margin-top:15px;color:#8ff4ff;line-height:1.5}
+.small{text-align:center;margin-top:18px;color:#b8c6dd;font-size:14px}
+a{color:#61e6ff}
+.hidden{display:none}
+#accountPanel{text-align:center}
+#accountPanel p{overflow-wrap:anywhere;color:#c6d5e9}
+#accountPanel button{margin:8px}
+.home{display:block;text-align:center;margin-top:20px;color:#61e6ff}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🎮 PENIBON</h1>
+<p class="subtitle">Your entertainment. Your community. Your world.</p>
+
+<div id="authPanel">
+<div class="tabs">
+<button id="loginTab" class="active" type="button">Login</button>
+<button id="registerTab" type="button">Register</button>
+</div>
+
+<form id="accountForm">
+<div id="nameGroup" class="hidden">
+<label for="displayName">Your display name</label>
+<input id="displayName" type="text" maxlength="40" placeholder="Enter your name">
+</div>
+
+<label for="email">Email address</label>
+<input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+
+<label for="password">Password</label>
+<input id="password" type="password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters">
+
+<button class="main-button" id="submitButton" type="submit">Login</button>
+</form>
+
+<p id="forgotArea" class="small">
+<a href="#" id="forgotPassword">Forgot your password?</a>
+</p>
+
+<div id="message" role="status" aria-live="polite"></div>
+</div>
+
+<div id="accountPanel" class="hidden">
+<h2>Welcome to PENIBON! 🎉</h2>
+<p id="welcomeName"></p>
+<p id="welcomeEmail"></p>
+<button id="logoutButton" type="button">Log out</button>
+</div>
+
+<a class="home" href="index.html">← Back to PENIBON Home</a>
+</div>
+
+<script type="module">
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+import {
+ getAuth,
+ createUserWithEmailAndPassword,
+ signInWithEmailAndPassword,
+ sendPasswordResetEmail,
+ updateProfile,
+ onAuthStateChanged,
+ signOut
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+ authDomain: "penibon-b9f0f.firebaseapp.com",
+ projectId: "penibon-b9f0f",
+ storageBucket: "penibon-b9f0f.firebasestorage.app",
+ messagingSenderId: "770060676311",
+ appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const form = document.getElementById("accountForm");
+const message = document.getElementById("message");
+const loginTab = document.getElementById("loginTab");
+const registerTab = document.getElementById("registerTab");
+const nameGroup = document.getElementById("nameGroup");
+const displayName = document.getElementById("displayName");
+const submitButton = document.getElementById("submitButton");
+const forgotArea = document.getElementById("forgotArea");
+const authPanel = document.getElementById("authPanel");
+const accountPanel = document.getElementById("accountPanel");
+
+let mode = "login";
+
+function showMessage(text, error=false){
+ message.textContent = text;
+ message.style.color = error ? "#ff8995" : "#8ff4ff";
+}
+
+function setMode(newMode){
+ mode = newMode;
+ const registering = mode === "register";
+
+ loginTab.classList.toggle("active",!registering);
+ registerTab.classList.toggle("active",registering);
+ nameGroup.classList.toggle("hidden",!registering);
+ forgotArea.classList.toggle("hidden",registering);
+ submitButton.textContent = registering ? "Create account" : "Login";
+ document.getElementById("password").autocomplete =
+ registering ? "new-password" : "current-password";
+ showMessage("");
+}
+
+loginTab.addEventListener("click",()=>setMode("login"));
+registerTab.addEventListener("click",()=>setMode("register"));
+
+form.addEventListener("submit",async(e)=>{
+ e.preventDefault();
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ const name=displayName.value.trim();
+
+ if(mode==="register" && !name){
+  showMessage("Please enter your display name.",true);
+  return;
+ }
+
+ submitButton.disabled=true;
+ submitButton.textContent="Please wait...";
+ showMessage("Connecting securely to PENIBON...");
+
+ try{
+  if(mode==="register"){
+   const result=await createUserWithEmailAndPassword(auth,email,password);
+   await updateProfile(result.user,{displayName:name});
+   showMessage("Your PENIBON account has been created!");
+  }else{
+   await signInWithEmailAndPassword(auth,email,password);
+   showMessage("Login successful!");
+  }
+ }catch(error){
+  const errors={
+   "auth/email-already-in-use":"This email already has an account. Please log in.",
+   "auth/invalid-email":"Please enter a valid email address.",
+   "auth/weak-password":"Your password must contain at least 6 characters.",
+   "auth/invalid-credential":"Email or password is incorrect.",
+   "auth/user-not-found":"No account was found. Please register first.",
+   "auth/network-request-failed":"Check your internet connection and try again.",
+   "auth/too-many-requests":"Too many attempts. Please wait and try again."
+  };
+  showMessage(errors[error.code] || "Something went wrong: "+error.message,true);
+ }finally{
+  submitButton.disabled=false;
+  submitButton.textContent=mode==="register"?"Create account":"Login";
+ }
+});
+
+document.getElementById("forgotPassword").addEventListener("click",async(e)=>{
+ e.preventDefault();
+ const email=document.getElementById("email").value.trim();
+ if(!email){
+  showMessage("Enter your email address first.",true);
+  return;
+ }
+ try{
+  await sendPasswordResetEmail(auth,email);
+  showMessage("Password reset instructions have been sent if that account exists. Check your inbox.");
+ }catch(error){
+  showMessage("Unable to send reset email. Check your email and try again.",true);
+ }
+});
+
+document.getElementById("logoutButton").addEventListener("click",async()=>{
+ try{
+  await signOut(auth);
+  showMessage("You have logged out.");
+ }catch(error){
+  showMessage("Could not log out. Please try again.",true);
+ }
+});
+
+onAuthStateChanged(auth,(user)=>{
+ if(user){
+  authPanel.classList.add("hidden");
+  accountPanel.classList.remove("hidden");
+  document.getElementById("welcomeName").textContent =
+   "Hello, "+(user.displayName || "PENIBON member")+"!";
+  document.getElementById("welcomeEmail").textContent =
+   "Account email: "+user.email;
+ }else{
+  accountPanel.classList.add("hidden");
+  authPanel.classList.remove("hidden");
+ }
+});
+</script>
+</body>
+</html>
+
