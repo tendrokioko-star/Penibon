@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,27 +13,18 @@ header{background:#151d35;padding:17px;display:flex;justify-content:space-betwee
 .logo{font-size:24px;font-weight:bold;color:#42e8c5}
 nav{display:flex;gap:15px;flex-wrap:wrap}
 nav a{color:white;text-decoration:none}
-nav a:hover{color:#42e8c5}
 main{max-width:850px;margin:auto;padding:22px 15px}
 h1,h2{color:#42e8c5}
 .panel{background:#18213a;border:1px solid #293653;border-radius:14px;padding:20px;margin:18px 0}
 label{display:block;margin:15px 0 7px}
-input,textarea,select{
-width:100%;padding:13px;border:1px solid #35435f;
-border-radius:9px;background:#0b1020;color:white;font-size:15px
-}
+input,textarea,select{width:100%;padding:13px;border:1px solid #35435f;border-radius:9px;background:#0b1020;color:white;font-size:15px}
 textarea{min-height:100px;resize:vertical}
-button{
-background:#42e8c5;color:#10152b;border:0;
-padding:13px 19px;border-radius:25px;font-weight:bold;
-cursor:pointer;margin-top:15px
-}
-button:disabled{opacity:.5;cursor:not-allowed}
+button{background:#42e8c5;color:#10152b;border:0;padding:13px 19px;border-radius:25px;font-weight:bold;cursor:pointer;margin-top:15px}
 .hint{font-size:13px;color:#bdc8df;line-height:1.6}
 .preview{width:100%;max-height:260px;object-fit:contain;background:#050814;border-radius:10px;margin-top:15px;display:none}
 .status{padding:13px;border-radius:9px;background:#0b1020;color:#42e8c5;margin-top:15px;display:none}
-footer{text-align:center;padding:25px;color:#aeb8d0;background:#151d35;font-size:13px}
 .back{color:#42e8c5;text-decoration:none}
+footer{text-align:center;padding:25px;color:#aeb8d0;background:#151d35;font-size:13px}
 </style>
 </head>
 <body>
@@ -50,45 +40,41 @@ footer{text-align:center;padding:25px;color:#aeb8d0;background:#151d35;font-size
 
 <main>
 <h1>🎨 Creator Studio</h1>
-<p>Share your creativity with the PENIBON community.</p>
+<p>Share your creativity with PENIBON.</p>
 
 <div class="panel">
 <h2>📤 Upload Your Video</h2>
 
 <form id="uploadForm">
 
-<label for="title">Video title</label>
-<input id="title" type="text" maxlength="100"
-placeholder="Enter your video title" required>
+<label for="title">Video title (Optional)</label>
+<input id="title" type="text" maxlength="100" placeholder="Enter video title">
 
-<label for="description">Description</label>
-<textarea id="description" maxlength="1000"
-placeholder="Tell viewers about your video"></textarea>
+<label for="description">Description (Optional)</label>
+<textarea id="description" maxlength="1000" placeholder="Tell viewers about your video"></textarea>
 
-<label for="category">Video category</label>
-<select id="category" required>
-<option value="">Choose category</option>
+<label for="category">Video category (Optional)</label>
+<select id="category">
+<option value="Other">Other</option>
 <option>Entertainment</option>
 <option>Music</option>
 <option>Comedy</option>
 <option>Education</option>
 <option>Motivation</option>
 <option>Technology</option>
-<option>Other</option>
 </select>
 
-<label for="video">Choose a video from your phone</label>
+<label for="video">Choose a video</label>
 <input id="video" type="file" accept="video/*" required>
 
 <p class="hint">
-Choose a video that you own or have permission to upload.
-This page currently previews your selected video on your phone.
-It does not upload or permanently store the video yet.
+Only selecting a video is required. You can leave all other fields empty.
+Please upload content you own or have permission to share.
 </p>
 
 <video id="preview" class="preview" controls playsinline></video>
 
-<button id="submitButton" type="submit">Preview Upload</button>
+<button type="submit">Continue</button>
 <div class="status" id="status"></div>
 
 </form>
@@ -97,43 +83,38 @@ It does not upload or permanently store the video yet.
 <div class="panel">
 <h2>🌟 Creator Guidelines</h2>
 <p class="hint">
-• Upload videos you own or have permission to share.<br>
-• Do not upload harmful or illegal content.<br>
+• Share videos you own or have permission to upload.<br>
 • Respect other people's privacy and copyright.<br>
-• Videos will require a secure upload and moderation system before public publishing.<br>
-• Earnings are not available until PENIBON has an approved and funded monetization system.
+• Do not upload illegal or harmful content.<br>
+• Public publishing will require our secure upload and moderation system.<br>
+• Creator earnings will become available only after monetization is properly established.
 </p>
 </div>
 
 <a class="back" href="index.html">← Back to PENIBON Home</a>
 </main>
 
-<footer>
-© 2026 PENIBON. WATCH • PLAY • DISCOVER
-</footer>
+<footer>© 2026 PENIBON. WATCH • PLAY • DISCOVER</footer>
 
 <script>
 const form=document.getElementById("uploadForm");
 const videoInput=document.getElementById("video");
 const preview=document.getElementById("preview");
 const statusBox=document.getElementById("status");
-const submitButton=document.getElementById("submitButton");
 let previewUrl=null;
 
 videoInput.addEventListener("change",function(){
-const file=this.files[0];
-
 if(previewUrl){
 URL.revokeObjectURL(previewUrl);
 previewUrl=null;
 }
-
 preview.style.display="none";
 
+const file=this.files[0];
 if(!file)return;
 
 if(!file.type.startsWith("video/")){
-alert("Please select a video file.");
+alert("Please select a valid video.");
 this.value="";
 return;
 }
@@ -146,20 +127,15 @@ preview.style.display="block";
 form.addEventListener("submit",function(event){
 event.preventDefault();
 
-if(!form.reportValidity())return;
-
 const file=videoInput.files[0];
-
 if(!file || !file.type.startsWith("video/")){
-alert("Please choose a valid video.");
+alert("Please select a video first.");
 return;
 }
 
 statusBox.style.display="block";
 statusBox.textContent=
-"Your video is ready for preview on this device. Permanent uploading and publishing will be added when secure video storage is connected.";
-
-submitButton.textContent="Preview Ready";
+"Your video is ready for preview. Title, description and category are optional. Permanent uploading is not connected yet.";
 });
 </script>
 
