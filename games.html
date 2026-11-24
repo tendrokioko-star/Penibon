@@ -1,1 +1,197 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PENIBON Games</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:#101426;color:white;
+}
+header{
+ background:#191f38;padding:20px;text-align:center;
+ border-bottom:1px solid #303957;
+}
+header h1{margin:0;color:#55e6c1}
+header p{color:#bdc7dc}
+nav{
+ display:flex;justify-content:center;flex-wrap:wrap;
+ gap:18px;padding:15px;background:#151b30;
+}
+nav a{color:white;text-decoration:none;font-weight:bold}
+main{max-width:850px;margin:auto;padding:18px}
+.hero{text-align:center;padding:25px 10px}
+.hero h2{font-size:28px}
+.hero p{color:#bdc7dc}
+.game{
+ background:#1c2540;padding:22px;border-radius:16px;
+ margin:20px 0;border:1px solid #354363;
+}
+.game h3{color:#55e6c1;margin-top:0}
+button{
+ background:#55e6c1;color:#101426;border:0;
+ padding:12px 18px;border-radius:9px;
+ font-weight:bold;margin:5px;cursor:pointer;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.choice{background:#303d60;color:white}
+.question{font-size:19px;line-height:1.5}
+#feedback{min-height:25px;color:#55e6c1}
+.score{color:#ffd166;font-weight:bold}
+footer{text-align:center;color:#aeb9d0;padding:25px}
+</style>
+</head>
+<body>
+
+<header>
+ <h1>🎮 PENIBON GAMES</h1>
+ <p>WATCH • PLAY • DISCOVER</p>
+</header>
+
+<nav>
+ <a href="index.html">Home</a>
+ <a href="videos.html">Videos</a>
+ <a href="games.html">Games</a>
+ <a href="creator.html">Creator Studio</a>
+</nav>
+
+<main>
+ <section class="hero">
+  <h2>Welcome to PENIBON Games!</h2>
+  <p>Relax, challenge your mind and have fun.</p>
+ </section>
+
+ <section class="game">
+  <h3>🧠 Quick Quiz</h3>
+  <p>Answer questions correctly and collect points.</p>
+  <p class="score">Score: <span id="score">0</span></p>
+  <p id="question" class="question">Press Start Quiz to begin!</p>
+  <div id="answers"></div>
+  <p id="feedback"></p>
+  <button id="start" onclick="startQuiz()">Start Quiz</button>
+  <button id="next" onclick="nextQuestion()" hidden>Next Question</button>
+ </section>
+
+ <section class="game">
+  <h3>✊ Rock, Paper, Scissors</h3>
+  <p>Choose your move and challenge the computer!</p>
+  <div>
+   <button class="choice" onclick="play('Rock')">✊ Rock</button>
+   <button class="choice" onclick="play('Paper')">✋ Paper</button>
+   <button class="choice" onclick="play('Scissors')">✌️ Scissors</button>
+  </div>
+  <p id="result">Make your first move!</p>
+  <p class="score">Wins: <span id="wins">0</span></p>
+ </section>
+
+</main>
+
+<footer>
+ <p>© 2026 PENIBON. All rights reserved.</p>
+ <p>Your entertainment. Your community. Your world.</p>
+</footer>
+
+<script>
+const questions=[
+ {q:"What is the capital city of Kenya?",a:["Nairobi","Mombasa","Kisumu"],c:0},
+ {q:"How many days are in a week?",a:["5","7","10"],c:1},
+ {q:"Which planet is known as the Red Planet?",a:["Earth","Mars","Jupiter"],c:1},
+ {q:"What is 10 × 5?",a:["15","50","100"],c:1},
+ {q:"Which animal is known as the King of the Jungle?",a:["Elephant","Lion","Giraffe"],c:1},
+ {q:"Which ocean is the largest?",a:["Indian","Atlantic","Pacific"],c:2},
+ {q:"How many months are in a year?",a:["10","12","14"],c:1}
+];
+
+let current=0;
+let score=0;
+let answered=false;
+
+function startQuiz(){
+ current=0;
+ score=0;
+ document.getElementById("score").textContent=score;
+ document.getElementById("start").hidden=true;
+ showQuestion();
+}
+
+function showQuestion(){
+ answered=false;
+ const q=questions[current];
+ document.getElementById("question").textContent=
+ "Question "+(current+1)+" of "+questions.length+": "+q.q;
+ document.getElementById("feedback").textContent="";
+ document.getElementById("next").hidden=true;
+ const area=document.getElementById("answers");
+ area.innerHTML="";
+ q.a.forEach((answer,index)=>{
+  const btn=document.createElement("button");
+  btn.textContent=answer;
+  btn.className="choice";
+  btn.onclick=()=>checkAnswer(index);
+  area.appendChild(btn);
+ });
+}
+
+function checkAnswer(index){
+ if(answered)return;
+ answered=true;
+ const q=questions[current];
+ const buttons=document.querySelectorAll("#answers button");
+ buttons.forEach(btn=>btn.disabled=true);
+ if(index===q.c){
+  score+=10;
+  document.getElementById("feedback").textContent="Correct! +10 points 🎉";
+ }else{
+  document.getElementById("feedback").textContent=
+  "Not quite! Correct answer: "+q.a[q.c];
+ }
+ document.getElementById("score").textContent=score;
+ const next=document.getElementById("next");
+ next.hidden=false;
+ next.textContent=current===questions.length-1?"Finish Quiz":"Next Question";
+}
+
+function nextQuestion(){
+ current++;
+ if(current>=questions.length){
+  document.getElementById("question").textContent=
+  "Quiz completed! Your final score is "+score+" points. 🎉";
+  document.getElementById("answers").innerHTML="";
+  document.getElementById("feedback").textContent=
+  "Well played! Try again to improve your score.";
+  document.getElementById("next").hidden=true;
+  document.getElementById("start").hidden=false;
+  document.getElementById("start").textContent="Play Again";
+  return;
+ }
+ showQuestion();
+}
+
+let wins=0;
+function play(user){
+ const options=["Rock","Paper","Scissors"];
+ const computer=options[Math.floor(Math.random()*3)];
+ let message="You chose "+user+". Computer chose "+computer+". ";
+ if(user===computer){
+  message+="It's a draw!";
+ }else if(
+  (user==="Rock"&&computer==="Scissors")||
+  (user==="Paper"&&computer==="Rock")||
+  (user==="Scissors"&&computer==="Paper")
+ ){
+  message+="You win! 🎉";
+  wins++;
+ }else{
+  message+="Computer wins!";
+ }
+ document.getElementById("result").textContent=message;
+ document.getElementById("wins").textContent=wins;
+}
+</script>
+
+</body>
+</html>
+
