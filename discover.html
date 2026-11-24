@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +22,6 @@ button.active{background:#55e6c1;color:#101426}
 .story h3{margin-top:0;color:#55e6c1}
 .story p{line-height:1.6;color:#d1d9e9}
 .category{font-size:12px;color:#ffd166}
-.story a{color:#55e6c1}
 #empty{text-align:center;color:#bdc7dc;padding:25px}
 footer{text-align:center;color:#aeb9d0;padding:25px}
 </style>
@@ -45,12 +43,13 @@ footer{text-align:center;color:#aeb9d0;padding:25px}
 
 <main>
 <h2>Discover something new ✨</h2>
-<p>Explore entertainment, technology, motivation and more.</p>
+<p>Explore love, entertainment, technology, motivation and more.</p>
 
 <input id="search" type="search" placeholder="Search stories..." oninput="renderStories()">
 
 <div class="filters">
 <button class="active" onclick="filterCategory('All',this)">All</button>
+<button onclick="filterCategory('Love',this)">❤️ Love</button>
 <button onclick="filterCategory('Entertainment',this)">Entertainment</button>
 <button onclick="filterCategory('Technology',this)">Technology</button>
 <button onclick="filterCategory('Motivation',this)">Motivation</button>
@@ -68,6 +67,21 @@ footer{text-align:center;color:#aeb9d0;padding:25px}
 
 <script>
 const stories=[
+{
+title:"The Beauty of True Love ❤️",
+category:"Love",
+description:"True love is built on honesty, respect, patience and choosing each other every day. Small acts of care can make a relationship stronger."
+},
+{
+title:"Sweet Ways to Make Your Partner Smile 💕",
+category:"Love",
+description:"A thoughtful message, a listening ear, a warm hug and genuine appreciation can make your partner feel special and valued."
+},
+{
+title:"Building a Healthy Relationship 💑",
+category:"Love",
+description:"Healthy relationships grow through communication, trust, understanding, respect and giving each other room to grow."
+},
 {
 title:"Welcome to PENIBON",
 category:"Entertainment",
@@ -89,11 +103,6 @@ category:"Lifestyle",
 description:"Remember to rest, enjoy your hobbies and spend time doing things that make you happy."
 },
 {
-title:"Discover New Entertainment",
-category:"Entertainment",
-description:"Explore new creative ideas, share your interests and enjoy discovering content from different communities."
-},
-{
 title:"Believe in Your Progress",
 category:"Motivation",
 description:"You do not have to achieve everything in one day. Keep moving forward, stay focused and celebrate small victories."
@@ -103,38 +112,38 @@ description:"You do not have to achieve everything in one day. Keep moving forwa
 let selectedCategory="All";
 
 function filterCategory(category,button){
- selectedCategory=category;
- document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
- button.classList.add("active");
- renderStories();
+selectedCategory=category;
+document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+renderStories();
 }
 
 function renderStories(){
- const search=document.getElementById("search").value.toLowerCase();
- const container=document.getElementById("stories");
- container.innerHTML="";
+const search=document.getElementById("search").value.toLowerCase();
+const container=document.getElementById("stories");
+container.innerHTML="";
 
- const results=stories.filter(story=>{
-  const matchesCategory=selectedCategory==="All"||story.category===selectedCategory;
-  const matchesSearch=(story.title+" "+story.description+" "+story.category).toLowerCase().includes(search);
-  return matchesCategory&&matchesSearch;
- });
+const results=stories.filter(story=>{
+const matchesCategory=selectedCategory==="All"||story.category===selectedCategory;
+const matchesSearch=(story.title+" "+story.description+" "+story.category).toLowerCase().includes(search);
+return matchesCategory&&matchesSearch;
+});
 
- results.forEach(story=>{
-  const card=document.createElement("article");
-  card.className="story";
-  const category=document.createElement("div");
-  category.className="category";
-  category.textContent=story.category.toUpperCase();
-  const title=document.createElement("h3");
-  title.textContent=story.title;
-  const description=document.createElement("p");
-  description.textContent=story.description;
-  card.append(category,title,description);
-  container.appendChild(card);
- });
+results.forEach(story=>{
+const card=document.createElement("article");
+card.className="story";
+const category=document.createElement("div");
+category.className="category";
+category.textContent=story.category.toUpperCase();
+const title=document.createElement("h3");
+title.textContent=story.title;
+const description=document.createElement("p");
+description.textContent=story.description;
+card.append(category,title,description);
+container.appendChild(card);
+});
 
- document.getElementById("empty").hidden=results.length!==0;
+document.getElementById("empty").hidden=results.length!==0;
 }
 
 renderStories();
