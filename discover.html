@@ -1,1 +1,143 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PENIBON Discover</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#101426;color:white}
+header{background:#191f38;text-align:center;padding:22px}
+header h1{color:#55e6c1;margin:0}
+nav{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:15px;background:#151b30}
+nav a{color:white;text-decoration:none;font-weight:bold}
+main{max-width:850px;margin:auto;padding:18px}
+h2{color:#55e6c1}
+input{width:100%;padding:14px;border-radius:10px;border:0;margin:12px 0;background:#26324f;color:white;font-size:16px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
+button{border:0;border-radius:20px;padding:10px 16px;background:#303d60;color:white;cursor:pointer}
+button.active{background:#55e6c1;color:#101426}
+.story{background:#1c2540;border:1px solid #354363;padding:18px;border-radius:14px;margin:15px 0}
+.story h3{margin-top:0;color:#55e6c1}
+.story p{line-height:1.6;color:#d1d9e9}
+.category{font-size:12px;color:#ffd166}
+.story a{color:#55e6c1}
+#empty{text-align:center;color:#bdc7dc;padding:25px}
+footer{text-align:center;color:#aeb9d0;padding:25px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌍 PENIBON DISCOVER</h1>
+<p>Explore stories. Discover ideas. Stay inspired.</p>
+</header>
+
+<nav>
+<a href="index.html">Home</a>
+<a href="videos.html">Videos</a>
+<a href="games.html">Games</a>
+<a href="discover.html">Discover</a>
+<a href="creator.html">Creator Studio</a>
+</nav>
+
+<main>
+<h2>Discover something new ✨</h2>
+<p>Explore entertainment, technology, motivation and more.</p>
+
+<input id="search" type="search" placeholder="Search stories..." oninput="renderStories()">
+
+<div class="filters">
+<button class="active" onclick="filterCategory('All',this)">All</button>
+<button onclick="filterCategory('Entertainment',this)">Entertainment</button>
+<button onclick="filterCategory('Technology',this)">Technology</button>
+<button onclick="filterCategory('Motivation',this)">Motivation</button>
+<button onclick="filterCategory('Lifestyle',this)">Lifestyle</button>
+</div>
+
+<div id="stories"></div>
+<div id="empty" hidden>No stories found. Try another search.</div>
+</main>
+
+<footer>
+<p>© 2026 PENIBON</p>
+<p>Your entertainment. Your community. Your world.</p>
+</footer>
+
+<script>
+const stories=[
+{
+title:"Welcome to PENIBON",
+category:"Entertainment",
+description:"Welcome to your new entertainment community. Explore videos, play games and discover interesting content all in one place."
+},
+{
+title:"The Power of Learning Every Day",
+category:"Motivation",
+description:"Small steps can lead to big achievements. Take time each day to learn something new and keep improving yourself."
+},
+{
+title:"How Technology Is Changing Our World",
+category:"Technology",
+description:"Digital tools are changing how people communicate, work, learn and share their creativity with the world."
+},
+{
+title:"Make Time for Yourself",
+category:"Lifestyle",
+description:"Remember to rest, enjoy your hobbies and spend time doing things that make you happy."
+},
+{
+title:"Discover New Entertainment",
+category:"Entertainment",
+description:"Explore new creative ideas, share your interests and enjoy discovering content from different communities."
+},
+{
+title:"Believe in Your Progress",
+category:"Motivation",
+description:"You do not have to achieve everything in one day. Keep moving forward, stay focused and celebrate small victories."
+}
+];
+
+let selectedCategory="All";
+
+function filterCategory(category,button){
+ selectedCategory=category;
+ document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ renderStories();
+}
+
+function renderStories(){
+ const search=document.getElementById("search").value.toLowerCase();
+ const container=document.getElementById("stories");
+ container.innerHTML="";
+
+ const results=stories.filter(story=>{
+  const matchesCategory=selectedCategory==="All"||story.category===selectedCategory;
+  const matchesSearch=(story.title+" "+story.description+" "+story.category).toLowerCase().includes(search);
+  return matchesCategory&&matchesSearch;
+ });
+
+ results.forEach(story=>{
+  const card=document.createElement("article");
+  card.className="story";
+  const category=document.createElement("div");
+  category.className="category";
+  category.textContent=story.category.toUpperCase();
+  const title=document.createElement("h3");
+  title.textContent=story.title;
+  const description=document.createElement("p");
+  description.textContent=story.description;
+  card.append(category,title,description);
+  container.appendChild(card);
+ });
+
+ document.getElementById("empty").hidden=results.length!==0;
+}
+
+renderStories();
+</script>
+</body>
+</html>
