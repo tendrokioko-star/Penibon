@@ -1,1 +1,422 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PENIBON Camera Studio</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #080d1b;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background: #151d35;
+    padding: 18px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    color: #48d6c5;
+}
+
+header p {
+    color: #c4cce0;
+    margin-bottom: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 16px;
+}
+
+.card {
+    background: #151d35;
+    border: 1px solid #293653;
+    padding: 18px;
+    border-radius: 15px;
+    margin-bottom: 18px;
+}
+
+h2 {
+    color: #48d6c5;
+    margin-top: 0;
+}
+
+.camera-box {
+    position: relative;
+    background: black;
+    border-radius: 15px;
+    overflow: hidden;
+    aspect-ratio: 9 / 16;
+    max-height: 65vh;
+    margin: auto;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+#recordedVideo {
+    display: none;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+button {
+    border: none;
+    padding: 14px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #48d6c5;
+    color: #07131c;
+}
+
+.secondary {
+    background: #293653;
+    color: white;
+}
+
+.record {
+    background: #e63c55;
+    color: white;
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 8px 0 15px;
+    border-radius: 9px;
+    border: 1px solid #405071;
+    background: #080d1b;
+    color: white;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+label {
+    color: #dce4f5;
+}
+
+#status {
+    text-align: center;
+    color: #48d6c5;
+    line-height: 1.5;
+    margin-top: 12px;
+}
+
+.small {
+    color: #aab6ce;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+a {
+    color: #48d6c5;
+    text-decoration: none;
+}
+
+.back {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    background: #293653;
+    border-radius: 9px;
+    margin-top: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>PENIBON 🎥</h1>
+    <p>Camera Studio • Create your moments</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Record Your Video</h2>
+
+        <div class="camera-box">
+            <video id="camera" autoplay muted playsinline></video>
+            <video id="recordedVideo" controls playsinline></video>
+        </div>
+
+        <div class="controls">
+            <button id="startCamera">Open Camera</button>
+            <button id="switchCamera" class="secondary">
+                Switch Camera
+            </button>
+            <button id="startRecord" class="record" disabled>
+                ● Start Recording
+            </button>
+            <button id="stopRecord" class="secondary" disabled>
+                Stop Recording
+            </button>
+        </div>
+
+        <p id="status">Tap Open Camera to begin.</p>
+    </div>
+
+    <div class="card">
+        <h2>Your Video Details</h2>
+
+        <label for="videoTitle">Video Title (Optional)</label>
+        <input id="videoTitle" type="text"
+               placeholder="Give your video a title">
+
+        <label for="videoDescription">Description (Optional)</label>
+        <textarea id="videoDescription"
+                  placeholder="Write something about your video..."></textarea>
+
+        <div class="controls">
+            <button id="retake" class="secondary" disabled>
+                Retake Video
+            </button>
+
+            <button id="download" disabled>
+                Download Video
+            </button>
+        </div>
+
+        <p class="small">
+            Your recording stays on this device unless you download it.
+            Permanent video uploading and publishing will be connected
+            in a later step.
+        </p>
+    </div>
+
+    <a class="back" href="dashboard.html">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+<script>
+const camera = document.getElementById("camera");
+const recordedVideo = document.getElementById("recordedVideo");
+const statusText = document.getElementById("status");
+
+const startCameraButton = document.getElementById("startCamera");
+const switchCameraButton = document.getElementById("switchCamera");
+const startRecordButton = document.getElementById("startRecord");
+const stopRecordButton = document.getElementById("stopRecord");
+const retakeButton = document.getElementById("retake");
+const downloadButton = document.getElementById("download");
+
+let stream = null;
+let recorder = null;
+let chunks = [];
+let videoBlob = null;
+let videoURL = null;
+let facingMode = "user";
+let recording = false;
+
+async function openCamera() {
+    try {
+        if (!navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia) {
+            throw new Error("Camera access is unavailable. Open PENIBON using Chrome over HTTPS.");
+        }
+
+        if (recording) return;
+
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: {
+                facingMode: { ideal: facingMode },
+                width: { ideal: 720 },
+                height: { ideal: 1280 }
+            }
+        });
+
+        camera.srcObject = stream;
+        camera.style.display = "block";
+        recordedVideo.style.display = "none";
+
+        startRecordButton.disabled = false;
+
+        statusText.textContent =
+            "Camera ready! You can now record your video.";
+
+    } catch (error) {
+        statusText.textContent =
+            "Camera error: " + error.message +
+            ". Please allow camera and microphone permissions.";
+    }
+}
+
+startCameraButton.addEventListener("click", openCamera);
+
+switchCameraButton.addEventListener("click", async () => {
+    facingMode = facingMode === "user" ? "environment" : "user";
+    await openCamera();
+});
+
+startRecordButton.addEventListener("click", () => {
+    if (!stream) return;
+
+    if (!window.MediaRecorder) {
+        statusText.textContent =
+            "Video recording is not supported by this browser.";
+        return;
+    }
+
+    chunks = [];
+
+    const mimeTypes = [
+        "video/webm;codecs=vp9,opus",
+        "video/webm;codecs=vp8,opus",
+        "video/webm"
+    ];
+
+    const supportedType = mimeTypes.find(type =>
+        MediaRecorder.isTypeSupported(type)
+    );
+
+    try {
+        recorder = supportedType
+            ? new MediaRecorder(stream, { mimeType: supportedType })
+            : new MediaRecorder(stream);
+
+        recorder.ondataavailable = event => {
+            if (event.data && event.data.size > 0) {
+                chunks.push(event.data);
+            }
+        };
+
+        recorder.onstop = () => {
+            videoBlob = new Blob(chunks, {
+                type: recorder.mimeType || "video/webm"
+            });
+
+            if (videoURL) URL.revokeObjectURL(videoURL);
+
+            videoURL = URL.createObjectURL(videoBlob);
+            recordedVideo.src = videoURL;
+
+            camera.style.display = "none";
+            recordedVideo.style.display = "block";
+
+            retakeButton.disabled = false;
+            downloadButton.disabled = false;
+
+            statusText.textContent =
+                "Video recorded! Preview it or download it.";
+
+            startRecordButton.disabled = true;
+            stopRecordButton.disabled = true;
+        };
+
+        recorder.start();
+        recording = true;
+
+        startRecordButton.disabled = true;
+        stopRecordButton.disabled = false;
+        statusText.textContent = "🔴 Recording...";
+
+    } catch (error) {
+        statusText.textContent =
+            "Could not start recording: " + error.message;
+    }
+});
+
+stopRecordButton.addEventListener("click", () => {
+    if (recorder && recorder.state === "recording") {
+        recorder.stop();
+        recording = false;
+    }
+});
+
+retakeButton.addEventListener("click", () => {
+    if (videoURL) {
+        URL.revokeObjectURL(videoURL);
+        videoURL = null;
+    }
+
+    videoBlob = null;
+    recordedVideo.pause();
+    recordedVideo.removeAttribute("src");
+    recordedVideo.load();
+
+    recordedVideo.style.display = "none";
+    camera.style.display = "block";
+
+    retakeButton.disabled = true;
+    downloadButton.disabled = true;
+
+    if (stream && stream.active) {
+        startRecordButton.disabled = false;
+        statusText.textContent = "Ready! Record another video.";
+    } else {
+        startRecordButton.disabled = true;
+        statusText.textContent = "Tap Open Camera to record again.";
+    }
+});
+
+downloadButton.addEventListener("click", () => {
+    if (!videoBlob || !videoURL) return;
+
+    const title = document.getElementById("videoTitle")
+        .value.trim() || "PENIBON-video";
+
+    const safeTitle = title.replace(/[^a-z0-9-_]/gi, "_");
+
+    const link = document.createElement("a");
+    link.href = videoURL;
+    link.download = safeTitle + ".webm";
+    link.click();
+
+    statusText.textContent = "Your video download has started!";
+});
+
+window.addEventListener("pagehide", () => {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+
+    if (videoURL) {
+        URL.revokeObjectURL(videoURL);
+    }
+});
+</script>
+
+</body>
+</html>
