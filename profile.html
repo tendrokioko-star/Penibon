@@ -4,222 +4,220 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PENIBON - Watch, Play, Discover</title>
+<title>My Profile - PENIBON</title>
 
 <style>
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:Arial,sans-serif;
   background:#080d25;
   color:white;
+  font-family:Arial,sans-serif;
 }
-
-#site{display:none}
-
 header{
   background:#111b35;
-  padding:18px;
+  padding:17px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  flex-wrap:wrap;
-  gap:15px;
 }
-
-.logo{
-  font-size:27px;
-  font-weight:bold;
-  color:#42d6ff;
-}
-
-nav{
-  display:flex;
-  gap:15px;
-  flex-wrap:wrap;
-}
-
-nav a{
-  color:white;
-  text-decoration:none;
-  font-weight:bold;
-  font-size:14px;
-}
-
-nav a:hover{color:#42d6ff}
-
-.hero{
-  text-align:center;
-  padding:75px 20px;
-  background:linear-gradient(135deg,#10254c,#124c70);
-}
-
-.hero h1{
-  font-size:38px;
-  margin:0 0 15px;
-}
-
-.hero p{
-  font-size:18px;
-  color:#d2e7ff;
-}
-
-.hero button{
-  background:#12a9df;
-  border:0;
-  color:white;
-  padding:14px 25px;
-  border-radius:8px;
-  font-size:16px;
-  font-weight:bold;
-  margin-top:15px;
-}
-
-section{padding:35px 20px}
-
-.section-title{
-  text-align:center;
-  font-size:27px;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;
-  max-width:1000px;
-  margin:25px auto;
-}
-
+.logo{font-size:25px;font-weight:bold;color:#42d6ff}
+header a{color:#42d6ff;text-decoration:none}
+.container{max-width:750px;margin:25px auto;padding:15px}
 .card{
   background:#14213e;
-  padding:25px;
-  border-radius:14px;
+  border-radius:15px;
+  padding:22px;
+  margin-bottom:18px;
+}
+.profile-top{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  flex-wrap:wrap;
+}
+.avatar{
+  width:105px;
+  height:105px;
+  border-radius:50%;
+  background:#263d61;
+  border:3px solid #42d6ff;
+  object-fit:cover;
+}
+h2{color:#42d6ff}
+.name{font-size:23px;font-weight:bold}
+.email{color:#b9c8df;overflow-wrap:anywhere}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:25px;
   text-align:center;
 }
-
-.card h3{color:#42d6ff}
-
-.card p{
-  color:#c5d2e7;
-  line-height:1.5;
+.stat{
+  background:#202e4d;
+  padding:15px 5px;
+  border-radius:10px;
 }
-
-.card a{
-  display:inline-block;
-  background:#168bd2;
-  padding:11px 18px;
-  border-radius:7px;
-  color:white;
-  text-decoration:none;
-  margin-top:10px;
-}
-
-footer{
-  text-align:center;
-  padding:25px;
-  background:#111b35;
-  color:#b7c8df;
-}
-
-#loading{
-  text-align:center;
-  padding:60px 20px;
+.stat strong{
+  display:block;
   color:#42d6ff;
+  font-size:22px;
 }
+.stat span{font-size:12px;color:#bdcbe0}
+label{display:block;margin:15px 0 7px}
+input,textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #405274;
+  border-radius:8px;
+  background:#0c1630;
+  color:white;
+  font-size:15px;
+}
+textarea{resize:vertical;min-height:90px}
+button{
+  padding:13px 17px;
+  border:0;
+  border-radius:8px;
+  background:#168bd2;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:12px;
+}
+.secondary{background:#293b5e}
+.tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.tabs a{
+  color:white;
+  background:#263958;
+  padding:12px;
+  border-radius:8px;
+  text-decoration:none;
+  font-size:13px;
+}
+#editBox{display:none}
+#message{color:#42d6ff;font-size:14px}
+footer{text-align:center;color:#91a6c6;padding:20px}
 </style>
 </head>
 
 <body>
 
-<div id="loading">Checking your PENIBON account...</div>
-
-<div id="site">
-
 <header>
   <div class="logo">PENIBON</div>
-
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="videos.html">Videos</a>
-    <a href="games.html">Games</a>
-    <a href="discover.html">Discover</a>
-    <a href="creator.html">Creator Studio</a>
-    <a href="profile.html">My Profile</a>
-  </nav>
+  <a href="index.html">Home</a>
 </header>
 
-<div class="hero">
-  <h1>Welcome to PENIBON</h1>
-  <p>WATCH • PLAY • DISCOVER</p>
-  <p>Your entertainment. Your community. Your world.</p>
-
-  <button onclick="location.href='videos.html'">
-    Explore PENIBON
-  </button>
+<div class="container" id="loading">
+  <p>Loading your profile...</p>
 </div>
 
-<section>
-  <h2 class="section-title">Explore PENIBON</h2>
+<div class="container" id="profilePage" style="display:none">
 
-  <div class="cards">
+  <div class="card">
+    <div class="profile-top">
 
-    <div class="card">
-      <h3>Videos</h3>
-      <p>Watch entertaining videos and discover exciting content.</p>
-      <a href="videos.html">Explore Videos</a>
+      <img id="avatar"
+        class="avatar"
+        src="https://placehold.co/200x200/263d61/ffffff?text=PROFILE"
+        alt="Profile picture">
+
+      <div>
+        <div class="name" id="displayName">User</div>
+        <p class="email" id="email"></p>
+        <button onclick="showEditor()">Edit Profile</button>
+      </div>
+
     </div>
 
-    <div class="card">
-      <h3>Games & Challenges</h3>
-      <p>Play games, test your skills and enjoy exciting challenges.</p>
-      <a href="games.html">Play Games</a>
+    <div class="stats">
+      <div class="stat">
+        <strong id="posts">0</strong>
+        <span>Posts</span>
+      </div>
+      <div class="stat">
+        <strong id="followers">0</strong>
+        <span>Followers</span>
+      </div>
+      <div class="stat">
+        <strong id="following">0</strong>
+        <span>Following</span>
+      </div>
     </div>
-
-    <div class="card">
-      <h3>Discover</h3>
-      <p>Explore love, entertainment, technology and inspiration.</p>
-      <a href="discover.html">Discover More</a>
-    </div>
-
-    <div class="card">
-      <h3>Creator Studio</h3>
-      <p>Prepare your videos and explore your creator journey.</p>
-      <a href="creator.html">Open Creator Studio</a>
-    </div>
-
-    <div class="card">
-      <h3>My Profile</h3>
-      <p>View and manage your PENIBON personal profile.</p>
-      <a href="profile.html">Open My Profile</a>
-    </div>
-
   </div>
-</section>
 
-<footer>
-  <p>© 2026 PENIBON. All rights reserved.</p>
-  <p>Your entertainment. Your community. Your world.</p>
+  <div class="card">
+    <h2>About Me</h2>
+    <p id="bioDisplay">Welcome to my PENIBON profile!</p>
+  </div>
 
-  <button id="logoutButton"
-    style="padding:10px 20px;border:0;border-radius:7px;background:#168bd2;color:white;font-weight:bold">
-    Logout
-  </button>
-</footer>
+  <div class="card" id="editBox">
+    <h2>Edit My Profile</h2>
+
+    <label>Profile Picture</label>
+    <input type="file" id="photoInput" accept="image/*">
+
+    <label>Display Name</label>
+    <input id="nameInput" type="text" placeholder="Enter your name">
+
+    <label>Bio</label>
+    <textarea id="bioInput" maxlength="250"
+      placeholder="Tell people something about yourself..."></textarea>
+
+    <button id="saveButton">Save Changes</button>
+    <button class="secondary" onclick="hideEditor()">Cancel</button>
+
+    <p id="message"></p>
+  </div>
+
+  <div class="card">
+    <h2>My Content</h2>
+    <div class="tabs">
+      <a href="creator.html">My Videos</a>
+      <a href="videos.html">Liked Videos</a>
+      <a href="videos.html">Saved Videos</a>
+    </div>
+    <p style="color:#b9c8df;font-size:13px">
+      Your personal content collections will be connected as we build the social features.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Account Navigation</h2>
+    <div class="tabs">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">My Dashboard</a>
+      <a href="creator.html">Creator Studio</a>
+      <a href="discover.html">Discover</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <button id="logoutButton" style="background:#b83245">
+      Logout
+    </button>
+  </div>
 
 </div>
+
+<footer>© 2026 PENIBON</footer>
 
 <script type="module">
 
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
 import {
   getAuth,
   onAuthStateChanged,
+  updateProfile,
   signOut
-} from
-"https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
@@ -233,25 +231,132 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("site").style.display = "block";
-  } else {
+let currentUser = null;
+let selectedPhoto = null;
+
+const $ = id => document.getElementById(id);
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
     window.location.replace("account.html");
+    return;
   }
+
+  currentUser = user;
+
+  $("loading").style.display = "none";
+  $("profilePage").style.display = "block";
+
+  showProfile();
 });
 
-document.getElementById("logoutButton").addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    window.location.replace("account.html");
-  } catch (error) {
-    alert("Unable to log out. Please try again.");
+function showProfile() {
+  $("displayName").textContent =
+    currentUser.displayName || "PENIBON User";
+
+  $("email").textContent = currentUser.email || "";
+
+  $("nameInput").value =
+    currentUser.displayName || "";
+
+  $("avatar").src =
+    selectedPhoto || currentUser.photoURL ||
+    "https://placehold.co/200x200/263d61/ffffff?text=PROFILE";
+
+  const savedBio = localStorage.getItem(
+    "penibon_bio_" + currentUser.uid
+  );
+
+  $("bioDisplay").textContent =
+    savedBio || "Welcome to my PENIBON profile!";
+  $("bioInput").value = savedBio || "";
+}
+
+window.showEditor = function() {
+  $("editBox").style.display = "block";
+  $("message").textContent = "";
+  window.scrollTo({
+    top: $("editBox").offsetTop,
+    behavior: "smooth"
+  });
+};
+
+window.hideEditor = function() {
+  $("editBox").style.display = "none";
+};
+
+$("photoInput").addEventListener("change", event => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image.");
+    return;
   }
+
+  if (file.size > 3 * 1024 * 1024) {
+    alert("Please choose an image smaller than 3 MB.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    selectedPhoto = reader.result;
+    $("avatar").src = selectedPhoto;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+$("saveButton").addEventListener("click", async () => {
+
+  const name = $("nameInput").value.trim();
+  const bio = $("bioInput").value.trim();
+
+  if (!name) {
+    alert("Please enter your display name.");
+    return;
+  }
+
+  $("saveButton").disabled = true;
+  $("message").textContent = "Saving...";
+
+  try {
+    await updateProfile(currentUser, {
+      displayName: name
+    });
+
+    currentUser = auth.currentUser;
+
+    // Bio is currently saved on this device only.
+    localStorage.setItem(
+      "penibon_bio_" + currentUser.uid,
+      bio
+    );
+
+    // Selected picture is a local preview only.
+    showProfile();
+
+    $("message").textContent =
+      "Your name and bio have been saved!";
+
+    $("editBox").style.display = "none";
+
+  } catch (error) {
+    $("message").textContent =
+      "Could not save: " + error.message;
+  }
+
+  $("saveButton").disabled = false;
+});
+
+$("logoutButton").addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.replace("account.html");
 });
 
 </script>
-
 </body>
 </html>
