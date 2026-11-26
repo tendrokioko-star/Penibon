@@ -4,33 +4,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Dashboard | PENIBON</title>
+<title>My Dashboard - PENIBON</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:white}
-header{background:#151d35;padding:22px 15px;text-align:center}
-header h1{margin:0;color:#48d6c5}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0b1020;
+  color:white;
+}
+header{
+  background:#151d35;
+  padding:20px;
+  text-align:center;
+}
+header h1{color:#48d6c5;margin:0}
 .container{max-width:900px;margin:auto;padding:18px}
-.card{background:#151d35;border:1px solid #293653;padding:20px;border-radius:14px;margin-bottom:18px}
+.card{
+  background:#151d35;
+  border:1px solid #293653;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:18px;
+}
 h2{color:#48d6c5;margin-top:0}
 h3{color:#e2e9f8}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
-.stat{background:#202c49;padding:17px;border-radius:12px}
-.amount{color:#48d6c5;font-size:23px;font-weight:bold}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px;
+}
+.stat{
+  background:#202c49;
+  padding:17px;
+  border-radius:12px;
+}
+.amount{
+  color:#48d6c5;
+  font-size:23px;
+  font-weight:bold;
+}
 p{line-height:1.5}
 button,.action{
-display:block;width:100%;padding:14px;border:0;border-radius:9px;
-margin-top:10px;font-size:15px;font-weight:bold;cursor:pointer;
-background:#48d6c5;color:#07131c;text-align:center;text-decoration:none;
+  display:block;
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:9px;
+  margin-top:10px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#48d6c5;
+  color:#07131c;
+  text-align:center;
+  text-decoration:none;
 }
 .secondary{background:#293653;color:white}
 .logout{background:#a83245;color:white}
-.email{overflow-wrap:anywhere;color:#b9c5dc}
-.small{color:#aab6ce;font-size:13px}
-nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
-nav a{display:block;background:#202c49;padding:13px 8px;text-align:center;border-radius:9px;color:#48d6c5;text-decoration:none}
+.email,.small{color:#aab6ce}
+.email{overflow-wrap:anywhere}
+.small{font-size:13px}
+input,textarea{
+  width:100%;
+  padding:13px;
+  border-radius:8px;
+  border:1px solid #405274;
+  background:#0b1630;
+  color:white;
+  margin:7px 0 14px;
+  font-size:15px;
+}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-weight:bold}
+.profile{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.avatar{
+  width:105px;
+  height:105px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #48d6c5;
+  background:#293653;
+}
+.profile-name{font-size:23px;font-weight:bold}
+.profile-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  text-align:center;
+  margin-top:22px;
+}
+.profile-stats div{
+  background:#202c49;
+  padding:13px 5px;
+  border-radius:10px;
+}
+.profile-stats strong{
+  display:block;
+  color:#48d6c5;
+  font-size:22px;
+}
+.profile-stats span{font-size:12px;color:#bdcbe0}
+nav{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:10px;
+}
+nav a{
+  display:block;
+  background:#202c49;
+  padding:13px 8px;
+  text-align:center;
+  border-radius:9px;
+  color:#48d6c5;
+  text-decoration:none;
+}
+#editProfile{display:none}
+#message{color:#48d6c5}
+#dashboard{display:none}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -38,30 +138,87 @@ nav a{display:block;background:#202c49;padding:13px 8px;text-align:center;border
 <p>Your entertainment. Your community. Your world.</p>
 </header>
 
-<div class="container" id="dashboard" style="display:none">
-
-<div class="card">
-<h2>Welcome, <span id="userName">User</span>! 👋</h2>
-<p class="email" id="userEmail"></p>
-<p>Welcome to your PENIBON dashboard.</p>
-
-<a class="action" href="./profile.html">👤 My Profile</a>
-<a class="action secondary" href="./index.html">🏠 PENIBON Home</a>
+<div id="loading" class="container">
+<p>Loading your PENIBON account...</p>
 </div>
 
+<div class="container" id="dashboard">
+
+<!-- MY PROFILE -->
+<div class="card">
+<h2>👤 My Profile</h2>
+
+<div class="profile">
+<img id="profilePicture"
+class="avatar"
+src="https://placehold.co/200x200/293653/ffffff?text=PROFILE"
+alt="Profile picture">
+
+<div>
+<div class="profile-name" id="profileName">User</div>
+<p class="email" id="userEmail"></p>
+<p class="small">Your personal PENIBON profile</p>
+</div>
+</div>
+
+<div class="profile-stats">
+<div>
+<strong>0</strong>
+<span>Posts</span>
+</div>
+<div>
+<strong>0</strong>
+<span>Followers</span>
+</div>
+<div>
+<strong>0</strong>
+<span>Following</span>
+</div>
+</div>
+
+<h3>About Me</h3>
+<p id="bioDisplay">Welcome to my PENIBON profile!</p>
+
+<button id="editButton">Edit My Profile</button>
+</div>
+
+<!-- EDIT PROFILE -->
+<div class="card" id="editProfile">
+<h2>Edit My Profile ✏️</h2>
+
+<label>Profile Picture</label>
+<input type="file" id="photoInput" accept="image/*">
+
+<label>Display Name</label>
+<input type="text" id="nameInput" placeholder="Enter your name">
+
+<label>About Me / Bio</label>
+<textarea id="bioInput" maxlength="250"
+placeholder="Tell people about yourself..."></textarea>
+
+<button id="saveProfile">Save Profile</button>
+<button class="secondary" id="cancelEdit">Cancel</button>
+
+<p id="message"></p>
+</div>
+
+<!-- WALLET -->
 <div class="card">
 <h2>My Wallet 💰</h2>
+
 <div class="grid">
 <div class="stat">
 <h3>Welcome Bonus</h3>
 <div class="amount">KSh 0</div>
 <p class="small">KSh 150 bonus after phone and identity verification when the programme is funded.</p>
 </div>
+
 <div class="stat">
 <h3>Creator Earnings</h3>
 <div class="amount">KSh 0</div>
 <p class="small">Your confirmed creator earnings.</p>
 </div>
+
 <div class="stat">
 <h3>Available Balance</h3>
 <div class="amount">KSh 0</div>
@@ -70,32 +227,51 @@ nav a{display:block;background:#202c49;padding:13px 8px;text-align:center;border
 </div>
 </div>
 
+<!-- CREATOR ACCOUNT -->
 <div class="card">
 <h2>Creator Account 🎬</h2>
+
 <div class="grid">
-<div class="stat"><h3>My Videos</h3><div class="amount">0</div></div>
-<div class="stat"><h3>My Followers</h3><div class="amount">0</div></div>
-<div class="stat"><h3>Minimum Withdrawal</h3><div class="amount">KSh 650</div></div>
+<div class="stat">
+<h3>My Videos</h3>
+<div class="amount">0</div>
 </div>
+
+<div class="stat">
+<h3>My Followers</h3>
+<div class="amount">0</div>
+</div>
+
+<div class="stat">
+<h3>Minimum Withdrawal</h3>
+<div class="amount">KSh 650</div>
+</div>
+</div>
+
 <p class="small">Creator earnings and withdrawals will be connected when the payment system is developed.</p>
+
 <a class="action" href="./creator.html">Open Creator Studio</a>
 </div>
 
+<!-- REFERRALS -->
 <div class="card">
 <h2>Referral Programme 🎁</h2>
+
 <div class="stat">
 <h3>Successful Referral Reward</h3>
 <div class="amount">KSh 20</div>
 <p class="small">For each genuine new user who registers and completes phone and identity verification, subject to programme terms and funding.</p>
 </div>
+
 <p class="small">Referral tracking and reward history are coming soon.</p>
 </div>
 
+<!-- NAVIGATION -->
 <div class="card">
 <h2>Explore PENIBON 🌍</h2>
+
 <nav>
 <a href="./index.html">🏠 Home</a>
-<a href="./profile.html">👤 My Profile</a>
 <a href="./videos.html">🎬 Videos</a>
 <a href="./games.html">🎮 Games</a>
 <a href="./discover.html">✨ Discover</a>
@@ -110,12 +286,14 @@ nav a{display:block;background:#202c49;padding:13px 8px;text-align:center;border
 </div>
 
 <script type="module">
+
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
 import {
 getAuth,
 onAuthStateChanged,
+updateProfile,
 signOut
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
@@ -131,25 +309,190 @@ appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, (user) => {
-if (!user) {
+let currentUser = null;
+let selectedPhoto = null;
+
+const $ = id => document.getElementById(id);
+
+function bioKey(){
+return "penibon_bio_" + currentUser.uid;
+}
+
+function photoKey(){
+return "penibon_photo_" + currentUser.uid;
+}
+
+function displayProfile(){
+
+$("profileName").textContent =
+currentUser.displayName || "PENIBON User";
+
+$("userEmail").textContent =
+currentUser.email || "";
+
+$("bioDisplay").textContent =
+localStorage.getItem(bioKey()) ||
+"Welcome to my PENIBON profile!";
+
+$("profilePicture").src =
+localStorage.getItem(photoKey()) ||
+currentUser.photoURL ||
+"https://placehold.co/200x200/293653/ffffff?text=PROFILE";
+
+$("nameInput").value =
+currentUser.displayName || "";
+
+$("bioInput").value =
+localStorage.getItem(bioKey()) || "";
+}
+
+onAuthStateChanged(auth, user => {
+
+if(!user){
 window.location.replace("account.html");
 return;
 }
 
-document.getElementById("dashboard").style.display = "block";
-document.getElementById("userName").textContent = user.displayName || "User";
-document.getElementById("userEmail").textContent = user.email || "";
+currentUser = user;
+
+$("loading").style.display = "none";
+$("dashboard").style.display = "block";
+
+displayProfile();
+
 });
 
-document.getElementById("logoutButton").addEventListener("click", async () => {
-try {
+$("editButton").addEventListener("click", () => {
+$("editProfile").style.display = "block";
+$("message").textContent = "";
+$("editProfile").scrollIntoView({behavior:"smooth"});
+});
+
+$("cancelEdit").addEventListener("click", () => {
+$("editProfile").style.display = "none";
+selectedPhoto = null;
+$("photoInput").value = "";
+});
+
+$("photoInput").addEventListener("change", event => {
+
+const file = event.target.files[0];
+
+if(!file) return;
+
+if(!file.type.startsWith("image/")){
+alert("Please choose an image.");
+return;
+}
+
+if(file.size > 5 * 1024 * 1024){
+alert("Please choose an image smaller than 5 MB.");
+return;
+}
+
+const reader = new FileReader();
+
+reader.onload = () => {
+
+const image = new Image();
+
+image.onload = () => {
+
+const canvas = document.createElement("canvas");
+const max = 400;
+
+let width = image.width;
+let height = image.height;
+
+if(width > height){
+if(width > max){
+height = height * max / width;
+width = max;
+}
+}else{
+if(height > max){
+width = width * max / height;
+height = max;
+}
+}
+
+canvas.width = width;
+canvas.height = height;
+
+const ctx = canvas.getContext("2d");
+ctx.drawImage(image,0,0,width,height);
+
+selectedPhoto =
+canvas.toDataURL("image/jpeg",0.75);
+
+$("profilePicture").src = selectedPhoto;
+
+};
+
+image.src = reader.result;
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+$("saveProfile").addEventListener("click", async () => {
+
+const name = $("nameInput").value.trim();
+const bio = $("bioInput").value.trim();
+
+if(!name){
+alert("Please enter your display name.");
+return;
+}
+
+$("saveProfile").disabled = true;
+$("message").textContent = "Saving your profile...";
+
+try{
+
+await updateProfile(currentUser,{
+displayName:name
+});
+
+if(selectedPhoto){
+localStorage.setItem(photoKey(),selectedPhoto);
+}
+
+localStorage.setItem(bioKey(),bio);
+
+currentUser = auth.currentUser;
+
+displayProfile();
+
+$("message").textContent = "Profile saved successfully! ❤️";
+$("editProfile").style.display = "none";
+
+selectedPhoto = null;
+$("photoInput").value = "";
+
+}catch(error){
+
+$("message").textContent =
+"Error: " + error.message;
+
+}
+
+$("saveProfile").disabled = false;
+
+});
+
+$("logoutButton").addEventListener("click",async()=>{
+try{
 await signOut(auth);
 window.location.replace("account.html");
-} catch(error) {
+}catch(error){
 alert("Logout failed: " + error.message);
 }
 });
+
 </script>
+
 </body>
 </html>
