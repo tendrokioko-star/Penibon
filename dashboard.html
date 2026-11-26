@@ -5,248 +5,107 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Dashboard | PENIBON</title>
-
 <style>
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0b1020;
-    color: white;
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:white}
+header{background:#151d35;padding:22px 15px;text-align:center}
+header h1{margin:0;color:#48d6c5}
+.container{max-width:900px;margin:auto;padding:18px}
+.card{background:#151d35;border:1px solid #293653;padding:20px;border-radius:14px;margin-bottom:18px}
+h2{color:#48d6c5;margin-top:0}
+h3{color:#e2e9f8}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.stat{background:#202c49;padding:17px;border-radius:12px}
+.amount{color:#48d6c5;font-size:23px;font-weight:bold}
+p{line-height:1.5}
+button,.action{
+display:block;width:100%;padding:14px;border:0;border-radius:9px;
+margin-top:10px;font-size:15px;font-weight:bold;cursor:pointer;
+background:#48d6c5;color:#07131c;text-align:center;text-decoration:none;
 }
-
-header {
-    background: #151d35;
-    padding: 22px 15px;
-    text-align: center;
-    border-bottom: 1px solid #293653;
-}
-
-header h1 {
-    margin: 0;
-    color: #48d6c5;
-}
-
-header p {
-    color: #c4cce0;
-}
-
-.container {
-    max-width: 900px;
-    margin: auto;
-    padding: 18px;
-}
-
-.card {
-    background: #151d35;
-    border: 1px solid #293653;
-    padding: 20px;
-    border-radius: 14px;
-    margin-bottom: 18px;
-}
-
-h2 {
-    color: #48d6c5;
-    margin-top: 0;
-}
-
-h3 {
-    color: #e2e9f8;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-    gap: 14px;
-}
-
-.stat {
-    background: #202c49;
-    padding: 17px;
-    border-radius: 12px;
-}
-
-.amount {
-    color: #48d6c5;
-    font-size: 23px;
-    font-weight: bold;
-}
-
-p {
-    line-height: 1.5;
-}
-
-button {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 9px;
-    margin-top: 10px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    background: #48d6c5;
-    color: #07131c;
-}
-
-.secondary {
-    background: #293653;
-    color: white;
-}
-
-.logout {
-    background: #a83245;
-    color: white;
-}
-
-a {
-    color: #48d6c5;
-    text-decoration: none;
-}
-
-.email {
-    overflow-wrap: anywhere;
-    color: #b9c5dc;
-}
-
-.small {
-    color: #aab6ce;
-    font-size: 13px;
-}
-
-nav {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 10px;
-}
-
-nav a {
-    display: block;
-    background: #202c49;
-    padding: 13px 8px;
-    text-align: center;
-    border-radius: 9px;
-}
+.secondary{background:#293653;color:white}
+.logout{background:#a83245;color:white}
+.email{overflow-wrap:anywhere;color:#b9c5dc}
+.small{color:#aab6ce;font-size:13px}
+nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+nav a{display:block;background:#202c49;padding:13px 8px;text-align:center;border-radius:9px;color:#48d6c5;text-decoration:none}
 </style>
 </head>
-
 <body>
 
 <header>
-    <h1>PENIBON</h1>
-    <p>Your entertainment. Your community. Your world.</p>
+<h1>PENIBON</h1>
+<p>Your entertainment. Your community. Your world.</p>
 </header>
 
-<div class="container" id="dashboard" style="display:none;">
+<div class="container" id="dashboard" style="display:none">
 
-    <div class="card">
-        <h2>Welcome, <span id="userName">User</span>! 👋</h2>
-        <p class="email" id="userEmail"></p>
-        <p>Welcome to your PENIBON dashboard.</p>
+<div class="card">
+<h2>Welcome, <span id="userName">User</span>! 👋</h2>
+<p class="email" id="userEmail"></p>
+<p>Welcome to your PENIBON dashboard.</p>
 
-        <button onclick="location.href='profile.html'">
-            👤 My Profile
-        </button>
+<a class="action" href="./profile.html">👤 My Profile</a>
+<a class="action secondary" href="./index.html">🏠 PENIBON Home</a>
+</div>
 
-        <button class="secondary" onclick="location.href='index.html'">
-            🏠 PENIBON Home
-        </button>
-    </div>
+<div class="card">
+<h2>My Wallet 💰</h2>
+<div class="grid">
+<div class="stat">
+<h3>Welcome Bonus</h3>
+<div class="amount">KSh 0</div>
+<p class="small">KSh 150 bonus after phone and identity verification when the programme is funded.</p>
+</div>
+<div class="stat">
+<h3>Creator Earnings</h3>
+<div class="amount">KSh 0</div>
+<p class="small">Your confirmed creator earnings.</p>
+</div>
+<div class="stat">
+<h3>Available Balance</h3>
+<div class="amount">KSh 0</div>
+<p class="small">Your available balance.</p>
+</div>
+</div>
+</div>
 
-    <div class="card">
-        <h2>My Wallet 💰</h2>
+<div class="card">
+<h2>Creator Account 🎬</h2>
+<div class="grid">
+<div class="stat"><h3>My Videos</h3><div class="amount">0</div></div>
+<div class="stat"><h3>My Followers</h3><div class="amount">0</div></div>
+<div class="stat"><h3>Minimum Withdrawal</h3><div class="amount">KSh 650</div></div>
+</div>
+<p class="small">Creator earnings and withdrawals will be connected when the payment system is developed.</p>
+<a class="action" href="./creator.html">Open Creator Studio</a>
+</div>
 
-        <div class="grid">
-            <div class="stat">
-                <h3>Welcome Bonus</h3>
-                <div class="amount">KSh 0</div>
-                <p class="small">
-                    KSh 150 bonus after phone and identity verification
-                    when the programme is funded.
-                </p>
-            </div>
+<div class="card">
+<h2>Referral Programme 🎁</h2>
+<div class="stat">
+<h3>Successful Referral Reward</h3>
+<div class="amount">KSh 20</div>
+<p class="small">For each genuine new user who registers and completes phone and identity verification, subject to programme terms and funding.</p>
+</div>
+<p class="small">Referral tracking and reward history are coming soon.</p>
+</div>
 
-            <div class="stat">
-                <h3>Creator Earnings</h3>
-                <div class="amount">KSh 0</div>
-                <p class="small">Your confirmed creator earnings.</p>
-            </div>
+<div class="card">
+<h2>Explore PENIBON 🌍</h2>
+<nav>
+<a href="./index.html">🏠 Home</a>
+<a href="./profile.html">👤 My Profile</a>
+<a href="./videos.html">🎬 Videos</a>
+<a href="./games.html">🎮 Games</a>
+<a href="./discover.html">✨ Discover</a>
+<a href="./creator.html">📹 Creator Studio</a>
+</nav>
+</div>
 
-            <div class="stat">
-                <h3>Available Balance</h3>
-                <div class="amount">KSh 0</div>
-                <p class="small">Your available balance.</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>Creator Account 🎬</h2>
-
-        <div class="grid">
-            <div class="stat">
-                <h3>My Videos</h3>
-                <div class="amount">0</div>
-            </div>
-
-            <div class="stat">
-                <h3>My Followers</h3>
-                <div class="amount">0</div>
-            </div>
-
-            <div class="stat">
-                <h3>Minimum Withdrawal</h3>
-                <div class="amount">KSh 650</div>
-            </div>
-        </div>
-
-        <p class="small">
-            Creator earnings and withdrawals will be connected
-            when the payment system is developed.
-        </p>
-
-        <button onclick="location.href='creator.html'">
-            Open Creator Studio
-        </button>
-    </div>
-
-    <div class="card">
-        <h2>Referral Programme 🎁</h2>
-
-        <div class="stat">
-            <h3>Successful Referral Reward</h3>
-            <div class="amount">KSh 20</div>
-            <p class="small">
-                For each genuine new user who registers and completes
-                phone and identity verification, subject to programme
-                terms and funding.
-            </p>
-        </div>
-
-        <p class="small">
-            Referral tracking and reward history are coming soon.
-        </p>
-    </div>
-
-    <div class="card">
-        <h2>Explore PENIBON 🌍</h2>
-
-        <nav>
-            <a href="index.html">🏠 Home</a>
-            <a href="videos.html">🎬 Videos</a>
-            <a href="games.html">🎮 Games</a>
-            <a href="discover.html">✨ Discover</a>
-            <a href="creator.html">📹 Creator Studio</a>
-            <a href="profile.html">👤 My Profile</a>
-        </nav>
-    </div>
-
-    <div class="card">
-        <button class="logout" id="logoutButton">
-            Logout
-        </button>
-    </div>
+<div class="card">
+<button class="logout" id="logoutButton">Logout</button>
+</div>
 
 </div>
 
@@ -255,47 +114,42 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
 import {
-    getAuth,
-    onAuthStateChanged,
-    signOut
+getAuth,
+onAuthStateChanged,
+signOut
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
-    authDomain: "penibon-b9f0f.firebaseapp.com",
-    projectId: "penibon-b9f0f",
-    storageBucket: "penibon-b9f0f.firebasestorage.app",
-    messagingSenderId: "770060676311",
-    appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
+apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+authDomain: "penibon-b9f0f.firebaseapp.com",
+projectId: "penibon-b9f0f",
+storageBucket: "penibon-b9f0f.firebasestorage.app",
+messagingSenderId: "770060676311",
+appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        window.location.href = "account.html";
-        return;
-    }
+if (!user) {
+window.location.replace("account.html");
+return;
+}
 
-    document.getElementById("dashboard").style.display = "block";
-
-    document.getElementById("userName").textContent =
-        user.displayName || "User";
-
-    document.getElementById("userEmail").textContent =
-        user.email || "";
+document.getElementById("dashboard").style.display = "block";
+document.getElementById("userName").textContent = user.displayName || "User";
+document.getElementById("userEmail").textContent = user.email || "";
 });
 
 document.getElementById("logoutButton").addEventListener("click", async () => {
-    try {
-        await signOut(auth);
-        window.location.href = "account.html";
-    } catch (error) {
-        alert("Logout failed: " + error.message);
-    }
+try {
+await signOut(auth);
+window.location.replace("account.html");
+} catch(error) {
+alert("Logout failed: " + error.message);
+}
 });
 </script>
-
 </body>
 </html>
