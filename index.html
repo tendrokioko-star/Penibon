@@ -40,6 +40,9 @@ nav a:hover{color:#42d6ff}
 }
 .hero h1{font-size:38px;margin:0 0 15px}
 .hero p{font-size:18px;color:#d2e7ff}
+button{
+  cursor:pointer;
+}
 .hero button{
   background:#12a9df;
   border:0;
@@ -87,6 +90,14 @@ footer{
   padding:60px 20px;
   color:#42d6ff;
 }
+#logoutButton{
+  padding:10px 20px;
+  border:0;
+  border-radius:7px;
+  background:#168bd2;
+  color:white;
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -98,9 +109,10 @@ footer{
 
 <header>
   <div class="logo">PENIBON</div>
-
   <nav>
     <a href="index.html">Home</a>
+    <a href="profile.html">My Profile</a>
+    <a href="dashboard.html">Dashboard</a>
     <a href="videos.html">Videos</a>
     <a href="games.html">Games</a>
     <a href="discover.html">Discover</a>
@@ -121,6 +133,18 @@ footer{
   <h2 class="section-title">Explore PENIBON</h2>
 
   <div class="cards">
+
+    <div class="card">
+      <h3>My Profile 👤</h3>
+      <p>View and manage your personal PENIBON profile.</p>
+      <a href="profile.html">Open My Profile</a>
+    </div>
+
+    <div class="card">
+      <h3>My Dashboard</h3>
+      <p>View your account dashboard, wallet and creator information.</p>
+      <a href="dashboard.html">Open Dashboard</a>
+    </div>
 
     <div class="card">
       <h3>Videos</h3>
@@ -152,9 +176,7 @@ footer{
 <footer>
   <p>© 2026 PENIBON. All rights reserved.</p>
   <p>Your entertainment. Your community. Your world.</p>
-  <button id="logoutButton" style="padding:10px 20px;border:0;border-radius:7px;background:#168bd2;color:white;font-weight:bold">
-    Logout
-  </button>
+  <button id="logoutButton">Logout</button>
 </footer>
 
 </div>
