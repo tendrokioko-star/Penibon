@@ -3,1003 +3,614 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>PENIBON Camera Studio</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    background: #000;
-    color: white;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-}
-
-#studio {
-    position: relative;
-    width: 100%;
-    height: 100dvh;
-    background: #111;
-    overflow: hidden;
-}
-
-#cameraCanvas {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-#sourceCamera {
-    display: none;
-}
-
-.topbar {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    right: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 5;
-}
-
-.top-button {
-    background: rgba(0,0,0,.55);
-    border: 0;
-    color: white;
-    padding: 12px;
-    border-radius: 25px;
-    font-size: 16px;
-}
-
-.brand {
-    font-weight: bold;
-    color: #48d6c5;
-    font-size: 18px;
-}
-
-.side-tools {
-    position: absolute;
-    right: 8px;
-    top: 75px;
-    display: flex;
-    flex-direction: column;
-    gap: 13px;
-    z-index: 5;
-}
-
-.tool {
-    border: none;
-    background: transparent;
-    color: white;
-    text-align: center;
-    font-size: 12px;
-    text-shadow: 1px 2px 3px black;
-    min-width: 55px;
-    padding: 4px;
-}
-
-.tool .symbol {
-    display: block;
-    font-size: 27px;
-    margin-bottom: 3px;
-}
-
-.tool.active {
-    color: #48d6c5;
-}
-
-.bottom-area {
-    position: absolute;
-    bottom: 18px;
-    left: 0;
-    right: 0;
-    padding: 12px;
-    background: linear-gradient(transparent, rgba(0,0,0,.75));
-    z-index: 5;
-}
-
-.mode-row {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    align-items: center;
-}
-
-.mode {
-    border: none;
-    background: transparent;
-    color: white;
-    font-size: 15px;
-    padding: 8px;
-}
-
-.mode.active {
-    background: white;
-    color: black;
-    border-radius: 20px;
-    font-weight: bold;
-}
-
-.capture-row {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.capture-button {
-    width: 76px;
-    height: 76px;
-    border-radius: 50%;
-    background: white;
-    border: 5px solid #aaa;
-    outline: 2px solid white;
-}
-
-.capture-button.recording {
-    background: #ef334b;
-    border-radius: 20px;
-    transform: scale(.8);
-}
-
-.bottom-tool {
-    border: 0;
-    background: transparent;
-    color: white;
-    font-size: 13px;
-    text-align: center;
-    min-width: 70px;
-}
-
-.bottom-tool span {
-    display: block;
-    font-size: 25px;
-    margin-bottom: 5px;
-}
-
-#status {
-    text-align: center;
-    font-size: 12px;
-    margin-top: 12px;
-    text-shadow: 1px 1px 3px black;
-}
-
-#filterPanel {
-    position: absolute;
-    bottom: 150px;
-    left: 10px;
-    right: 10px;
-    z-index: 8;
-    background: rgba(15,20,35,.96);
-    padding: 14px;
-    border-radius: 15px;
-    display: none;
-}
-
-.filter-grid {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 8px;
-}
-
-.filter-option {
-    padding: 11px 4px;
-    background: #303b52;
-    color: white;
-    border: 1px solid transparent;
-    border-radius: 9px;
-    font-size: 12px;
-}
-
-.filter-option.active {
-    border-color: #48d6c5;
-    color: #48d6c5;
-}
-
-#musicPanel {
-    position: absolute;
-    top: 65px;
-    left: 12px;
-    right: 12px;
-    background: rgba(15,20,35,.97);
-    border-radius: 15px;
-    padding: 15px;
-    z-index: 10;
-    display: none;
-}
-
-#musicPanel input {
-    width: 100%;
-    color: white;
-    margin-top: 12px;
-}
-
-.panel-button {
-    background: #48d6c5;
-    color: black;
-    border: none;
-    border-radius: 9px;
-    padding: 10px;
-    margin-top: 10px;
-    width: 100%;
-    font-weight: bold;
-}
-
-#resultPanel {
-    display: none;
-    position: absolute;
-    inset: 0;
-    z-index: 20;
-    background: #080d1b;
-    padding: 18px;
-    overflow-y: auto;
-    text-align: center;
-}
-
-#resultPanel video,
-#resultImage {
-    width: 100%;
-    max-height: 65vh;
-    object-fit: contain;
-    background: black;
-    border-radius: 12px;
-}
-
-#resultImage {
-    display: none;
-}
-
-.result-button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 9px;
-    background: #48d6c5;
-    color: black;
-    font-weight: bold;
-}
-
-.secondary {
-    background: #303b52;
-    color: white;
-}
-
-input[type=file] {
-    display: none;
-}
-
-@media (max-height: 700px) {
-    .side-tools {
-        gap: 5px;
-        top: 65px;
-    }
-    .tool .symbol {
-        font-size: 22px;
-    }
-    .bottom-area {
-        bottom: 5px;
-    }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:white;font-family:Arial;overflow:hidden}
+#studio{height:100dvh;position:relative;background:#080808;overflow:hidden}
+#cam{display:none}
+#screen{width:100%;height:100%;display:block;object-fit:cover}
+.top{position:absolute;top:14px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;z-index:4}
+.top button,.tool,.bottom button{border:0;color:white;background:rgba(0,0,0,.55);border-radius:22px;padding:10px}
+.brand{font-weight:bold;color:#48d6c5;font-size:19px}
+.side{position:absolute;right:7px;top:75px;display:flex;flex-direction:column;gap:8px;z-index:4}
+.tool{background:rgba(0,0,0,.5);font-size:11px;min-width:58px;padding:6px 3px}
+.tool span{display:block;font-size:23px;margin-bottom:3px}
+.tool.active{color:#48d6c5}
+.bottom{position:absolute;bottom:12px;left:0;right:0;z-index:4;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:12px}
+.modes{display:flex;justify-content:center;gap:10px;margin-bottom:20px}
+.mode{background:transparent!important;padding:9px 12px!important}
+.mode.active{background:white!important;color:black!important}
+.capture{display:flex;justify-content:space-around;align-items:center}
+#record{height:76px;width:76px;border-radius:50%;background:white;border:5px solid #aaa;outline:2px solid white}
+#record.recording{background:#ed304d;border-radius:20px;transform:scale(.8)}
+#status{text-align:center;font-size:12px;text-shadow:1px 1px 3px black;margin:12px 0 0}
+.panel{display:none;position:absolute;z-index:8;left:10px;right:10px;bottom:155px;background:rgba(12,18,34,.97);padding:14px;border-radius:15px;max-height:45vh;overflow:auto}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.choice,.action{background:#303b52;color:white;border:1px solid transparent;padding:12px 5px;border-radius:9px;font-size:12px}
+.choice.active{border-color:#48d6c5;color:#48d6c5}
+.action{background:#48d6c5;color:#07131c;width:100%;margin-top:10px;font-weight:bold}
+.panel input{width:100%;margin:10px 0}
+#result{display:none;position:absolute;inset:0;background:#080d1b;z-index:15;padding:18px;overflow:auto;text-align:center}
+#result video,#result img{width:100%;max-height:65vh;object-fit:contain;background:#000;border-radius:12px}
+.resultBtn{width:100%;padding:14px;border:0;border-radius:9px;margin-top:10px;background:#48d6c5;font-weight:bold}
+.secondary{background:#303b52;color:white}
+#musicName{font-size:12px;color:#b9c8db}
 </style>
 </head>
 
 <body>
-
 <div id="studio">
+<video id="cam" autoplay muted playsinline></video>
+<canvas id="screen" width="720" height="1280"></canvas>
 
-<video id="sourceCamera" autoplay muted playsinline></video>
-<canvas id="cameraCanvas" width="720" height="1280"></canvas>
-
-<div class="topbar">
-    <button class="top-button" onclick="goBack()">✕</button>
-    <span class="brand">PENIBON</span>
-    <button class="top-button" id="soundsButton">♫ Sounds</button>
+<div class="top">
+<button onclick="leave()">✕</button>
+<span class="brand">PENIBON</span>
+<button id="soundBtn">♫ Sounds</button>
 </div>
 
-<div class="side-tools">
-
-    <button class="tool" id="flipButton">
-        <span class="symbol">🔄</span>Flip
-    </button>
-
-    <button class="tool" id="flashButton">
-        <span class="symbol">⚡</span>Flash
-    </button>
-
-    <button class="tool" id="timerButton">
-        <span class="symbol">⏱</span>Timer: Off
-    </button>
-
-    <button class="tool" id="filtersButton">
-        <span class="symbol">◉</span>Filters
-    </button>
-
-    <button class="tool" id="beautyButton">
-        <span class="symbol">✨</span>Beautify
-    </button>
-
-    <button class="tool" id="greenButton">
-        <span class="symbol">▧</span>Green Screen
-    </button>
-
-    <button class="tool" id="speedButton">
-        <span class="symbol">1x</span>Speed
-    </button>
-
-    <button class="tool active" id="micButton">
-        <span class="symbol">🎙</span>Mic On
-    </button>
-
+<div class="side">
+<button class="tool" id="flip"><span>🔄</span>Flip</button>
+<button class="tool" id="timer"><span>⏱</span>Timer Off</button>
+<button class="tool" id="filterBtn"><span>◉</span>Filters</button>
+<button class="tool" id="beauty"><span>✨</span>Beauty</button>
+<button class="tool" id="effectBtn"><span>🎭</span>Effects</button>
+<button class="tool" id="green"><span>🟩</span>Background</button>
+<button class="tool" id="mic"><span>🎙</span>Mic On</button>
 </div>
 
-<div id="filterPanel">
-    <h3>Camera Filters</h3>
-    <div class="filter-grid">
-        <button class="filter-option active" data-filter="none">Original</button>
-        <button class="filter-option" data-filter="warm">Warm</button>
-        <button class="filter-option" data-filter="cool">Cool</button>
-        <button class="filter-option" data-filter="bw">B&W</button>
-        <button class="filter-option" data-filter="vintage">Vintage</button>
-        <button class="filter-option" data-filter="pink">Pink</button>
-        <button class="filter-option" data-filter="bright">Bright</button>
-        <button class="filter-option" data-filter="dreamy">Dreamy</button>
-    </div>
-    <button class="panel-button" id="closeFilters">Done</button>
+<div class="panel" id="effectsPanel">
+<h3>Face Tracking Effects</h3>
+<div class="grid">
+<button class="choice active" data-effect="none">Natural</button>
+<button class="choice" data-effect="glasses">🕶 Glasses</button>
+<button class="choice" data-effect="hearts">❤️ Hearts</button>
+<button class="choice" data-effect="blush">🌸 Blush</button>
+<button class="choice" data-effect="freckles">✨ Freckles</button>
+<button class="choice" data-effect="stars">⭐ Stars</button>
+</div>
+<p id="faceStatus">Face tracking is loading...</p>
+<button class="action" id="closeEffects">Done</button>
 </div>
 
-<div id="musicPanel">
-    <h3>♫ Add Sounds</h3>
-    <p id="musicName">Choose music from your phone.</p>
-    <input type="file" id="musicInput" accept="audio/*">
-    <button class="panel-button" id="chooseMusic">Choose Music</button>
-    <label>Music volume</label>
-    <input type="range" id="musicVolume" min="0" max="100" value="50">
-    <button class="panel-button" id="closeMusic">Done</button>
+<div class="panel" id="filterPanel">
+<h3>Filters</h3>
+<div class="grid">
+<button class="choice active" data-filter="none">Original</button>
+<button class="choice" data-filter="warm">Warm</button>
+<button class="choice" data-filter="cool">Cool</button>
+<button class="choice" data-filter="bw">B&W</button>
+<button class="choice" data-filter="pink">Pink</button>
+<button class="choice" data-filter="bright">Bright</button>
+</div>
+<button class="action" id="closeFilters">Done</button>
 </div>
 
-<div class="bottom-area">
-
-    <div class="mode-row">
-        <button class="mode" data-mode="video" data-length="180">3m</button>
-        <button class="mode" data-mode="video" data-length="60">60s</button>
-        <button class="mode active" data-mode="video" data-length="15">15s</button>
-        <button class="mode" data-mode="photo">Photo</button>
-    </div>
-
-    <div class="capture-row">
-
-        <button class="bottom-tool" id="effectsButton">
-            <span>✨</span>Effects
-        </button>
-
-        <button class="capture-button" id="captureButton"></button>
-
-        <button class="bottom-tool" id="uploadButton">
-            <span>🖼️</span>Upload
-        </button>
-
-    </div>
-
-    <p id="status">Open your camera to begin.</p>
-
+<div class="panel" id="musicPanel">
+<h3>♫ Add Music</h3>
+<p id="musicName">No music selected.</p>
+<input type="file" id="musicFile" accept="audio/*">
+<button class="action" id="chooseMusic">Choose music from phone</button>
+<label>Music volume</label>
+<input type="range" id="volume" min="0" max="100" value="50">
+<button class="action" id="closeMusic">Done</button>
 </div>
 
-<div id="resultPanel">
-    <h2 style="color:#48d6c5">Your PENIBON Video</h2>
-
-    <video id="resultVideo" controls playsinline></video>
-    <img id="resultImage" alt="Your photo">
-
-    <button class="result-button" id="downloadButton">
-        Download
-    </button>
-
-    <button class="result-button secondary" id="retakeButton">
-        Retake
-    </button>
-
-    <button class="result-button secondary" id="closeResult">
-        Back to Camera
-    </button>
+<div class="bottom">
+<div class="modes">
+<button class="mode active" data-length="15">15s</button>
+<button class="mode" data-length="60">60s</button>
+<button class="mode" data-length="180">3m</button>
+<button class="mode" data-length="photo">Photo</button>
+</div>
+<div class="capture">
+<button id="upload">🖼 Upload</button>
+<button id="record"></button>
+<button id="openCam">📷 Camera</button>
+</div>
+<p id="status">Open your camera to begin.</p>
 </div>
 
-<input type="file" id="uploadInput" accept="video/*,image/*">
-
+<div id="result">
+<h2 style="color:#48d6c5">Your creation ❤️</h2>
+<video id="resultVideo" controls playsinline></video>
+<img id="resultImage" style="display:none" alt="Your photo">
+<button class="resultBtn" id="download">Download</button>
+<button class="resultBtn secondary" id="retake">Retake</button>
+<button class="resultBtn secondary" id="backResult">Back to camera</button>
 </div>
 
-<audio id="musicPlayer" loop></audio>
+<input type="file" id="uploadFile" accept="image/*,video/*" style="display:none">
+</div>
 
-<script>
-const source = document.getElementById("sourceCamera");
-const canvas = document.getElementById("cameraCanvas");
-const ctx = canvas.getContext("2d");
+<audio id="music" loop></audio>
 
-const statusText = document.getElementById("status");
-const captureButton = document.getElementById("captureButton");
+<script type="module">
+import {
+ FilesetResolver,
+ FaceLandmarker
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
 
-const musicPlayer = document.getElementById("musicPlayer");
+const cam=document.getElementById("cam");
+const canvas=document.getElementById("screen");
+const ctx=canvas.getContext("2d");
+const status=document.getElementById("status");
+const faceStatus=document.getElementById("faceStatus");
+const music=document.getElementById("music");
 
-const resultPanel = document.getElementById("resultPanel");
-const resultVideo = document.getElementById("resultVideo");
-const resultImage = document.getElementById("resultImage");
+let stream=null;
+let landmarker=null;
+let facePoints=null;
+let facing="user";
+let effect="none";
+let filter="none";
+let beautyOn=false;
+let micOn=true;
+let timerSeconds=0;
+let length=15;
+let mode="video";
+let recording=false;
+let recorder=null;
+let chunks=[];
+let videoURL=null;
+let imageURL=null;
+let musicURL=null;
+let animationId=null;
+let lastDetection=0;
+let audioContext=null;
+let audioDestination=null;
+let musicGain=null;
+let musicSource=null;
+let micSource=null;
+let recordStream=null;
+let detectionBusy=false;
 
-let stream = null;
-let recorder = null;
-let chunks = [];
-let videoURL = null;
-let photoURL = null;
-let musicURL = null;
-
-let facingMode = "user";
-let selectedFilter = "none";
-let selectedMode = "video";
-let selectedLength = 15;
-let timerSeconds = 0;
-let micEnabled = true;
-let flashEnabled = false;
-let recording = false;
-let animationId = null;
-let audioContext = null;
-let audioDestination = null;
-let musicGain = null;
-let musicSource = null;
-let microphoneSource = null;
-let recordingStream = null;
-let beauty = false;
-let effect = "none";
-
-const filterValues = {
-    none: "none",
-    warm: "sepia(.25) saturate(1.3)",
-    cool: "hue-rotate(12deg) saturate(.9)",
-    bw: "grayscale(1) contrast(1.1)",
-    vintage: "sepia(.45) contrast(.9)",
-    pink: "sepia(.15) hue-rotate(300deg) saturate(1.3)",
-    bright: "brightness(1.2) saturate(1.2)",
-    dreamy: "brightness(1.12) saturate(1.1)"
+const filters={
+ none:"none",
+ warm:"sepia(.25) saturate(1.3)",
+ cool:"hue-rotate(12deg)",
+ bw:"grayscale(1)",
+ pink:"sepia(.15) hue-rotate(300deg) saturate(1.3)",
+ bright:"brightness(1.2) saturate(1.15)"
 };
 
-function say(message) {
-    statusText.textContent = message;
+function say(message){status.textContent=message}
+
+async function loadFaceTracking(){
+ try{
+  faceStatus.textContent="Loading face tracking model...";
+  const vision=await FilesetResolver.forVisionTasks(
+   "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+  );
+
+  const modelURL=
+   "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task";
+
+  landmarker=await FaceLandmarker.createFromOptions(vision,{
+   baseOptions:{
+    modelAssetPath:modelURL,
+    delegate:"GPU"
+   },
+   runningMode:"VIDEO",
+   numFaces:1,
+   outputFaceBlendshapes:true
+  });
+
+  faceStatus.textContent="Face tracking ready! Move your face to test.";
+ }catch(error){
+  faceStatus.textContent="Face tracking could not load. Check internet and reload.";
+  console.error(error);
+ }
 }
 
-async function openCamera() {
-    try {
-        if (!navigator.mediaDevices?.getUserMedia) {
-            throw new Error("Open PENIBON in Chrome to use the camera.");
-        }
+async function openCamera(){
+ try{
+  if(!navigator.mediaDevices?.getUserMedia){
+   throw new Error("Please open PENIBON using Chrome.");
+  }
+  if(recording)return;
 
-        if (recording) return;
+  if(stream)stream.getTracks().forEach(t=>t.stop());
 
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
+  stream=await navigator.mediaDevices.getUserMedia({
+   audio:true,
+   video:{
+    facingMode:{ideal:facing},
+    width:{ideal:720},
+    height:{ideal:1280}
+   }
+  });
 
-        if (animationId) cancelAnimationFrame(animationId);
-
-        stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: {
-                facingMode: { ideal: facingMode },
-                width: { ideal: 720 },
-                height: { ideal: 1280 }
-            }
-        });
-
-        source.srcObject = stream;
-        await source.play();
-
-        const micTrack = stream.getAudioTracks()[0];
-        if (micTrack) micTrack.enabled = micEnabled;
-
-        say("Camera ready. Start creating!");
-        drawFrame();
-
-    } catch (error) {
-        say("Camera error: " + error.message);
-    }
+  cam.srcObject=stream;
+  await cam.play();
+  stream.getAudioTracks().forEach(t=>t.enabled=micOn);
+  say("Camera ready. Choose an effect!");
+  if(!animationId)drawFrame();
+ }catch(error){
+  say("Camera error: "+error.message);
+ }
 }
 
-function drawFrame() {
-    if (source.readyState >= 2 && source.videoWidth) {
-        const w = canvas.width;
-        const h = canvas.height;
-
-        const scale = Math.max(
-            w / source.videoWidth,
-            h / source.videoHeight
-        );
-
-        const dw = source.videoWidth * scale;
-        const dh = source.videoHeight * scale;
-
-        const x = (w - dw) / 2;
-        const y = (h - dh) / 2;
-
-        ctx.save();
-        ctx.clearRect(0, 0, w, h);
-        ctx.filter = filterValues[selectedFilter];
-
-        if (facingMode === "user") {
-            ctx.translate(w, 0);
-            ctx.scale(-1, 1);
-        }
-
-        ctx.drawImage(source, x, y, dw, dh);
-        ctx.restore();
-
-        if (beauty) {
-            ctx.save();
-            ctx.fillStyle = "rgba(255,190,205,.10)";
-            ctx.fillRect(0, 0, w, h);
-            ctx.restore();
-        }
-
-        if (effect === "hearts") {
-            ctx.font = "55px Arial";
-            ctx.fillText("💖", 90, 200);
-            ctx.fillText("❤️", 570, 360);
-            ctx.fillText("💕", 140, 650);
-        }
-
-        if (effect === "glasses") {
-            ctx.font = "100px Arial";
-            ctx.fillText("🕶️", 360, 570);
-        }
-
-        if (effect === "stars") {
-            ctx.font = "45px Arial";
-            ctx.fillText("✨", 100, 350);
-            ctx.fillText("✨", 590, 600);
-            ctx.fillText("⭐", 350, 230);
-        }
-    }
-
-    animationId = requestAnimationFrame(drawFrame);
+function point(index){
+ if(!facePoints||!facePoints[index])return null;
+ const p=facePoints[index];
+ let x=p.x*canvas.width;
+ if(facing==="user")x=canvas.width-x;
+ return {x,y:p.y*canvas.height};
 }
 
-document.getElementById("flipButton").onclick = async () => {
-    if (recording) return;
-    facingMode = facingMode === "user" ? "environment" : "user";
-    await openCamera();
+function drawFaceEffect(){
+ if(!facePoints)return;
+
+ const leftEye=point(33);
+ const rightEye=point(263);
+ const nose=point(1);
+ const leftCheek=point(205);
+ const rightCheek=point(425);
+
+ if(!leftEye||!rightEye||!nose)return;
+
+ const eyeDistance=Math.hypot(
+  rightEye.x-leftEye.x,
+  rightEye.y-leftEye.y
+ );
+
+ ctx.save();
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+
+ if(effect==="glasses"){
+  const size=eyeDistance*.9;
+  ctx.font=size+"px Arial";
+  ctx.fillText("🕶️",(leftEye.x+rightEye.x)/2,
+   (leftEye.y+rightEye.y)/2);
+ }
+
+ if(effect==="hearts"){
+  ctx.font=(eyeDistance*.45)+"px Arial";
+  ctx.fillText("❤️",nose.x,nose.y-eyeDistance*1.5);
+  ctx.fillText("💕",nose.x-eyeDistance,nose.y);
+ }
+
+ if(effect==="stars"){
+  ctx.font=(eyeDistance*.4)+"px Arial";
+  ctx.fillText("✨",leftEye.x-eyeDistance*.3,leftEye.y);
+  ctx.fillText("✨",rightEye.x+eyeDistance*.3,rightEye.y);
+  ctx.fillText("⭐",nose.x,nose.y-eyeDistance);
+ }
+
+ if(effect==="blush"&&leftCheek&&rightCheek){
+  ctx.fillStyle="rgba(255,75,135,.35)";
+  [leftCheek,rightCheek].forEach(p=>{
+   ctx.beginPath();
+   ctx.ellipse(p.x,p.y,eyeDistance*.24,
+    eyeDistance*.13,0,0,Math.PI*2);
+   ctx.fill();
+  });
+ }
+
+ if(effect==="freckles"&&leftCheek&&rightCheek){
+  ctx.fillStyle="#9a6045";
+  for(let side of [leftCheek,rightCheek]){
+   for(let i=0;i<7;i++){
+    ctx.beginPath();
+    ctx.arc(
+     side.x+(Math.random()-.5)*eyeDistance*.35,
+     side.y+(Math.random()-.5)*eyeDistance*.2,
+     2.5,0,Math.PI*2
+    );
+    ctx.fill();
+   }
+  }
+ }
+
+ ctx.restore();
+}
+
+function drawFrame(){
+ if(cam.readyState>=2&&cam.videoWidth){
+  const w=canvas.width,h=canvas.height;
+  const scale=Math.max(w/cam.videoWidth,h/cam.videoHeight);
+  const dw=cam.videoWidth*scale,dh=cam.videoHeight*scale;
+  const x=(w-dw)/2,y=(h-dh)/2;
+
+  ctx.clearRect(0,0,w,h);
+  ctx.save();
+  ctx.filter=filters[filter]||"none";
+
+  if(facing==="user"){
+   ctx.translate(w,0);
+   ctx.scale(-1,1);
+  }
+  ctx.drawImage(cam,x,y,dw,dh);
+  ctx.restore();
+
+  if(beautyOn){
+   ctx.fillStyle="rgba(255,190,205,.09)";
+   ctx.fillRect(0,0,w,h);
+  }
+
+  if(landmarker&&!detectionBusy&&cam.currentTime!==lastDetection){
+   detectionBusy=true;
+   lastDetection=cam.currentTime;
+   try{
+    const result=landmarker.detectForVideo(cam,performance.now());
+    facePoints=result.faceLandmarks?.[0]||null;
+    faceStatus.textContent=facePoints?
+     "Face detected ✓":"Move into camera view to detect your face.";
+   }catch(error){
+    console.error(error);
+   }finally{
+    detectionBusy=false;
+   }
+  }
+
+  drawFaceEffect();
+ }
+ animationId=requestAnimationFrame(drawFrame);
+}
+
+function showPanel(id){
+ document.querySelectorAll(".panel").forEach(p=>p.style.display="none");
+ document.getElementById(id).style.display="block";
+}
+
+document.getElementById("openCam").onclick=openCamera;
+document.getElementById("flip").onclick=async()=>{
+ if(recording)return;
+ facing=facing==="user"?"environment":"user";
+ await openCamera();
 };
 
-document.getElementById("flashButton").onclick = async () => {
-    if (!stream) {
-        say("Open the camera first.");
-        return;
-    }
-
-    const track = stream.getVideoTracks()[0];
-
-    try {
-        if (!track.getCapabilities().torch) {
-            say("Flash is not supported by this camera.");
-            return;
-        }
-
-        flashEnabled = !flashEnabled;
-
-        await track.applyConstraints({
-            advanced: [{ torch: flashEnabled }]
-        });
-
-        document.getElementById("flashButton").classList.toggle("active", flashEnabled);
-        say(flashEnabled ? "Flash on" : "Flash off");
-
-    } catch (error) {
-        say("Flash could not be changed on this device.");
-    }
+document.getElementById("timer").onclick=()=>{
+ timerSeconds=timerSeconds===0?3:timerSeconds===3?10:0;
+ document.getElementById("timer").innerHTML=
+  "<span>⏱</span>Timer "+(timerSeconds||"Off");
 };
 
-document.getElementById("timerButton").onclick = () => {
-    timerSeconds = timerSeconds === 0 ? 3 :
-                   timerSeconds === 3 ? 10 : 0;
+document.getElementById("filterBtn").onclick=()=>showPanel("filterPanel");
+document.getElementById("effectBtn").onclick=()=>showPanel("effectsPanel");
+document.getElementById("soundBtn").onclick=()=>showPanel("musicPanel");
 
-    document.getElementById("timerButton").innerHTML =
-        '<span class="symbol">⏱</span>Timer: ' +
-        (timerSeconds ? timerSeconds + "s" : "Off");
-};
+document.getElementById("closeEffects").onclick=()=>showPanel("");
+document.getElementById("closeFilters").onclick=()=>showPanel("");
+document.getElementById("closeMusic").onclick=()=>showPanel("");
 
-document.getElementById("filtersButton").onclick = () => {
-    const panel = document.getElementById("filterPanel");
-    panel.style.display =
-        panel.style.display === "block" ? "none" : "block";
-};
-
-document.getElementById("closeFilters").onclick = () => {
-    document.getElementById("filterPanel").style.display = "none";
-};
-
-document.querySelectorAll(".filter-option").forEach(button => {
-    button.onclick = () => {
-        if (recording) return;
-
-        selectedFilter = button.dataset.filter;
-
-        document.querySelectorAll(".filter-option").forEach(item => {
-            item.classList.remove("active");
-        });
-
-        button.classList.add("active");
-        say("Filter: " + selectedFilter);
-    };
+document.querySelectorAll("[data-effect]").forEach(button=>{
+ button.onclick=()=>{
+  effect=button.dataset.effect;
+  document.querySelectorAll("[data-effect]").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  say("Effect selected: "+effect);
+ };
 });
 
-document.getElementById("beautyButton").onclick = () => {
-    beauty = !beauty;
-    document.getElementById("beautyButton").classList.toggle("active", beauty);
-    say(beauty ? "Beauty preview enabled." : "Beauty preview disabled.");
-};
-
-document.getElementById("greenButton").onclick = () => {
-    say("Green Screen background replacement is coming in a later upgrade.");
-};
-
-document.getElementById("speedButton").onclick = () => {
-    say("Recording speed controls are coming in a later upgrade.");
-};
-
-document.getElementById("micButton").onclick = () => {
-    micEnabled = !micEnabled;
-
-    if (stream) {
-        stream.getAudioTracks().forEach(track => {
-            track.enabled = micEnabled;
-        });
-    }
-
-    document.getElementById("micButton").innerHTML =
-        '<span class="symbol">🎙</span>' +
-        (micEnabled ? "Mic On" : "Mic Off");
-
-    say(micEnabled ? "Microphone enabled." : "Microphone muted.");
-};
-
-document.getElementById("soundsButton").onclick = () => {
-    document.getElementById("musicPanel").style.display = "block";
-};
-
-document.getElementById("chooseMusic").onclick = () => {
-    document.getElementById("musicInput").click();
-};
-
-document.getElementById("closeMusic").onclick = () => {
-    document.getElementById("musicPanel").style.display = "none";
-};
-
-document.getElementById("musicInput").onchange = event => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    if (musicURL) URL.revokeObjectURL(musicURL);
-
-    musicURL = URL.createObjectURL(file);
-    musicPlayer.src = musicURL;
-
-    document.getElementById("musicName").textContent = file.name;
-    say("Music selected: " + file.name);
-};
-
-document.getElementById("musicVolume").oninput = event => {
-    if (musicGain) {
-        musicGain.gain.value = Number(event.target.value) / 100;
-    }
-};
-
-document.getElementById("effectsButton").onclick = () => {
-    const choices = ["none", "hearts", "stars", "glasses"];
-    const current = choices.indexOf(effect);
-    effect = choices[(current + 1) % choices.length];
-
-    say("Effect: " + effect);
-};
-
-document.querySelectorAll(".mode").forEach(button => {
-    button.onclick = () => {
-        document.querySelectorAll(".mode").forEach(item => {
-            item.classList.remove("active");
-        });
-
-        button.classList.add("active");
-
-        selectedMode = button.dataset.mode;
-
-        if (selectedMode === "video") {
-            selectedLength = Number(button.dataset.length);
-            say("Video recording: " + selectedLength + " seconds.");
-        } else {
-            say("Photo mode selected.");
-        }
-    };
+document.querySelectorAll("[data-filter]").forEach(button=>{
+ button.onclick=()=>{
+  filter=button.dataset.filter;
+  document.querySelectorAll("[data-filter]").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  say("Filter selected: "+filter);
+ };
 });
 
-async function prepareAudio() {
-    if (!audioContext) {
-        audioContext = new AudioContext();
-        audioDestination = audioContext.createMediaStreamDestination();
-
-        musicGain = audioContext.createGain();
-        musicGain.gain.value =
-            Number(document.getElementById("musicVolume").value) / 100;
-
-        musicGain.connect(audioDestination);
-
-        musicSource = audioContext.createMediaElementSource(musicPlayer);
-        musicSource.connect(musicGain);
-    }
-
-    if (audioContext.state === "suspended") {
-        await audioContext.resume();
-    }
-
-    if (microphoneSource) {
-        microphoneSource.disconnect();
-        microphoneSource = null;
-    }
-
-    if (micEnabled && stream.getAudioTracks().length) {
-        microphoneSource =
-            audioContext.createMediaStreamSource(
-                new MediaStream(stream.getAudioTracks())
-            );
-
-        microphoneSource.connect(audioDestination);
-    }
-
-    return audioDestination.stream;
-}
-
-async function startRecording() {
-    if (!stream) {
-        await openCamera();
-        if (!stream) return;
-    }
-
-    if (timerSeconds > 0) {
-        let remaining = timerSeconds;
-
-        while (remaining > 0) {
-            say("Recording starts in " + remaining + "...");
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            remaining--;
-        }
-    }
-
-    try {
-        const audioStream = await prepareAudio();
-        const videoStream = canvas.captureStream(30);
-
-        recordingStream = videoStream;
-
-        audioStream.getAudioTracks().forEach(track => {
-            recordingStream.addTrack(track);
-        });
-
-        chunks = [];
-
-        const mimeTypes = [
-            "video/webm;codecs=vp9,opus",
-            "video/webm;codecs=vp8,opus",
-            "video/webm"
-        ];
-
-        const supported = mimeTypes.find(type =>
-            MediaRecorder.isTypeSupported(type)
-        );
-
-        recorder = supported
-            ? new MediaRecorder(recordingStream, { mimeType: supported })
-            : new MediaRecorder(recordingStream);
-
-        recorder.ondataavailable = event => {
-            if (event.data && event.data.size) {
-                chunks.push(event.data);
-            }
-        };
-
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, {
-                type: recorder.mimeType || "video/webm"
-            });
-
-            if (videoURL) URL.revokeObjectURL(videoURL);
-
-            videoURL = URL.createObjectURL(blob);
-            resultVideo.src = videoURL;
-
-            resultVideo.style.display = "block";
-            resultImage.style.display = "none";
-
-            resultPanel.style.display = "block";
-
-            musicPlayer.pause();
-
-            if (recordingStream) {
-                recordingStream.getTracks().forEach(track => track.stop());
-                recordingStream = null;
-            }
-
-            if (microphoneSource) {
-                microphoneSource.disconnect();
-                microphoneSource = null;
-            }
-        };
-
-        recorder.start();
-        recording = true;
-
-        if (musicURL) {
-            musicPlayer.currentTime = 0;
-            musicPlayer.volume = 1;
-            await musicPlayer.play().catch(() => {});
-        }
-
-        captureButton.classList.add("recording");
-        say("🔴 Recording...");
-
-        setTimeout(() => {
-            if (recording && recorder.state === "recording") {
-                stopRecording();
-            }
-        }, selectedLength * 1000);
-
-    } catch (error) {
-        say("Recording error: " + error.message);
-    }
-}
-
-function stopRecording() {
-    if (recorder && recorder.state === "recording") {
-        recorder.stop();
-    }
-
-    recording = false;
-    captureButton.classList.remove("recording");
-    musicPlayer.pause();
-    say("Recording finished.");
-}
-
-captureButton.onclick = async () => {
-    if (recording) {
-        stopRecording();
-        return;
-    }
-
-    if (selectedMode === "photo") {
-        if (!stream) {
-            await openCamera();
-            if (!stream) return;
-        }
-
-        if (timerSeconds > 0) {
-            let remaining = timerSeconds;
-
-            while (remaining > 0) {
-                say("Photo in " + remaining + "...");
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                remaining--;
-            }
-        }
-
-        canvas.toBlob(blob => {
-            if (!blob) return;
-
-            if (photoURL) URL.revokeObjectURL(photoURL);
-
-            photoURL = URL.createObjectURL(blob);
-            resultImage.src = photoURL;
-
-            resultImage.style.display = "block";
-            resultVideo.style.display = "none";
-
-            resultPanel.style.display = "block";
-        }, "image/jpeg", .92);
-
-    } else {
-        await startRecording();
-    }
+document.getElementById("beauty").onclick=()=>{
+ beautyOn=!beautyOn;
+ document.getElementById("beauty").classList.toggle("active",beautyOn);
+ say(beautyOn?"Beauty preview enabled.":"Beauty preview disabled.");
 };
 
-document.getElementById("downloadButton").onclick = () => {
-    const link = document.createElement("a");
-
-    if (resultVideo.style.display !== "none" && videoURL) {
-        link.href = videoURL;
-        link.download = "PENIBON-video.webm";
-    } else if (photoURL) {
-        link.href = photoURL;
-        link.download = "PENIBON-photo.jpg";
-    } else {
-        return;
-    }
-
-    link.click();
+document.getElementById("green").onclick=()=>{
+ say("Advanced background replacement is planned for the next upgrade.");
 };
 
-document.getElementById("retakeButton").onclick = () => {
-    resultVideo.pause();
-    resultPanel.style.display = "none";
-
-    if (videoURL) URL.revokeObjectURL(videoURL);
-    if (photoURL) URL.revokeObjectURL(photoURL);
-
-    videoURL = null;
-    photoURL = null;
-
-    say("Ready for another creation.");
+document.getElementById("mic").onclick=()=>{
+ micOn=!micOn;
+ if(stream)stream.getAudioTracks().forEach(t=>t.enabled=micOn);
+ document.getElementById("mic").innerHTML=
+  "<span>🎙</span>Mic "+(micOn?"On":"Off");
 };
 
-document.getElementById("closeResult").onclick = () => {
-    resultVideo.pause();
-    resultPanel.style.display = "none";
+document.getElementById("musicFile").onchange=e=>{
+ const file=e.target.files[0];
+ if(!file)return;
+ if(musicURL)URL.revokeObjectURL(musicURL);
+ musicURL=URL.createObjectURL(file);
+ music.src=musicURL;
+ document.getElementById("musicName").textContent=file.name;
 };
 
-document.getElementById("uploadButton").onclick = () => {
-    document.getElementById("uploadInput").click();
+document.getElementById("chooseMusic").onclick=()=>{
+ document.getElementById("musicFile").click();
 };
 
-document.getElementById("uploadInput").onchange = event => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    if (file.type.startsWith("video/")) {
-        if (videoURL) URL.revokeObjectURL(videoURL);
-
-        videoURL = URL.createObjectURL(file);
-        resultVideo.src = videoURL;
-        resultVideo.style.display = "block";
-        resultImage.style.display = "none";
-    } else if (file.type.startsWith("image/")) {
-        if (photoURL) URL.revokeObjectURL(photoURL);
-
-        photoURL = URL.createObjectURL(file);
-        resultImage.src = photoURL;
-        resultImage.style.display = "block";
-        resultVideo.style.display = "none";
-    } else {
-        say("Please choose a photo or video.");
-        return;
-    }
-
-    resultPanel.style.display = "block";
-    say("Media selected successfully.");
+document.getElementById("volume").oninput=e=>{
+ if(musicGain)musicGain.gain.value=Number(e.target.value)/100;
 };
 
-function goBack() {
-    if (recording) stopRecording();
-
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-    }
-
-    window.location.href = "dashboard.html";
-}
-
-window.addEventListener("pagehide", () => {
-    if (animationId) cancelAnimationFrame(animationId);
-
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-    }
-
-    if (recordingStream) {
-        recordingStream.getTracks().forEach(track => track.stop());
-    }
-
-    musicPlayer.pause();
-
-    if (audioContext) audioContext.close();
+document.querySelectorAll("[data-length]").forEach(button=>{
+ button.onclick=()=>{
+  document.querySelectorAll("[data-length]").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  if(button.dataset.length==="photo"){
+   mode="photo";
+  }else{
+   mode="video";
+   length=Number(button.dataset.length);
+  }
+  say(mode==="photo"?"Photo mode selected.":"Video length: "+length+" seconds.");
+ };
 });
+
+async function prepareAudio(){
+ if(!audioContext){
+  audioContext=new AudioContext();
+  audioDestination=audioContext.createMediaStreamDestination();
+  musicGain=audioContext.createGain();
+  musicGain.connect(audioDestination);
+  musicSource=audioContext.createMediaElementSource(music);
+  musicSource.connect(musicGain);
+ }
+ if(audioContext.state==="suspended")await audioContext.resume();
+
+ musicGain.gain.value=Number(document.getElementById("volume").value)/100;
+
+ if(micSource){micSource.disconnect();micSource=null;}
+
+ if(micOn&&stream.getAudioTracks().length){
+  micSource=audioContext.createMediaStreamSource(
+   new MediaStream(stream.getAudioTracks())
+  );
+  micSource.connect(audioDestination);
+ }
+ return audioDestination.stream;
+}
+
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
+async function countdown(){
+ for(let i=timerSeconds;i>0;i--){
+  say("Recording starts in "+i+"...");
+  await sleep(1000);
+ }
+}
+
+async function startRecording(){
+ if(!stream){await openCamera();if(!stream)return;}
+ if(recording)return;
+
+ await countdown();
+
+ try{
+  const audio=await prepareAudio();
+  recordStream=canvas.captureStream(30);
+  audio.getAudioTracks().forEach(t=>recordStream.addTrack(t));
+
+  chunks=[];
+  const types=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+  const type=types.find(t=>MediaRecorder.isTypeSupported(t));
+  recorder=type?new MediaRecorder(recordStream,{mimeType:type}):new MediaRecorder(recordStream);
+
+  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+
+  recorder.onstop=()=>{
+   const blob=new Blob(chunks,{type:recorder.mimeType||"video/webm"});
+   if(videoURL)URL.revokeObjectURL(videoURL);
+   videoURL=URL.createObjectURL(blob);
+   document.getElementById("resultVideo").src=videoURL;
+   document.getElementById("resultVideo").style.display="block";
+   document.getElementById("resultImage").style.display="none";
+   document.getElementById("result").style.display="block";
+   music.pause();
+   recordStream?.getTracks().forEach(t=>t.stop());
+   recordStream=null;
+   if(micSource){micSource.disconnect();micSource=null;}
+  };
+
+  recorder.start();
+  recording=true;
+  if(musicURL)await music.play().catch(()=>{});
+  document.getElementById("record").classList.add("recording");
+  say("🔴 Recording...");
+
+  setTimeout(()=>{
+   if(recording)stopRecording();
+  },length*1000);
+
+ }catch(error){
+  say("Recording error: "+error.message);
+ }
+}
+
+function stopRecording(){
+ if(recorder&&recorder.state==="recording")recorder.stop();
+ recording=false;
+ music.pause();
+ document.getElementById("record").classList.remove("recording");
+ say("Recording complete!");
+}
+
+document.getElementById("record").onclick=async()=>{
+ if(recording){stopRecording();return;}
+
+ if(mode==="photo"){
+  if(!stream){await openCamera();if(!stream)return;}
+  await countdown();
+  canvas.toBlob(blob=>{
+   if(!blob)return;
+   if(imageURL)URL.revokeObjectURL(imageURL);
+   imageURL=URL.createObjectURL(blob);
+   document.getElementById("resultImage").src=imageURL;
+   document.getElementById("resultImage").style.display="block";
+   document.getElementById("resultVideo").style.display="none";
+   document.getElementById("result").style.display="block";
+  },"image/jpeg",.92);
+ }else{
+  await startRecording();
+ }
+};
+
+document.getElementById("download").onclick=()=>{
+ const link=document.createElement("a");
+ if(document.getElementById("resultVideo").style.display!=="none"&&videoURL){
+  link.href=videoURL;link.download="PENIBON-video.webm";
+ }else if(imageURL){
+  link.href=imageURL;link.download="PENIBON-photo.jpg";
+ }else return;
+ link.click();
+};
+
+document.getElementById("retake").onclick=()=>{
+ document.getElementById("resultVideo").pause();
+ document.getElementById("result").style.display="none";
+ if(videoURL)URL.revokeObjectURL(videoURL);
+ if(imageURL)URL.revokeObjectURL(imageURL);
+ videoURL=null;imageURL=null;
+ say("Ready to create again!");
+};
+
+document.getElementById("backResult").onclick=()=>{
+ document.getElementById("resultVideo").pause();
+ document.getElementById("result").style.display="none";
+};
+
+document.getElementById("upload").onclick=()=>{
+ document.getElementById("uploadFile").click();
+};
+
+document.getElementById("uploadFile").onchange=e=>{
+ const file=e.target.files[0];
+ if(!file)return;
+
+ if(file.type.startsWith("video/")){
+  if(videoURL)URL.revokeObjectURL(videoURL);
+  videoURL=URL.createObjectURL(file);
+  document.getElementById("resultVideo").src=videoURL;
+  document.getElementById("resultVideo").style.display="block";
+  document.getElementById("resultImage").style.display="none";
+ }else if(file.type.startsWith("image/")){
+  if(imageURL)URL.revokeObjectURL(imageURL);
+  imageURL=URL.createObjectURL(file);
+  document.getElementById("resultImage").src=imageURL;
+  document.getElementById("resultImage").style.display="block";
+  document.getElementById("resultVideo").style.display="none";
+ }else{
+  say("Choose an image or video.");
+  return;
+ }
+ document.getElementById("result").style.display="block";
+};
+
+window.leave=function(){
+ if(recording)stopRecording();
+ if(stream)stream.getTracks().forEach(t=>t.stop());
+ location.href="dashboard.html";
+};
+
+loadFaceTracking();
 </script>
-
 </body>
 </html>
