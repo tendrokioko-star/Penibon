@@ -4,309 +4,254 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile | PENIBON</title>
+<title>PENIBON - Watch, Play, Discover</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#080d25;
+  color:white;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0b1020;
-    color: white;
+#site{display:none}
+
+header{
+  background:#111b35;
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:15px;
 }
 
-header {
-    background: #151d35;
-    padding: 18px;
-    text-align: center;
-    border-bottom: 1px solid #293653;
+.logo{
+  font-size:27px;
+  font-weight:bold;
+  color:#42d6ff;
 }
 
-header h1 {
-    margin: 0;
-    color: #48d6c5;
+nav{
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
 }
 
-header p {
-    margin: 7px 0 0;
-    color: #c4cce0;
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:14px;
 }
 
-.container {
-    max-width: 600px;
-    margin: 25px auto;
-    padding: 18px;
+nav a:hover{color:#42d6ff}
+
+.hero{
+  text-align:center;
+  padding:75px 20px;
+  background:linear-gradient(135deg,#10254c,#124c70);
 }
 
-.card {
-    background: #151d35;
-    border: 1px solid #293653;
-    border-radius: 16px;
-    padding: 22px;
-    margin-bottom: 18px;
+.hero h1{
+  font-size:38px;
+  margin:0 0 15px;
 }
 
-.profile-top {
-    text-align: center;
+.hero p{
+  font-size:18px;
+  color:#d2e7ff;
 }
 
-.avatar {
-    width: 115px;
-    height: 115px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #293653;
-    border: 3px solid #48d6c5;
-    display: block;
-    margin: 0 auto 15px;
+.hero button{
+  background:#12a9df;
+  border:0;
+  color:white;
+  padding:14px 25px;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  margin-top:15px;
 }
 
-h2 {
-    color: #48d6c5;
-    margin-top: 0;
+section{padding:35px 20px}
+
+.section-title{
+  text-align:center;
+  font-size:27px;
 }
 
-input, textarea {
-    width: 100%;
-    padding: 13px;
-    margin: 8px 0 16px;
-    border-radius: 9px;
-    border: 1px solid #405071;
-    background: #0b1020;
-    color: white;
-    font-size: 15px;
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  max-width:1000px;
+  margin:25px auto;
 }
 
-textarea {
-    min-height: 100px;
-    resize: vertical;
+.card{
+  background:#14213e;
+  padding:25px;
+  border-radius:14px;
+  text-align:center;
 }
 
-label {
-    color: #dce4f5;
-    font-size: 14px;
+.card h3{color:#42d6ff}
+
+.card p{
+  color:#c5d2e7;
+  line-height:1.5;
 }
 
-button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 9px;
-    border: none;
-    border-radius: 9px;
-    background: #48d6c5;
-    color: #07131c;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
+.card a{
+  display:inline-block;
+  background:#168bd2;
+  padding:11px 18px;
+  border-radius:7px;
+  color:white;
+  text-decoration:none;
+  margin-top:10px;
 }
 
-.secondary {
-    background: #293653;
-    color: white;
+footer{
+  text-align:center;
+  padding:25px;
+  background:#111b35;
+  color:#b7c8df;
 }
 
-.logout {
-    background: #a83245;
-    color: white;
-}
-
-#message {
-    text-align: center;
-    color: #48d6c5;
-    margin-top: 12px;
-}
-
-.email {
-    color: #b9c5dc;
-    overflow-wrap: anywhere;
-}
-
-a {
-    color: #48d6c5;
-    text-decoration: none;
-}
-
-.small {
-    color: #aab6ce;
-    font-size: 13px;
-    line-height: 1.5;
+#loading{
+  text-align:center;
+  padding:60px 20px;
+  color:#42d6ff;
 }
 </style>
 </head>
 
 <body>
 
+<div id="loading">Checking your PENIBON account...</div>
+
+<div id="site">
+
 <header>
-    <h1>PENIBON</h1>
-    <p>My Profile</p>
+  <div class="logo">PENIBON</div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="videos.html">Videos</a>
+    <a href="games.html">Games</a>
+    <a href="discover.html">Discover</a>
+    <a href="creator.html">Creator Studio</a>
+    <a href="profile.html">My Profile</a>
+  </nav>
 </header>
 
-<div class="container" id="profilePage" style="display:none;">
+<div class="hero">
+  <h1>Welcome to PENIBON</h1>
+  <p>WATCH • PLAY • DISCOVER</p>
+  <p>Your entertainment. Your community. Your world.</p>
 
-    <div class="card profile-top">
-        <img id="profileImage"
-             class="avatar"
-             src="https://placehold.co/200x200/293653/ffffff?text=PROFILE"
-             alt="Profile picture">
+  <button onclick="location.href='videos.html'">
+    Explore PENIBON
+  </button>
+</div>
 
-        <h2 id="welcomeName">My Profile</h2>
-        <p class="email" id="userEmail"></p>
+<section>
+  <h2 class="section-title">Explore PENIBON</h2>
 
-        <label for="photoInput">Choose profile photo</label>
-        <input type="file" id="photoInput" accept="image/*">
+  <div class="cards">
 
-        <p class="small">
-            Your selected photo is previewed on this device.
-            Permanent photo storage will be connected later.
-        </p>
+    <div class="card">
+      <h3>Videos</h3>
+      <p>Watch entertaining videos and discover exciting content.</p>
+      <a href="videos.html">Explore Videos</a>
     </div>
 
     <div class="card">
-        <h2>Edit Profile</h2>
-
-        <label for="displayName">Display Name</label>
-        <input type="text" id="displayName"
-               placeholder="Enter your display name">
-
-        <label for="bio">About Me / Bio</label>
-        <textarea id="bio"
-                  placeholder="Tell people something about yourself..."></textarea>
-
-        <button id="saveButton">Save Display Name</button>
-
-        <p class="small">
-            Your display name will be saved to your PENIBON account.
-            Bio saving and permanent profile photo storage will be added
-            when we connect the database and storage.
-        </p>
-
-        <p id="message"></p>
+      <h3>Games & Challenges</h3>
+      <p>Play games, test your skills and enjoy exciting challenges.</p>
+      <a href="games.html">Play Games</a>
     </div>
 
     <div class="card">
-        <h2>Account Information</h2>
-        <p>Registered Email:</p>
-        <p class="email" id="accountEmail"></p>
-        <p>Platform: PENIBON</p>
-        <p>Account status: Logged in</p>
+      <h3>Discover</h3>
+      <p>Explore love, entertainment, technology and inspiration.</p>
+      <a href="discover.html">Discover More</a>
     </div>
 
     <div class="card">
-        <button class="secondary"
-                onclick="location.href='dashboard.html'">
-            Back to Dashboard
-        </button>
-
-        <button class="secondary"
-                onclick="location.href='index.html'">
-            PENIBON Home
-        </button>
-
-        <button class="logout" id="logoutButton">
-            Logout
-        </button>
+      <h3>Creator Studio</h3>
+      <p>Prepare your videos and explore your creator journey.</p>
+      <a href="creator.html">Open Creator Studio</a>
     </div>
+
+    <div class="card">
+      <h3>My Profile</h3>
+      <p>View and manage your PENIBON personal profile.</p>
+      <a href="profile.html">Open My Profile</a>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 PENIBON. All rights reserved.</p>
+  <p>Your entertainment. Your community. Your world.</p>
+
+  <button id="logoutButton"
+    style="padding:10px 20px;border:0;border-radius:7px;background:#168bd2;color:white;font-weight:bold">
+    Logout
+  </button>
+</footer>
 
 </div>
 
 <script type="module">
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
 import {
-    getAuth,
-    onAuthStateChanged,
-    updateProfile,
-    signOut
-} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from
+"https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
-    authDomain: "penibon-b9f0f.firebaseapp.com",
-    projectId: "penibon-b9f0f",
-    storageBucket: "penibon-b9f0f.firebasestorage.app",
-    messagingSenderId: "770060676311",
-    appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
+  apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+  authDomain: "penibon-b9f0f.firebaseapp.com",
+  projectId: "penibon-b9f0f",
+  storageBucket: "penibon-b9f0f.firebasestorage.app",
+  messagingSenderId: "770060676311",
+  appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const profilePage = document.getElementById("profilePage");
-const displayNameInput = document.getElementById("displayName");
-const bioInput = document.getElementById("bio");
-const message = document.getElementById("message");
-const profileImage = document.getElementById("profileImage");
-
 onAuthStateChanged(auth, (user) => {
-    if (!user) {
-        window.location.href = "account.html";
-        return;
-    }
-
-    profilePage.style.display = "block";
-
-    displayNameInput.value = user.displayName || "";
-    document.getElementById("welcomeName").textContent =
-        user.displayName || "Welcome to PENIBON";
-
-    document.getElementById("userEmail").textContent = user.email || "";
-    document.getElementById("accountEmail").textContent = user.email || "";
-});
-
-document.getElementById("saveButton").addEventListener("click", async () => {
-    const user = auth.currentUser;
-    const newName = displayNameInput.value.trim();
-
-    if (!user) return;
-
-    if (!newName) {
-        message.textContent = "Please enter your display name.";
-        return;
-    }
-
-    try {
-        await updateProfile(user, {
-            displayName: newName
-        });
-
-        document.getElementById("welcomeName").textContent = newName;
-        message.textContent = "Your display name has been updated successfully!";
-
-    } catch (error) {
-        message.textContent = "Could not save: " + error.message;
-    }
-});
-
-document.getElementById("photoInput").addEventListener("change", (event) => {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-        message.textContent = "Please choose an image file.";
-        return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-        message.textContent = "Please choose an image smaller than 5 MB.";
-        return;
-    }
-
-    const imageURL = URL.createObjectURL(file);
-    profileImage.src = imageURL;
-    message.textContent = "Photo preview updated. Permanent saving comes later.";
+  if (user) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("site").style.display = "block";
+  } else {
+    window.location.replace("account.html");
+  }
 });
 
 document.getElementById("logoutButton").addEventListener("click", async () => {
+  try {
     await signOut(auth);
-    window.location.href = "account.html";
+    window.location.replace("account.html");
+  } catch (error) {
+    alert("Unable to log out. Please try again.");
+  }
 });
+
 </script>
 
 </body>
 </html>
-
