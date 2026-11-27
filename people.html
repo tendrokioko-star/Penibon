@@ -65,7 +65,7 @@ getAuth,onAuthStateChanged
 
 import {
 getFirestore,collection,getDocs,doc,setDoc,deleteDoc,
-serverTimestamp,query,where
+addDoc,serverTimestamp,query,where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
@@ -125,6 +125,8 @@ followingSnapshot.docs.map(item=>item.data().followingId)
 renderPeople();
 
 }catch(error){
+
+console.error(error);
 
 $("status").textContent=
 "Could not load users: "+error.message;
@@ -220,18 +222,19 @@ $("peopleList").append(card);
 async function toggleFollow(userId,button){
 
 button.disabled=true;
-
+const wasFollowing=followingIds.has(userId);
 const followRef=followDocument(userId);
 
 try{
 
-if(followingIds.has(userId)){
+if(wasFollowing){
 
 await deleteDoc(followRef);
 followingIds.delete(userId);
 
 }else{
 
+// Create the follow connection first.
 await setDoc(followRef,{
 followerId:currentUser.uid,
 followingId:userId,
@@ -240,11 +243,37 @@ createdAt:serverTimestamp()
 
 followingIds.add(userId);
 
+// Send an in-app notification to the person followed.
+try{
+
+await addDoc(collection(db,"notifications"),{
+senderId:currentUser.uid,
+recipientId:userId,
+type:"follow",
+createdAt:serverTimestamp(),
+read:false
+});
+
+}catch(notificationError){
+
+console.error(
+"Notification could not be created:",
+notificationError
+);
+
+alert(
+"You followed this person, but the notification could not be sent. Please check your connection."
+);
+
+}
+
 }
 
 renderPeople();
 
 }catch(error){
+
+console.error(error);
 
 alert("Could not update follow: "+error.message);
 
