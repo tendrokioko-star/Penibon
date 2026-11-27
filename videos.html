@@ -25,6 +25,7 @@ h1{color:#42e8c5}
 .description{color:#d0d8e8;line-height:1.6;overflow-wrap:anywhere}
 .category{display:inline-block;background:#263550;color:#42e8c5;padding:6px 11px;border-radius:20px;font-size:12px;margin-top:8px}
 .date{color:#9eabc5;font-size:12px;margin-top:10px}
+.view-count{color:#42e8c5;font-weight:bold;margin-top:12px;font-size:14px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
 .action-btn{background:#263550;color:white;border:1px solid #40516f;padding:10px 14px;border-radius:22px;font-weight:bold;cursor:pointer}
 .action-btn.active{background:#42e8c5;color:#10152b;border-color:#42e8c5}
@@ -97,7 +98,8 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  runTransaction
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -119,7 +121,6 @@ const loginMessage = document.getElementById("loginMessage");
 
 let currentUser = null;
 let currentVideos = [];
-let stopVideoListener = null;
 let stopActionListeners = [];
 
 const profileCache = new Map();
@@ -170,6 +171,31 @@ function requireLogin() {
   return true;
 }
 
+/* RECORD ONE VIEW PER ACCOUNT PER VIDEO */
+async function recordVideoView(videoId) {
+  if (!currentUser) return;
+
+  const viewerId = currentUser.uid;
+  const viewId = videoId + "_" + viewerId;
+  const viewRef = doc(db, "videoViews", viewId);
+
+  try {
+    await runTransaction(db, async transaction => {
+      const existing = await transaction.get(viewRef);
+
+      if (!existing.exists()) {
+        transaction.set(viewRef, {
+          viewerId: viewerId,
+          videoId: videoId,
+          createdAt: serverTimestamp()
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Could not record video view:", error);
+  }
+}
+
 function renderVideos() {
   stopActions();
   feed.replaceChildren();
@@ -189,7 +215,7 @@ function renderVideos() {
     let safeUrl;
 
     try {
-      safeUrl = new URL(video.videoUrl);
+      safeUrl = new URL(video.videoUrl || "");
 
       if (
         safeUrl.protocol !== "https:" ||
@@ -205,6 +231,16 @@ function renderVideos() {
     player.controls = true;
     player.playsInline = true;
     player.preload = "metadata";
+
+    // COUNT VIEW WHEN PLAYBACK STARTS
+    let viewAttempted = false;
+
+    player.addEventListener("play", async () => {
+      if (!currentUser || viewAttempted) return;
+
+      viewAttempted = true;
+      await recordVideoView(video.id);
+    });
 
     const creator = element("div", "creator");
     const creatorLink = element("a", "", "👤 Loading creator...");
@@ -242,6 +278,31 @@ function renderVideos() {
       formatDate(video.createdAt)
     );
 
+    // LIVE VIEW COUNT
+    const viewCount = element(
+      "div",
+      "view-count",
+      "👁️ Views: Loading..."
+    );
+
+    const viewsQuery = query(
+      collection(db, "videoViews"),
+      where("videoId", "==", video.id)
+    );
+
+    const stopViews = onSnapshot(
+      viewsQuery,
+      snapshot => {
+        viewCount.textContent = "👁️ Views: " + snapshot.size;
+      },
+      error => {
+        console.error("View count listener:", error);
+        viewCount.textContent = "👁️ Views unavailable";
+      }
+    );
+
+    stopActionListeners.push(stopViews);
+
     const actions = element("div", "actions");
 
     const likeButton = element("button", "action-btn", "❤️ Like");
@@ -278,6 +339,7 @@ function renderVideos() {
       description,
       category,
       date,
+      viewCount,
       actions,
       commentsArea
     );
@@ -290,7 +352,7 @@ function renderVideos() {
       where("videoId", "==", video.id)
     );
 
-    const stopLikes = onSnapshot(likesQuery, async snapshot => {
+    const stopLikes = onSnapshot(likesQuery, snapshot => {
       likeCount.textContent = "Likes: " + snapshot.size;
 
       const liked = currentUser &&
@@ -334,16 +396,13 @@ function renderVideos() {
     });
 
     // PRIVATE FAVOURITES
-    const favoritesQuery = query(
-      collection(db, "favorites"),
-      where("userId", "==", currentUser?.uid || "__no_user__"),
-      where("videoId", "==", video.id)
-    );
-
-    let stopFavorites = () => {};
+    let stopFavorites = null;
 
     function listenFavorites() {
-      stopFavorites();
+      if (stopFavorites) {
+        stopFavorites();
+        stopFavorites = null;
+      }
 
       if (!currentUser) {
         favoriteButton.textContent = "⭐ Save";
@@ -380,10 +439,9 @@ function renderVideos() {
       try {
         const favoriteId = currentUser.uid + "_" + video.id;
         const favoriteRef = doc(db, "favorites", favoriteId);
-        const existing = await getDoc(favoriteRef).catch(() => null);
+        const existing = await getDoc(favoriteRef);
 
-        // If the record exists, remove it. Otherwise save it.
-        if (existing && existing.exists()) {
+        if (existing.exists()) {
           await deleteDoc(favoriteRef);
         } else {
           await setDoc(favoriteRef, {
@@ -491,7 +549,7 @@ const videoQuery = query(
   limit(50)
 );
 
-stopVideoListener = onSnapshot(
+onSnapshot(
   videoQuery,
   snapshot => {
     currentVideos = snapshot.docs.map(item => ({
@@ -514,8 +572,8 @@ onAuthStateChanged(auth, user => {
   currentUser = user;
 
   loginMessage.textContent = user
-    ? "✅ Logged in. You can like, comment and save videos."
-    : "👋 You can watch videos without logging in. Log in to like, comment and save favourites.";
+    ? "✅ Logged in. You can watch, like, comment and save videos."
+    : "👋 You can watch videos without logging in. Log in to have your views counted and to like, comment and save favourites.";
 
   renderVideos();
 });
