@@ -25,7 +25,6 @@ h1{color:#42e8c5}
 .description{color:#d0d8e8;line-height:1.6;overflow-wrap:anywhere}
 .category{display:inline-block;background:#263550;color:#42e8c5;padding:6px 11px;border-radius:20px;font-size:12px;margin-top:8px}
 .date{color:#9eabc5;font-size:12px;margin-top:10px}
-.view-count{color:#42e8c5;font-weight:bold;margin-top:12px;font-size:14px}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
 .action-btn{background:#263550;color:white;border:1px solid #40516f;padding:10px 14px;border-radius:22px;font-weight:bold;cursor:pointer}
 .action-btn.active{background:#42e8c5;color:#10152b;border-color:#42e8c5}
@@ -172,11 +171,11 @@ function requireLogin() {
 }
 
 /* RECORD ONE VIEW PER ACCOUNT PER VIDEO */
-async function recordVideoView(videoId) {
-  if (!currentUser) return;
+async function recordVideoView(video) {
+  if (!currentUser || !video.creatorId) return;
 
   const viewerId = currentUser.uid;
-  const viewId = videoId + "_" + viewerId;
+  const viewId = video.id + "_" + viewerId;
   const viewRef = doc(db, "videoViews", viewId);
 
   try {
@@ -186,7 +185,8 @@ async function recordVideoView(videoId) {
       if (!existing.exists()) {
         transaction.set(viewRef, {
           viewerId: viewerId,
-          videoId: videoId,
+          videoId: video.id,
+          creatorId: video.creatorId,
           createdAt: serverTimestamp()
         });
       }
@@ -232,14 +232,14 @@ function renderVideos() {
     player.playsInline = true;
     player.preload = "metadata";
 
-    // COUNT VIEW WHEN PLAYBACK STARTS
+    // RECORD VIEW WHEN PLAYBACK STARTS
     let viewAttempted = false;
 
     player.addEventListener("play", async () => {
       if (!currentUser || viewAttempted) return;
 
       viewAttempted = true;
-      await recordVideoView(video.id);
+      await recordVideoView(video);
     });
 
     const creator = element("div", "creator");
@@ -278,31 +278,6 @@ function renderVideos() {
       formatDate(video.createdAt)
     );
 
-    // LIVE VIEW COUNT
-    const viewCount = element(
-      "div",
-      "view-count",
-      "👁️ Views: Loading..."
-    );
-
-    const viewsQuery = query(
-      collection(db, "videoViews"),
-      where("videoId", "==", video.id)
-    );
-
-    const stopViews = onSnapshot(
-      viewsQuery,
-      snapshot => {
-        viewCount.textContent = "👁️ Views: " + snapshot.size;
-      },
-      error => {
-        console.error("View count listener:", error);
-        viewCount.textContent = "👁️ Views unavailable";
-      }
-    );
-
-    stopActionListeners.push(stopViews);
-
     const actions = element("div", "actions");
 
     const likeButton = element("button", "action-btn", "❤️ Like");
@@ -339,7 +314,6 @@ function renderVideos() {
       description,
       category,
       date,
-      viewCount,
       actions,
       commentsArea
     );
