@@ -24,15 +24,9 @@ justify-content:space-between;
 align-items:center
 }
 
-header h2{
-margin:0;
-color:#6ee7ff
-}
+header h2{margin:0;color:#6ee7ff}
 
-a{
-color:#6ee7ff;
-text-decoration:none
-}
+a{color:#6ee7ff;text-decoration:none}
 
 main{
 max-width:650px;
@@ -40,11 +34,7 @@ margin:25px auto;
 padding:15px
 }
 
-.tabs{
-display:flex;
-gap:10px;
-margin-bottom:20px
-}
+.tabs{display:flex;gap:10px;margin-bottom:20px}
 
 button{
 border:0;
@@ -65,16 +55,25 @@ color:#07111c
 background:#171c32;
 border:1px solid #303a5c;
 border-radius:14px;
-padding:15px;
+padding:13px;
 margin:12px 0;
 display:flex;
-gap:12px;
+gap:10px;
 align-items:center
 }
 
+.person-link{
+display:flex;
+align-items:center;
+gap:10px;
+flex:1;
+min-width:0;
+color:white
+}
+
 .avatar{
-width:55px;
-height:55px;
+width:52px;
+height:52px;
 border-radius:50%;
 background:#293657;
 display:flex;
@@ -91,24 +90,7 @@ height:100%;
 object-fit:cover
 }
 
-.details{
-flex:1;
-min-width:0
-}
-
-.person-link{
-display:flex;
-align-items:center;
-gap:12px;
-flex:1;
-min-width:0;
-color:white;
-text-decoration:none
-}
-
-.person-link:hover strong{
-color:#6ee7ff
-}
+.details{flex:1;min-width:0}
 
 .details strong{
 display:block;
@@ -125,8 +107,29 @@ overflow-wrap:anywhere
 
 .profile{
 display:inline-block;
-margin-top:8px;
+margin-top:7px;
 font-size:13px
+}
+
+.follow-btn{
+padding:10px 12px;
+border-radius:9px;
+background:#00bcd4;
+color:#07111c;
+font-size:12px;
+min-width:100px;
+flex-shrink:0
+}
+
+.follow-btn.following{
+background:#293653;
+color:white;
+border:1px solid #526486
+}
+
+.follow-btn:disabled{
+opacity:.6;
+cursor:wait
 }
 
 #message{
@@ -138,6 +141,12 @@ padding:25px
 #count{
 color:#6ee7ff;
 margin-bottom:12px
+}
+
+@media(max-width:390px){
+.person{gap:7px;padding:10px}
+.avatar{width:43px;height:43px}
+.follow-btn{min-width:83px;padding:9px 7px;font-size:11px}
 }
 </style>
 </head>
@@ -154,23 +163,16 @@ margin-bottom:12px
 <h2>👥 My Connections</h2>
 
 <p style="color:#aab5ce">
-Discover the people connected to you.
+Discover and connect with people on PENIBON.
 </p>
 
 <div class="tabs">
-<button id="followersTab" class="active">
-Followers
-</button>
-
-<button id="followingTab">
-Following
-</button>
+<button id="followersTab" class="active">Followers</button>
+<button id="followingTab">Following</button>
 </div>
 
 <div id="count">Loading...</div>
-
 <div id="people"></div>
-
 <div id="message">Loading connections...</div>
 
 </main>
@@ -193,7 +195,10 @@ query,
 where,
 getDocs,
 doc,
-getDoc
+getDoc,
+setDoc,
+deleteDoc,
+serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -216,11 +221,8 @@ const peopleBox = document.getElementById("people");
 const message = document.getElementById("message");
 const count = document.getElementById("count");
 
-const followersTab =
-document.getElementById("followersTab");
-
-const followingTab =
-document.getElementById("followingTab");
+const followersTab = document.getElementById("followersTab");
+const followingTab = document.getElementById("followingTab");
 
 followersTab.onclick = () => {
 activeTab = "followers";
@@ -235,6 +237,14 @@ followingTab.classList.add("active");
 followersTab.classList.remove("active");
 loadConnections();
 };
+
+function followDocument(otherId){
+return doc(
+db,
+"follows",
+currentUser.uid + "_" + otherId
+);
+}
 
 async function loadConnections(){
 
@@ -264,8 +274,7 @@ where(field,"==",currentUser.uid)
 
 const snapshot = await getDocs(q);
 
-count.textContent =
-snapshot.size + " " + activeTab;
+count.textContent = snapshot.size + " " + activeTab;
 
 if(snapshot.empty){
 
@@ -293,22 +302,21 @@ if(!profileSnap.exists())continue;
 
 const profile = profileSnap.data();
 
-const name =
-profile.displayName || "PENIBON User";
+const name = profile.displayName || "PENIBON User";
+const bio = profile.bio || "No bio yet";
 
-const bio =
-profile.bio || "No bio yet";
+const myFollowRef = followDocument(otherId);
+const myFollowSnap = await getDoc(myFollowRef);
+
+const isFollowing = myFollowSnap.exists();
 
 const card = document.createElement("div");
 card.className = "person";
 
 const profileLink = document.createElement("a");
-
 profileLink.className = "person-link";
-
 profileLink.href =
-"./profile.html?uid=" +
-encodeURIComponent(otherId);
+"./profile.html?uid=" + encodeURIComponent(otherId);
 
 const avatarBox = document.createElement("div");
 avatarBox.className = "avatar";
@@ -318,7 +326,6 @@ if(profile.photoURL){
 const img = document.createElement("img");
 img.src = profile.photoURL;
 img.alt = name + " profile picture";
-
 avatarBox.appendChild(img);
 
 }else{
@@ -336,33 +343,74 @@ strong.textContent = name;
 const paragraph = document.createElement("p");
 paragraph.textContent = bio;
 
-const link = document.createElement("span");
-link.className = "profile";
-link.textContent = "View Profile →";
+const viewLink = document.createElement("span");
+viewLink.className = "profile";
+viewLink.textContent = "View Profile →";
 
-details.append(strong,paragraph,link);
-
+details.append(strong,paragraph,viewLink);
 profileLink.append(avatarBox,details);
 
-card.appendChild(profileLink);
+const followButton = document.createElement("button");
+followButton.className =
+"follow-btn" + (isFollowing ? " following" : "");
 
+followButton.textContent =
+isFollowing ? "Following ✓" : "Follow";
+
+followButton.onclick = async () => {
+
+followButton.disabled = true;
+followButton.textContent = "Please wait...";
+
+try{
+
+if(isFollowing){
+
+await deleteDoc(myFollowRef);
+
+}else{
+
+await setDoc(myFollowRef,{
+followerId:currentUser.uid,
+followingId:otherId,
+createdAt:serverTimestamp()
+});
+
+}
+
+await loadConnections();
+
+}catch(error){
+
+console.error(error);
+
+alert(
+"Could not update connection: " + error.message
+);
+
+followButton.disabled = false;
+followButton.textContent =
+isFollowing ? "Following ✓" : "Follow";
+
+}
+
+};
+
+card.append(profileLink,followButton);
 peopleBox.appendChild(card);
 
 displayed++;
 
 }
 
-message.style.display = "block";
-
 if(displayed === 0){
 
-message.textContent =
-"No public profiles found yet.";
+message.textContent = "No public profiles found yet.";
 
 }else{
 
 message.textContent =
-"Tap any person to view their profile. 💙";
+"Connect with people on PENIBON. 💙";
 
 }
 
@@ -380,14 +428,11 @@ message.textContent =
 onAuthStateChanged(auth,user=>{
 
 if(!user){
-
 window.location.href = "./account.html";
 return;
-
 }
 
 currentUser = user;
-
 loadConnections();
 
 });
