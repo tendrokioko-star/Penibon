@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,12 +70,14 @@ object-fit:cover
 
 .details p{
 margin:5px 0;
-line-height:1.4
+line-height:1.4;
+overflow-wrap:anywhere
 }
 
 .time{
 color:#aab6ce;
-font-size:12px
+font-size:12px;
+margin-top:7px
 }
 
 .unread{
@@ -86,7 +87,8 @@ border-left:4px solid #48d6c5
 .actions{
 display:flex;
 gap:8px;
-margin-top:12px
+margin-top:12px;
+flex-wrap:wrap
 }
 
 button{
@@ -95,6 +97,11 @@ border-radius:8px;
 padding:10px;
 font-weight:bold;
 cursor:pointer
+}
+
+button:disabled{
+opacity:.6;
+cursor:not-allowed
 }
 
 .read{
@@ -114,6 +121,12 @@ padding:25px
 }
 
 #count{color:#48d6c5}
+
+.live{
+font-size:12px;
+color:#48d6c5;
+margin-top:5px
+}
 </style>
 </head>
 
@@ -128,7 +141,8 @@ padding:25px
 
 <h2>Notifications 🔔</h2>
 
-<p id="count">Loading notifications...</p>
+<p id="count">Connecting...</p>
+<div class="live">🟢 Live notifications enabled</div>
 
 <div id="notifications"></div>
 
@@ -152,11 +166,11 @@ getFirestore,
 collection,
 query,
 where,
-getDocs,
 doc,
 getDoc,
 updateDoc,
-deleteDoc
+deleteDoc,
+onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -173,6 +187,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null;
+let unsubscribeNotifications = null;
+let renderVersion = 0;
 
 const box = document.getElementById("notifications");
 const message = document.getElementById("message");
@@ -188,22 +204,21 @@ return timestamp.toDate().toLocaleString();
 
 }
 
-async function loadNotifications(){
+function showError(error){
 
-if(!currentUser)return;
+console.error(error);
+
+message.style.display = "block";
+message.textContent =
+"Could not load notifications: " + error.message;
+
+}
+
+async function renderNotifications(snapshot){
+
+const version = ++renderVersion;
 
 box.innerHTML = "";
-message.style.display = "block";
-message.textContent = "Loading notifications...";
-
-try{
-
-const q = query(
-collection(db,"notifications"),
-where("recipientId","==",currentUser.uid)
-);
-
-const snapshot = await getDocs(q);
 
 const unread = snapshot.docs.filter(
 item => item.data().read === false
@@ -215,12 +230,16 @@ unread + " unread";
 
 if(snapshot.empty){
 
+message.style.display = "block";
 message.textContent =
 "You have no notifications yet. 💙";
 
 return;
 
 }
+
+message.style.display = "block";
+message.textContent = "Updating notifications...";
 
 const items = [...snapshot.docs].sort((a,b)=>{
 
@@ -231,19 +250,49 @@ return timeB-timeA;
 
 });
 
-let displayed = 0;
+try{
 
-for(const notificationDoc of items){
+const renderedItems = await Promise.all(
+items.map(async notificationDoc=>{
 
 const data = notificationDoc.data();
+
+let sender = {};
+
+try{
 
 const senderSnap = await getDoc(
 doc(db,"publicProfiles",data.senderId)
 );
 
-const sender = senderSnap.exists()
-? senderSnap.data()
-: {};
+if(senderSnap.exists()){
+sender = senderSnap.data();
+}
+
+}catch(error){
+
+console.error("Could not load sender profile:",error);
+
+}
+
+return {
+notificationDoc,
+data,
+sender
+};
+
+})
+);
+
+if(version !== renderVersion)return;
+
+box.innerHTML = "";
+
+for(const item of renderedItems){
+
+const notificationDoc = item.notificationDoc;
+const data = item.data;
+const sender = item.sender;
 
 const name = sender.displayName || "PENIBON User";
 
@@ -261,6 +310,11 @@ if(sender.photoURL){
 const img = document.createElement("img");
 img.src = sender.photoURL;
 img.alt = name;
+
+img.onerror = ()=>{
+avatar.textContent = "👤";
+};
+
 avatar.appendChild(img);
 
 }else{
@@ -283,12 +337,18 @@ profileLink.textContent = name;
 const paragraph = document.createElement("p");
 
 if(data.type === "follow"){
+
 paragraph.append(profileLink);
+
 paragraph.append(
 document.createTextNode(" started following you. 🎉")
 );
+
 }else{
-paragraph.textContent = "You have a new notification.";
+
+paragraph.textContent =
+"You have a new notification.";
+
 }
 
 const time = document.createElement("div");
@@ -297,22 +357,21 @@ time.textContent = formatDate(data.createdAt);
 
 details.append(paragraph,time);
 
-const content = document.createElement("div");
-content.style.flex = "1";
-content.style.minWidth = "0";
-content.appendChild(details);
-
 const actions = document.createElement("div");
 actions.className = "actions";
 
 const readButton = document.createElement("button");
+
 readButton.className = "read";
+
 readButton.textContent =
 data.read ? "Read ✓" : "Mark read";
 
 readButton.disabled = data.read;
 
 readButton.onclick = async()=>{
+
+readButton.disabled = true;
 
 try{
 
@@ -321,17 +380,20 @@ doc(db,"notifications",notificationDoc.id),
 {read:true}
 );
 
-await loadNotifications();
+// Firebase automatically updates the page.
 
 }catch(error){
 
-alert("Could not mark as read: "+error.message);
+readButton.disabled = false;
+
+alert("Could not mark as read: " + error.message);
 
 }
 
 };
 
 const deleteButton = document.createElement("button");
+
 deleteButton.className = "delete";
 deleteButton.textContent = "Delete";
 
@@ -339,17 +401,21 @@ deleteButton.onclick = async()=>{
 
 if(!confirm("Delete this notification?"))return;
 
+deleteButton.disabled = true;
+
 try{
 
 await deleteDoc(
 doc(db,"notifications",notificationDoc.id)
 );
 
-await loadNotifications();
+// Firebase automatically removes it from the page.
 
 }catch(error){
 
-alert("Could not delete notification: "+error.message);
+deleteButton.disabled = false;
+
+alert("Could not delete notification: " + error.message);
 
 }
 
@@ -358,28 +424,65 @@ alert("Could not delete notification: "+error.message);
 actions.append(readButton,deleteButton);
 details.appendChild(actions);
 
-card.append(avatar,content);
+card.append(avatar,details);
 
 box.appendChild(card);
 
-displayed++;
-
 }
 
-message.style.display = displayed ? "none" : "block";
+if(version === renderVersion){
 
-if(!displayed){
-message.textContent = "No notifications to display.";
+message.style.display = "none";
+
 }
 
 }catch(error){
 
-console.error(error);
-
-message.textContent =
-"Could not load notifications: " + error.message;
+if(version === renderVersion){
+showError(error);
+}
 
 }
+
+}
+
+function startNotifications(user){
+
+if(unsubscribeNotifications){
+
+unsubscribeNotifications();
+unsubscribeNotifications = null;
+
+}
+
+currentUser = user;
+
+box.innerHTML = "";
+
+message.style.display = "block";
+message.textContent = "Connecting to live notifications...";
+
+const q = query(
+collection(db,"notifications"),
+where("recipientId","==",user.uid)
+);
+
+unsubscribeNotifications = onSnapshot(
+q,
+
+snapshot=>{
+
+renderNotifications(snapshot);
+
+},
+
+error=>{
+
+showError(error);
+
+}
+
+);
 
 }
 
@@ -387,13 +490,17 @@ onAuthStateChanged(auth,user=>{
 
 if(!user){
 
+if(unsubscribeNotifications){
+unsubscribeNotifications();
+unsubscribeNotifications = null;
+}
+
 window.location.href = "./account.html";
 return;
 
 }
 
-currentUser = user;
-loadNotifications();
+startNotifications(user);
 
 });
 
