@@ -4,135 +4,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile - PENIBON</title>
-
+<title>Profile - PENIBON</title>
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  background:#080d25;
-  color:white;
-  font-family:Arial,sans-serif;
-}
-header{
-  background:#111b35;
-  padding:17px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+body{margin:0;background:#080d25;color:white;font-family:Arial,sans-serif}
+header{background:#111b35;padding:17px;display:flex;justify-content:space-between;align-items:center}
 .logo{font-size:25px;font-weight:bold;color:#42d6ff}
 header a{color:#42d6ff;text-decoration:none}
 .container{max-width:750px;margin:25px auto;padding:15px}
-.card{
-  background:#14213e;
-  border-radius:15px;
-  padding:22px;
-  margin-bottom:18px;
-}
-.profile-top{
-  display:flex;
-  align-items:center;
-  gap:20px;
-  flex-wrap:wrap;
-}
-.avatar{
-  width:105px;
-  height:105px;
-  border-radius:50%;
-  background:#263d61;
-  border:3px solid #42d6ff;
-  object-fit:cover;
-}
+.card{background:#14213e;border-radius:15px;padding:22px;margin-bottom:18px}
+.profile-top{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.avatar{width:105px;height:105px;border-radius:50%;background:#263d61;border:3px solid #42d6ff;object-fit:cover}
 h2{color:#42d6ff}
 .name{font-size:23px;font-weight:bold}
 .email{color:#b9c8df;overflow-wrap:anywhere}
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-top:25px;
-  text-align:center;
-}
-.stat{
-  background:#202e4d;
-  padding:15px 5px;
-  border-radius:10px;
-}
-.stat strong{
-  display:block;
-  color:#42d6ff;
-  font-size:22px;
-}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:25px;text-align:center}
+.stat{background:#202e4d;padding:15px 5px;border-radius:10px}
+.stat strong{display:block;color:#42d6ff;font-size:22px}
 .stat span{font-size:12px;color:#bdcbe0}
 label{display:block;margin:15px 0 7px}
-input,textarea{
-  width:100%;
-  padding:13px;
-  border:1px solid #405274;
-  border-radius:8px;
-  background:#0c1630;
-  color:white;
-  font-size:15px;
-}
+input,textarea{width:100%;padding:13px;border:1px solid #405274;border-radius:8px;background:#0c1630;color:white;font-size:15px}
 textarea{resize:vertical;min-height:90px}
-button{
-  padding:13px 17px;
-  border:0;
-  border-radius:8px;
-  background:#168bd2;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:12px;
-}
+button{padding:13px 17px;border:0;border-radius:8px;background:#168bd2;color:white;font-weight:bold;cursor:pointer;margin:5px 5px 0 0}
 .secondary{background:#293b5e}
-.tabs{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-.tabs a{
-  color:white;
-  background:#263958;
-  padding:12px;
-  border-radius:8px;
-  text-decoration:none;
-  font-size:13px;
-}
+.followingBtn{background:#293b5e}
+.danger{background:#b83245}
+.tabs{display:flex;flex-wrap:wrap;gap:10px}
+.tabs a{color:white;background:#263958;padding:12px;border-radius:8px;text-decoration:none;font-size:13px}
 #editBox{display:none}
 #message{color:#42d6ff;font-size:14px}
+.muted{color:#b9c8df;font-size:13px}
 footer{text-align:center;color:#91a6c6;padding:20px}
 </style>
 </head>
-
 <body>
 
 <header>
   <div class="logo">PENIBON</div>
-  <a href="index.html">Home</a>
+  <a href="./dashboard.html">Dashboard</a>
 </header>
 
 <div class="container" id="loading">
-  <p>Loading your profile...</p>
+  <p>Loading profile...</p>
 </div>
 
 <div class="container" id="profilePage" style="display:none">
 
   <div class="card">
     <div class="profile-top">
-
-      <img id="avatar"
-        class="avatar"
+      <img id="avatar" class="avatar"
         src="https://placehold.co/200x200/263d61/ffffff?text=PROFILE"
         alt="Profile picture">
 
       <div>
-        <div class="name" id="displayName">User</div>
-        <p class="email" id="email"></p>
-        <button onclick="showEditor()">Edit Profile</button>
+        <div class="name" id="displayName">PENIBON User</div>
+        <p class="email" id="email" style="display:none"></p>
+        <button id="editButton" style="display:none">Edit Profile</button>
+        <button id="followButton" style="display:none">Follow</button>
       </div>
-
     </div>
 
     <div class="stats">
@@ -153,54 +82,51 @@ footer{text-align:center;color:#91a6c6;padding:20px}
 
   <div class="card">
     <h2>About Me</h2>
-    <p id="bioDisplay">Welcome to my PENIBON profile!</p>
+    <p id="bioDisplay">Welcome to PENIBON!</p>
   </div>
 
   <div class="card" id="editBox">
     <h2>Edit My Profile</h2>
 
-    <label>Profile Picture</label>
+    <label>Profile Picture Preview</label>
     <input type="file" id="photoInput" accept="image/*">
+    <p class="muted">Photo selection is a preview only until profile photo storage is connected.</p>
 
     <label>Display Name</label>
-    <input id="nameInput" type="text" placeholder="Enter your name">
+    <input id="nameInput" type="text" maxlength="40"
+      placeholder="Enter your display name">
 
     <label>Bio</label>
     <textarea id="bioInput" maxlength="250"
       placeholder="Tell people something about yourself..."></textarea>
 
     <button id="saveButton">Save Changes</button>
-    <button class="secondary" onclick="hideEditor()">Cancel</button>
-
+    <button class="secondary" id="cancelButton">Cancel</button>
     <p id="message"></p>
   </div>
 
   <div class="card">
     <h2>My Content</h2>
     <div class="tabs">
-      <a href="creator.html">My Videos</a>
-      <a href="videos.html">Liked Videos</a>
-      <a href="videos.html">Saved Videos</a>
+      <a href="./creator.html">My Videos</a>
+      <a href="./videos.html">Liked Videos</a>
+      <a href="./videos.html">Saved Videos</a>
     </div>
-    <p style="color:#b9c8df;font-size:13px">
-      Your personal content collections will be connected as we build the social features.
-    </p>
+    <p class="muted">Your content collections will be connected as we build more features.</p>
   </div>
 
   <div class="card">
     <h2>Account Navigation</h2>
     <div class="tabs">
-      <a href="index.html">Home</a>
-      <a href="dashboard.html">My Dashboard</a>
-      <a href="creator.html">Creator Studio</a>
-      <a href="discover.html">Discover</a>
+      <a href="./index.html">Home</a>
+      <a href="./dashboard.html">Dashboard</a>
+      <a href="./creator.html">Creator Studio</a>
+      <a href="./people.html">Find People</a>
     </div>
   </div>
 
-  <div class="card">
-    <button id="logoutButton" style="background:#b83245">
-      Logout
-    </button>
+  <div class="card" id="logoutCard" style="display:none">
+    <button id="logoutButton" class="danger">Logout</button>
   </div>
 
 </div>
@@ -208,155 +134,266 @@ footer{text-align:center;color:#91a6c6;padding:20px}
 <footer>© 2026 PENIBON</footer>
 
 <script type="module">
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
-  getAuth,
-  onAuthStateChanged,
-  updateProfile,
-  signOut
-} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+ getAuth,onAuthStateChanged,updateProfile,signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
-  authDomain: "penibon-b9f0f.firebaseapp.com",
-  projectId: "penibon-b9f0f",
-  storageBucket: "penibon-b9f0f.firebasestorage.app",
-  messagingSenderId: "770060676311",
-  appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
+import {
+ getFirestore,doc,getDoc,setDoc,collection,query,where,
+ getDocs,deleteDoc,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+ authDomain:"penibon-b9f0f.firebaseapp.com",
+ projectId:"penibon-b9f0f",
+ storageBucket:"penibon-b9f0f.firebasestorage.app",
+ messagingSenderId:"770060676311",
+ appId:"1:770060676311:web:7b8ef4506e64465d1e1492"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const $=id=>document.getElementById(id);
 
-let currentUser = null;
-let selectedPhoto = null;
+let currentUser=null;
+let targetUid=null;
+let isOwnProfile=false;
+let selectedPhoto=null;
+let originalPhotoURL="";
 
-const $ = id => document.getElementById(id);
+const placeholder=
+"https://placehold.co/200x200/263d61/ffffff?text=PROFILE";
 
-onAuthStateChanged(auth, user => {
-  if (!user) {
-    window.location.replace("account.html");
-    return;
-  }
-
-  currentUser = user;
-
-  $("loading").style.display = "none";
-  $("profilePage").style.display = "block";
-
-  showProfile();
-});
-
-function showProfile() {
-  $("displayName").textContent =
-    currentUser.displayName || "PENIBON User";
-
-  $("email").textContent = currentUser.email || "";
-
-  $("nameInput").value =
-    currentUser.displayName || "";
-
-  $("avatar").src =
-    selectedPhoto || currentUser.photoURL ||
-    "https://placehold.co/200x200/263d61/ffffff?text=PROFILE";
-
-  const savedBio = localStorage.getItem(
-    "penibon_bio_" + currentUser.uid
-  );
-
-  $("bioDisplay").textContent =
-    savedBio || "Welcome to my PENIBON profile!";
-  $("bioInput").value = savedBio || "";
+function followRef(){
+ return doc(db,"follows",currentUser.uid+"_"+targetUid);
 }
 
-window.showEditor = function() {
-  $("editBox").style.display = "block";
-  $("message").textContent = "";
-  window.scrollTo({
-    top: $("editBox").offsetTop,
-    behavior: "smooth"
-  });
-};
+async function loadCounts(){
+ const followersQuery=query(
+  collection(db,"follows"),
+  where("followingId","==",targetUid)
+ );
 
-window.hideEditor = function() {
-  $("editBox").style.display = "none";
-};
+ const followingQuery=query(
+  collection(db,"follows"),
+  where("followerId","==",targetUid)
+ );
 
-$("photoInput").addEventListener("change", event => {
-  const file = event.target.files[0];
+ const [followersSnap,followingSnap]=await Promise.all([
+  getDocs(followersQuery),
+  getDocs(followingQuery)
+ ]);
 
-  if (!file) return;
+ $("followers").textContent=followersSnap.size;
+ $("following").textContent=followingSnap.size;
+}
 
-  if (!file.type.startsWith("image/")) {
-    alert("Please select an image.");
-    return;
-  }
+async function loadProfile(){
+ const profileRef=doc(db,"publicProfiles",targetUid);
+ let profileSnap=await getDoc(profileRef);
 
-  if (file.size > 3 * 1024 * 1024) {
-    alert("Please choose an image smaller than 3 MB.");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    selectedPhoto = reader.result;
-    $("avatar").src = selectedPhoto;
+ if(!profileSnap.exists() && isOwnProfile){
+  const newProfile={
+   displayName:currentUser.displayName||"PENIBON User",
+   bio:"",
+   photoURL:currentUser.photoURL||"",
+   createdAt:serverTimestamp(),
+   updatedAt:serverTimestamp()
   };
 
-  reader.readAsDataURL(file);
-});
+  await setDoc(profileRef,newProfile);
+  profileSnap=await getDoc(profileRef);
+ }
 
-$("saveButton").addEventListener("click", async () => {
+ if(!profileSnap.exists()){
+  $("loading").textContent="This user profile could not be found.";
+  return;
+ }
 
-  const name = $("nameInput").value.trim();
-  const bio = $("bioInput").value.trim();
+ const profile=profileSnap.data();
 
-  if (!name) {
-    alert("Please enter your display name.");
-    return;
+ $("displayName").textContent=
+  profile.displayName||"PENIBON User";
+
+ $("bioDisplay").textContent=
+  profile.bio||"Welcome to my PENIBON profile!";
+
+ originalPhotoURL=profile.photoURL||currentUser.photoURL||"";
+ $("avatar").src=originalPhotoURL||placeholder;
+
+ if(isOwnProfile){
+  $("email").textContent=currentUser.email||"";
+  $("email").style.display="block";
+  $("editButton").style.display="inline-block";
+  $("logoutCard").style.display="block";
+  $("nameInput").value=profile.displayName||currentUser.displayName||"";
+  $("bioInput").value=profile.bio||"";
+ }else{
+  $("email").style.display="none";
+  $("editButton").style.display="none";
+  $("logoutCard").style.display="none";
+  $("followButton").style.display="inline-block";
+  await updateFollowButton();
+ }
+
+ await loadCounts();
+
+ $("loading").style.display="none";
+ $("profilePage").style.display="block";
+}
+
+async function updateFollowButton(){
+ const snap=await getDoc(followRef());
+ const isFollowing=snap.exists();
+
+ $("followButton").textContent=isFollowing?"Following ✓":"Follow";
+ $("followButton").className=isFollowing?"followingBtn":"";
+}
+
+$("followButton").addEventListener("click",async()=>{
+ if(!currentUser||isOwnProfile)return;
+
+ $("followButton").disabled=true;
+
+ try{
+  const ref=followRef();
+  const snap=await getDoc(ref);
+
+  if(snap.exists()){
+   await deleteDoc(ref);
+  }else{
+   await setDoc(ref,{
+    followerId:currentUser.uid,
+    followingId:targetUid,
+    createdAt:serverTimestamp()
+   });
   }
 
-  $("saveButton").disabled = true;
-  $("message").textContent = "Saving...";
+  await updateFollowButton();
+  await loadCounts();
 
-  try {
-    await updateProfile(currentUser, {
-      displayName: name
-    });
+ }catch(error){
+  alert("Could not update follow: "+error.message);
+ }
 
-    currentUser = auth.currentUser;
+ $("followButton").disabled=false;
+});
 
-    // Bio is currently saved on this device only.
-    localStorage.setItem(
-      "penibon_bio_" + currentUser.uid,
-      bio
-    );
+$("editButton").addEventListener("click",()=>{
+ $("editBox").style.display="block";
+ $("message").textContent="";
+ $("editBox").scrollIntoView({behavior:"smooth"});
+});
 
-    // Selected picture is a local preview only.
-    showProfile();
+$("cancelButton").addEventListener("click",()=>{
+ $("editBox").style.display="none";
+ selectedPhoto=null;
+ $("photoInput").value="";
+ $("avatar").src=originalPhotoURL||placeholder;
+});
 
-    $("message").textContent =
-      "Your name and bio have been saved!";
+$("photoInput").addEventListener("change",event=>{
+ const file=event.target.files[0];
+ if(!file)return;
 
-    $("editBox").style.display = "none";
+ if(!file.type.startsWith("image/")){
+  alert("Please select an image.");
+  return;
+ }
 
-  } catch (error) {
-    $("message").textContent =
-      "Could not save: " + error.message;
+ if(file.size>3*1024*1024){
+  alert("Choose an image smaller than 3 MB.");
+  return;
+ }
+
+ const reader=new FileReader();
+ reader.onload=()=>{
+  selectedPhoto=reader.result;
+  $("avatar").src=selectedPhoto;
+ };
+ reader.readAsDataURL(file);
+});
+
+$("saveButton").addEventListener("click",async()=>{
+ if(!isOwnProfile)return;
+
+ const name=$("nameInput").value.trim();
+ const bio=$("bioInput").value.trim();
+
+ if(!name){
+  alert("Please enter your display name.");
+  return;
+ }
+
+ $("saveButton").disabled=true;
+ $("message").textContent="Saving profile...";
+
+ try{
+  await updateProfile(currentUser,{displayName:name});
+
+  const profileRef=doc(db,"publicProfiles",currentUser.uid);
+  const oldProfile=await getDoc(profileRef);
+
+  const profileData={
+   displayName:name,
+   bio:bio,
+   photoURL:originalPhotoURL,
+   updatedAt:serverTimestamp()
+  };
+
+  if(!oldProfile.exists()){
+   profileData.createdAt=serverTimestamp();
   }
 
-  $("saveButton").disabled = false;
+  await setDoc(profileRef,profileData,{merge:true});
+
+  $("displayName").textContent=name;
+  $("bioDisplay").textContent=bio||"Welcome to my PENIBON profile!";
+  $("message").textContent=selectedPhoto
+   ?"Name and bio saved. Photo is only a preview for now."
+   :"Your profile has been saved successfully!";
+
+  $("editBox").style.display="none";
+  selectedPhoto=null;
+  $("photoInput").value="";
+
+ }catch(error){
+  $("message").textContent="Could not save: "+error.message;
+ }
+
+ $("saveButton").disabled=false;
 });
 
-$("logoutButton").addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.replace("account.html");
+$("logoutButton").addEventListener("click",async()=>{
+ await signOut(auth);
+ window.location.replace("./account.html");
 });
 
+onAuthStateChanged(auth,async user=>{
+ if(!user){
+  window.location.replace("./account.html");
+  return;
+ }
+
+ currentUser=user;
+ const requestedUid=new URLSearchParams(location.search).get("uid");
+
+ targetUid=requestedUid||user.uid;
+ isOwnProfile=targetUid===user.uid;
+
+ try{
+  await loadProfile();
+ }catch(error){
+  console.error(error);
+  $("loading").textContent=
+   "Could not load profile. Please refresh and try again. "+error.message;
+ }
+});
 </script>
 </body>
 </html>
