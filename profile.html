@@ -4,12 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d25">
 <title>Profile - PENIBON</title>
 
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d25;color:white;font-family:Arial,sans-serif}
-header{background:#111b35;padding:17px;display:flex;justify-content:space-between;align-items:center}
+header{background:#111b35;padding:17px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .logo{font-size:25px;font-weight:bold;color:#42d6ff}
 header a{color:#42d6ff;text-decoration:none}
 .container{max-width:750px;margin:25px auto;padding:15px}
@@ -43,7 +44,7 @@ button:disabled{opacity:.6;cursor:wait}
  border:1px solid #293b5e;
  border-radius:12px;
  padding:12px;
- margin-bottom:16px;
+ margin-bottom:18px;
  overflow:hidden;
 }
 .video-card video{
@@ -74,11 +75,49 @@ button:disabled{opacity:.6;cursor:wait}
  color:#42d6ff;
  margin-top:8px;
 }
-.empty-videos{
- text-align:center;
+.video-date,.video-stats{
  color:#b9c8df;
- padding:20px 5px;
+ font-size:13px;
+ margin-top:10px;
 }
+.video-actions{
+ display:flex;
+ flex-wrap:wrap;
+ gap:8px;
+ margin-top:12px;
+}
+.video-actions button{
+ margin:0;
+}
+.view-count{
+ color:#42d6ff;
+ font-weight:bold;
+ font-size:14px;
+ margin-top:12px;
+ background:#172746;
+ padding:10px;
+ border-radius:8px;
+}
+.comments{
+ border-top:1px solid #293b5e;
+ margin-top:15px;
+ padding-top:12px;
+}
+.comments h3{color:#42d6ff;font-size:16px}
+.comment-item{
+ background:#172746;
+ padding:10px;
+ border-radius:8px;
+ margin:8px 0;
+ overflow-wrap:anywhere;
+}
+.comment-name{color:#42d6ff;font-size:13px;font-weight:bold}
+.comment-text{font-size:14px;line-height:1.5;margin-top:5px}
+.comment-date{font-size:11px;color:#9eabc5;margin-top:5px}
+.comment-form{display:flex;gap:8px;margin-top:12px}
+.comment-form input{flex:1;min-width:0}
+.comment-form button{margin:0}
+.empty-videos{text-align:center;color:#b9c8df;padding:20px 5px}
 </style>
 </head>
 
@@ -131,10 +170,10 @@ button:disabled{opacity:.6;cursor:wait}
   </div>
 
   <div class="card">
-    <h2>My Published Videos 🎬</h2>
-    <p class="muted">Videos published on PENIBON appear here.</p>
+    <h2>Published Videos 🎬</h2>
+    <p class="muted">Discover videos published on this profile.</p>
     <div id="myVideos">
-      <p class="empty-videos">Loading your videos...</p>
+      <p class="empty-videos">Loading videos...</p>
     </div>
   </div>
 
@@ -189,6 +228,7 @@ button:disabled{opacity:.6;cursor:wait}
 <footer>© 2026 PENIBON</footer>
 
 <script type="module">
+
 import {initializeApp}
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -224,11 +264,39 @@ let originalPhotoURL="";
 const placeholder=
 "https://placehold.co/200x200/263d61/ffffff?text=PROFILE";
 
+const profileCache=new Map();
+
 function followRef(){
  return doc(db,"follows",currentUser.uid+"_"+targetUid);
 }
 
-// LOAD FOLLOWERS AND FOLLOWING
+async function getProfileName(uid){
+ if(!uid)return "PENIBON User";
+
+ if(profileCache.has(uid)){
+  return profileCache.get(uid);
+ }
+
+ try{
+  const snap=await getDoc(doc(db,"publicProfiles",uid));
+  const name=snap.exists()
+   ?snap.data().displayName||"PENIBON User"
+   :"PENIBON User";
+
+  profileCache.set(uid,name);
+  return name;
+ }catch(error){
+  console.error(error);
+  return "PENIBON User";
+ }
+}
+
+function formatDate(timestamp){
+ if(!timestamp||!timestamp.toDate)return "";
+ return timestamp.toDate().toLocaleString();
+}
+
+// FOLLOWERS AND FOLLOWING
 async function loadCounts(){
  const followersQuery=query(
   collection(db,"follows"),
@@ -249,7 +317,174 @@ async function loadCounts(){
  $("following").textContent=followingSnap.size;
 }
 
-// LOAD PUBLISHED VIDEOS FOR THIS PROFILE
+// LOAD COMMENTS FOR A VIDEO
+async function loadComments(videoId,container){
+ container.replaceChildren();
+
+ try{
+  const commentsQuery=query(
+   collection(db,"comments"),
+   where("videoId","==",videoId)
+  );
+
+  const snapshot=await getDocs(commentsQuery);
+
+  const comments=snapshot.docs.map(item=>({
+   id:item.id,
+   ...item.data()
+  }));
+
+  comments.sort((a,b)=>{
+   const ta=a.createdAt?.toMillis?.()||0;
+   const tb=b.createdAt?.toMillis?.()||0;
+   return tb-ta;
+  });
+
+  if(!comments.length){
+   const empty=document.createElement("p");
+   empty.className="muted";
+   empty.textContent="No comments yet. Be the first!";
+   container.appendChild(empty);
+   return;
+  }
+
+  for(const comment of comments.slice(0,30)){
+   const item=document.createElement("div");
+   item.className="comment-item";
+
+   const name=document.createElement("div");
+   name.className="comment-name";
+   name.textContent="👤 "+await getProfileName(comment.userId);
+
+   const text=document.createElement("div");
+   text.className="comment-text";
+   text.textContent=comment.text||"";
+
+   const date=document.createElement("div");
+   date.className="comment-date";
+   date.textContent=formatDate(comment.createdAt);
+
+   item.append(name,text,date);
+   container.appendChild(item);
+  }
+
+ }catch(error){
+  console.error("Comments error:",error);
+  container.textContent="Unable to load comments.";
+ }
+}
+
+// LOAD VIDEO LIKES
+async function loadLikes(videoId,countElement,likeButton){
+ try{
+  const likesQuery=query(
+   collection(db,"likes"),
+   where("videoId","==",videoId)
+  );
+
+  const snapshot=await getDocs(likesQuery);
+
+  countElement.textContent="❤️ Likes: "+snapshot.size;
+
+  const liked=snapshot.docs.some(
+   item=>item.data().userId===currentUser.uid
+  );
+
+  likeButton.textContent=liked?"❤️ Liked":"❤️ Like";
+  likeButton.classList.toggle("active",liked);
+
+ }catch(error){
+  console.error("Likes error:",error);
+  countElement.textContent="Likes unavailable";
+ }
+}
+
+// PRIVATE CREATOR VIEW COUNT
+async function loadCreatorViews(videoId,viewElement){
+ if(!isOwnProfile||!currentUser)return;
+
+ try{
+  const viewsQuery=query(
+   collection(db,"videoViews"),
+   where("creatorId","==",currentUser.uid),
+   where("videoId","==",videoId)
+  );
+
+  const snapshot=await getDocs(viewsQuery);
+
+  viewElement.textContent="👁️ Views: "+snapshot.size;
+
+ }catch(error){
+  console.error("Private view count error:",error);
+  viewElement.textContent="👁️ Views unavailable";
+ }
+}
+
+// SEND COMMENT
+async function sendComment(videoId,input,button,commentContainer){
+ if(!currentUser){
+  alert("Please log in to comment.");
+  return;
+ }
+
+ const text=input.value.trim();
+
+ if(!text||text.length>500)return;
+
+ button.disabled=true;
+
+ try{
+  await addDoc(collection(db,"comments"),{
+   userId:currentUser.uid,
+   videoId:videoId,
+   text:text,
+   createdAt:serverTimestamp()
+  });
+
+  input.value="";
+  await loadComments(videoId,commentContainer);
+
+ }catch(error){
+  alert("Could not post comment: "+error.message);
+ }finally{
+  button.disabled=false;
+ }
+}
+
+// LIKE OR UNLIKE
+async function toggleLike(videoId,button,countElement){
+ if(!currentUser){
+  alert("Please log in to like videos.");
+  return;
+ }
+
+ button.disabled=true;
+
+ try{
+  const likeId=currentUser.uid+"_"+videoId;
+  const likeRef=doc(db,"likes",likeId);
+  const existing=await getDoc(likeRef);
+
+  if(existing.exists()){
+   await deleteDoc(likeRef);
+  }else{
+   await setDoc(likeRef,{
+    userId:currentUser.uid,
+    videoId:videoId,
+    createdAt:serverTimestamp()
+   });
+  }
+
+  await loadLikes(videoId,countElement,button);
+
+ }catch(error){
+  alert("Could not update like: "+error.message);
+ }finally{
+  button.disabled=false;
+ }
+}
+
+// LOAD VIDEOS
 async function loadMyVideos(){
  const container=$("myVideos");
  container.replaceChildren();
@@ -275,7 +510,7 @@ async function loadMyVideos(){
 
   $("posts").textContent=videos.length;
 
-  if(videos.length===0){
+  if(!videos.length){
    const empty=document.createElement("p");
    empty.className="empty-videos";
    empty.textContent="No published videos yet.";
@@ -283,57 +518,152 @@ async function loadMyVideos(){
    return;
   }
 
-  videos.forEach(videoData=>{
+  for(const video of videos){
+
    const card=document.createElement("div");
    card.className="video-card";
 
+   // VIDEO PLAYER
    const player=document.createElement("video");
    player.controls=true;
    player.playsInline=true;
    player.preload="metadata";
 
-   const videoURL=videoData.videoUrl||"";
+   try{
+    const parsedURL=new URL(video.videoUrl||"");
 
-   if(videoURL){
-    try{
-     const parsedURL=new URL(videoURL);
-     if(parsedURL.protocol==="https:"){
-      player.src=parsedURL.href;
-     }
-    }catch(error){
-     console.error("Invalid video URL",error);
+    if(
+     parsedURL.protocol==="https:"&&
+     parsedURL.hostname==="res.cloudinary.com"
+    ){
+     player.src=parsedURL.href;
     }
+   }catch(error){
+    console.error("Invalid video URL:",error);
    }
 
    if(!player.src){
     player.poster=placeholder;
    }
 
+   // TITLE
    const title=document.createElement("div");
    title.className="video-title";
-   title.textContent=videoData.title||"Untitled video";
+   title.textContent=video.title||"Untitled video";
 
+   // DESCRIPTION
    const description=document.createElement("p");
    description.className="video-description";
-   description.textContent=videoData.description||"";
+   description.textContent=video.description||"";
 
+   // CATEGORY
    const category=document.createElement("span");
    category.className="video-category";
-   category.textContent=videoData.category||"General";
+   category.textContent=video.category||"General";
 
-   card.appendChild(player);
-   card.appendChild(title);
+   // DATE
+   const date=document.createElement("div");
+   date.className="video-date";
+   date.textContent=formatDate(video.createdAt);
 
-   if(videoData.description){
-    card.appendChild(description);
+   // LIKE COUNT
+   const likeCount=document.createElement("div");
+   likeCount.className="video-stats";
+   likeCount.textContent="❤️ Likes: Loading...";
+
+   // LIKE BUTTON
+   const likeButton=document.createElement("button");
+   likeButton.textContent="❤️ Like";
+
+   likeButton.addEventListener("click",()=>{
+    toggleLike(video.id,likeButton,likeCount);
+   });
+
+   // ACTIONS
+   const actions=document.createElement("div");
+   actions.className="video-actions";
+   actions.appendChild(likeButton);
+
+   // VIEWS: ONLY THE CREATOR'S OWN PROFILE
+   let viewElement=null;
+
+   if(isOwnProfile){
+    viewElement=document.createElement("div");
+    viewElement.className="view-count";
+    viewElement.textContent="👁️ Views: Loading...";
+    await loadCreatorViews(video.id,viewElement);
    }
 
-   card.appendChild(category);
+   // COMMENTS
+   const comments=document.createElement("div");
+   comments.className="comments";
+
+   const commentsTitle=document.createElement("h3");
+   commentsTitle.textContent="💬 Comments";
+
+   const commentList=document.createElement("div");
+
+   const commentForm=document.createElement("form");
+   commentForm.className="comment-form";
+
+   const commentInput=document.createElement("input");
+   commentInput.type="text";
+   commentInput.maxLength=500;
+   commentInput.placeholder="Write a comment...";
+   commentInput.required=true;
+
+   const commentButton=document.createElement("button");
+   commentButton.type="submit";
+   commentButton.textContent="Send";
+
+   commentForm.append(commentInput,commentButton);
+
+   commentForm.addEventListener("submit",event=>{
+    event.preventDefault();
+
+    sendComment(
+     video.id,
+     commentInput,
+     commentButton,
+     commentList
+    );
+   });
+
+   comments.append(
+    commentsTitle,
+    commentList,
+    commentForm
+   );
+
+   card.append(
+    player,
+    title,
+    description,
+    category,
+    date
+   );
+
+   if(viewElement){
+    card.appendChild(viewElement);
+   }
+
+   card.append(
+    likeCount,
+    actions,
+    comments
+   );
+
    container.appendChild(card);
-  });
+
+   await Promise.all([
+    loadLikes(video.id,likeCount,likeButton),
+    loadComments(video.id,commentList)
+   ]);
+  }
 
  }catch(error){
   console.error("Video loading error:",error);
+
   $("posts").textContent="—";
 
   const message=document.createElement("p");
@@ -348,7 +678,7 @@ async function loadProfile(){
  const profileRef=doc(db,"publicProfiles",targetUid);
  let profileSnap=await getDoc(profileRef);
 
- if(!profileSnap.exists() && isOwnProfile){
+ if(!profileSnap.exists()&&isOwnProfile){
   const newProfile={
    displayName:currentUser.displayName||"PENIBON User",
    bio:"",
@@ -436,9 +766,8 @@ $("followButton").addEventListener("click",async()=>{
      createdAt:serverTimestamp(),
      read:false
     });
-   }catch(notificationError){
-    console.error("Notification error:",notificationError);
-    alert("You followed this person, but the notification could not be sent.");
+   }catch(error){
+    console.error("Notification error:",error);
    }
   }
 
@@ -446,7 +775,6 @@ $("followButton").addEventListener("click",async()=>{
   await loadCounts();
 
  }catch(error){
-  console.error(error);
   alert("Could not update follow: "+error.message);
  }
 
@@ -483,10 +811,12 @@ $("photoInput").addEventListener("change",event=>{
  }
 
  const reader=new FileReader();
+
  reader.onload=()=>{
   selectedPhoto=reader.result;
   $("avatar").src=selectedPhoto;
  };
+
  reader.readAsDataURL(file);
 });
 
@@ -556,7 +886,9 @@ onAuthStateChanged(auth,async user=>{
  }
 
  currentUser=user;
- const requestedUid=new URLSearchParams(location.search).get("uid");
+
+ const requestedUid=
+  new URLSearchParams(location.search).get("uid");
 
  targetUid=requestedUid||user.uid;
  isOwnProfile=targetUid===user.uid;
@@ -565,10 +897,12 @@ onAuthStateChanged(auth,async user=>{
   await loadProfile();
  }catch(error){
   console.error(error);
+
   $("loading").textContent=
    "Could not load profile. Please refresh and try again. "+error.message;
  }
 });
+
 </script>
 
 </body>
