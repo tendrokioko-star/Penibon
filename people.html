@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find People - PENIBON</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1020;color:white;font-family:Arial,sans-serif}
+header{background:#151d35;padding:20px;text-align:center}
+header h1{color:#48d6c5;margin:0}
+.container{max-width:750px;margin:auto;padding:18px}
+.card{background:#151d35;border:1px solid #293653;border-radius:14px;padding:16px;margin-bottom:14px}
+h2{color:#48d6c5}
+input{width:100%;padding:14px;border-radius:9px;border:1px solid #405274;background:#0b1630;color:white;font-size:16px;margin-bottom:15px}
+.person{display:flex;align-items:center;gap:13px}
+.avatar{width:65px;height:65px;border-radius:50%;object-fit:cover;background:#293653;border:2px solid #48d6c5}
+.details{flex:1;min-width:0}
+.name{font-weight:bold;font-size:17px;overflow-wrap:anywhere}
+.bio{color:#aab6ce;font-size:13px;margin-top:5px}
+button{border:0;border-radius:8px;padding:11px 15px;background:#48d6c5;color:#07131c;font-weight:bold;cursor:pointer}
+button.following{background:#293653;color:white;border:1px solid #48d6c5}
+button:disabled{opacity:.6}
+.message{color:#48d6c5;text-align:center}
+.back{display:block;text-align:center;color:#48d6c5;text-decoration:none;padding:15px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>PENIBON</h1>
+<p>Find your people. Build your community. 💙</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h2>🌍 Find People</h2>
+<input id="searchInput" type="search"
+placeholder="Search by username or name...">
+<p id="status" class="message">Loading PENIBON users...</p>
+</div>
+
+<div id="peopleList"></div>
+
+<a class="back" href="./dashboard.html">← Back to Dashboard</a>
+
+</div>
+
+<script type="module">
+
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+getDocs,
+doc,
+setDoc,
+deleteDoc,
+serverTimestamp,
+query,
+where
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+authDomain:"penibon-b9f0f.firebaseapp.com",
+projectId:"penibon-b9f0f",
+storageBucket:"penibon-b9f0f.firebasestorage.app",
+messagingSenderId:"770060676311",
+appId:"1:770060676311:web:7b8ef4506e64465d1e1492"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let people = [];
+let followingIds = new Set();
+
+const $ = id => document.getElementById(id);
+
+function followDocument(userId){
+return doc(db,"follows",currentUser.uid+"_"+userId);
+}
+
+async function loadPeople(){
+
+$("status").textContent = "Loading users...";
+$("peopleList").innerHTML = "";
+
+try{
+
+const [usersSnapshot,followingSnapshot] =
+await Promise.all([
+getDocs(collection(db,"publicProfiles")),
+getDocs(query(
+collection(db,"follows"),
+where("followerId","==",currentUser.uid)
+))
+]);
+
+people = usersSnapshot.docs.map(item=>({
+id:item.id,
+...item.data()
+}));
+
+followingIds = new Set(
+followingSnapshot.docs.map(item=>item.data().followingId)
+);
+
+renderPeople();
+
+}catch(error){
+
+$("status").textContent =
+"Could not load users: "+error.message;
+
+}
+
+}
+
+function renderPeople(){
+
+const search = $("searchInput").value.trim().toLowerCase();
+
+const filtered = people.filter(person=>
+person.id !== currentUser.uid &&
+(person.displayName || "").toLowerCase().includes(search) ||
+false
+);
+
+const results = filtered.filter(person=>
+person.id !== currentUser.uid &&
+(
+(person.displayName || "").toLowerCase().includes(search) ||
+(person.bio || "").toLowerCase().includes(search)
+)
+);
+
+$("peopleList").innerHTML = "";
+
+if(results.length===0){
+$("status").textContent =
+"No other users found yet. Invite friends to join PENIBON! 💙";
+return;
+}
+
+$("status").textContent =
+results.length+" PENIBON user(s) found.";
+
+results.forEach(person=>{
+
+const card = document.createElement("div");
+card.className = "card";
+
+const row = document.createElement("div");
+row.className = "person";
+
+const avatar = document.createElement("img");
+avatar.className = "avatar";
+avatar.alt = "Profile picture";
+avatar.src = person.photoURL ||
+"https://placehold.co/200x200/293653/ffffff?text=USER";
+
+const details = document.createElement("div");
+details.className = "details";
+
+const name = document.createElement("div");
+name.className = "name";
+name.textContent = person.displayName || "PENIBON User";
+
+const bio = document.createElement("div");
+bio.className = "bio";
+bio.textContent = person.bio || "Welcome to PENIBON!";
+
+details.append(name,bio);
+
+const button = document.createElement("button");
+const isFollowing = followingIds.has(person.id);
+
+button.textContent = isFollowing ? "Following" : "Follow";
+button.className = isFollowing ? "following" : "";
+
+button.addEventListener("click",()=>toggleFollow(person.id,button));
+
+row.append(avatar,details,button);
+card.append(row);
+$("peopleList").append(card);
+
+});
+
+}
+
+async function toggleFollow(userId,button){
+
+button.disabled = true;
+
+const followRef = followDocument(userId);
+
+try{
+
+if(followingIds.has(userId)){
+
+await deleteDoc(followRef);
+followingIds.delete(userId);
+
+}else{
+
+await setDoc(followRef,{
+followerId:currentUser.uid,
+followingId:userId,
+createdAt:serverTimestamp()
+});
+
+followingIds.add(userId);
+
+}
+
+renderPeople();
+
+}catch(error){
+
+alert("Could not update follow: "+error.message);
+
+}finally{
+
+button.disabled = false;
+
+}
+
+}
+
+$("searchInput").addEventListener("input",renderPeople);
+
+onAuthStateChanged(auth,user=>{
+
+if(!user){
+window.location.replace("account.html");
+return;
+}
+
+currentUser = user;
+loadPeople();
+
+});
+
+</script>
+
+</body>
+</html>
