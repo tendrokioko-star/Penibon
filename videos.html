@@ -9,125 +9,37 @@
 
 <style>
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:#0b1020;
-  color:white;
-  font-family:Arial,sans-serif;
-}
-
-header{
-  background:#151d35;
-  padding:17px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-}
-
-.logo{
-  font-size:24px;
-  font-weight:bold;
-  color:#42e8c5;
-}
-
-nav{
-  display:flex;
-  gap:15px;
-  flex-wrap:wrap;
-}
-
-nav a{
-  color:white;
-  text-decoration:none;
-}
-
-main{
-  max-width:850px;
-  margin:auto;
-  padding:20px 14px;
-}
-
-h1,h2{color:#42e8c5}
-
-.intro{
-  color:#bdc8df;
-  line-height:1.6;
-}
-
-.video-card{
-  background:#18213a;
-  border:1px solid #293653;
-  border-radius:14px;
-  padding:15px;
-  margin:20px 0;
-}
-
-.video-player{
-  width:100%;
-  max-height:480px;
-  background:#050814;
-  border-radius:10px;
-  display:block;
-}
-
-.creator{
-  color:#42e8c5;
-  font-weight:bold;
-  margin-top:13px;
-}
-
-.video-title{
-  font-size:19px;
-  font-weight:bold;
-  margin:12px 0 7px;
-}
-
-.description{
-  color:#d0d8e8;
-  line-height:1.6;
-  overflow-wrap:anywhere;
-}
-
-.category{
-  display:inline-block;
-  background:#263550;
-  color:#42e8c5;
-  padding:6px 11px;
-  border-radius:20px;
-  font-size:12px;
-  margin-top:8px;
-}
-
-.date{
-  color:#9eabc5;
-  font-size:12px;
-  margin-top:10px;
-}
-
-.message{
-  background:#18213a;
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
-  color:#bdc8df;
-  line-height:1.6;
-}
-
-.creator-link{
-  color:#42e8c5;
-  text-decoration:none;
-}
-
-footer{
-  text-align:center;
-  padding:25px;
-  color:#aeb8d0;
-  background:#151d35;
-  font-size:13px;
-}
+body{margin:0;background:#0b1020;color:white;font-family:Arial,sans-serif}
+header{background:#151d35;padding:17px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:24px;font-weight:bold;color:#42e8c5}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none}
+main{max-width:800px;margin:auto;padding:20px 14px}
+h1{color:#42e8c5}
+.intro{color:#bdc8df;line-height:1.6}
+.video-card{background:#18213a;border:1px solid #293653;border-radius:14px;padding:15px;margin:20px 0}
+.video-player{width:100%;max-height:480px;background:#050814;border-radius:10px;display:block}
+.creator{color:#42e8c5;font-weight:bold;margin-top:13px}
+.creator a{color:#42e8c5;text-decoration:none}
+.video-title{font-size:19px;font-weight:bold;margin:12px 0 7px}
+.description{color:#d0d8e8;line-height:1.6;overflow-wrap:anywhere}
+.category{display:inline-block;background:#263550;color:#42e8c5;padding:6px 11px;border-radius:20px;font-size:12px;margin-top:8px}
+.date{color:#9eabc5;font-size:12px;margin-top:10px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.action-btn{background:#263550;color:white;border:1px solid #40516f;padding:10px 14px;border-radius:22px;font-weight:bold;cursor:pointer}
+.action-btn.active{background:#42e8c5;color:#10152b;border-color:#42e8c5}
+.action-btn:disabled{opacity:.5}
+.comments{border-top:1px solid #35435f;padding-top:14px;margin-top:14px}
+.comments h3{color:#42e8c5;margin:5px 0 12px}
+.comment-form{display:flex;gap:8px;align-items:center}
+.comment-form input{flex:1;min-width:0;padding:12px;border:1px solid #35435f;border-radius:20px;background:#0b1020;color:white}
+.comment-form button{padding:11px 15px;border:0;border-radius:20px;background:#42e8c5;color:#10152b;font-weight:bold}
+.comment-item{background:#101a30;border-radius:9px;padding:10px;margin:9px 0;overflow-wrap:anywhere}
+.comment-name{color:#42e8c5;font-weight:bold;font-size:13px;margin-bottom:5px}
+.comment-text{line-height:1.5;font-size:14px}
+.comment-date{font-size:11px;color:#9eabc5;margin-top:5px}
+.message{background:#18213a;padding:20px;border-radius:12px;text-align:center;color:#bdc8df;line-height:1.6}
+footer{text-align:center;padding:25px;color:#aeb8d0;background:#151d35;font-size:13px}
 </style>
 </head>
 
@@ -135,7 +47,6 @@ footer{
 
 <header>
   <div class="logo">PENIBON</div>
-
   <nav>
     <a href="index.html">Home</a>
     <a href="videos.html">Videos</a>
@@ -145,23 +56,22 @@ footer{
 </header>
 
 <main>
-
   <h1>🎬 PENIBON Videos</h1>
-
   <p class="intro">
-    Discover videos shared by PENIBON creators.
-    Watch, enjoy and discover new creativity.
+    Watch, like, comment and save your favourite videos.
+    Discover creativity from the PENIBON community.
   </p>
 
-  <div id="videoFeed">
-    <div class="message">Loading PENIBON videos...</div>
+  <div id="loginMessage" class="message">
+    Checking your account...
   </div>
 
+  <div id="videoFeed">
+    <div class="message">Loading videos...</div>
+  </div>
 </main>
 
-<footer>
-  © 2026 PENIBON. WATCH • PLAY • DISCOVER
-</footer>
+<footer>© 2026 PENIBON. WATCH • PLAY • DISCOVER</footer>
 
 <script type="module">
 
@@ -169,18 +79,27 @@ import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
+  getAuth,
+  onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
   getFirestore,
   collection,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  addDoc,
   query,
+  where,
   orderBy,
   limit,
   onSnapshot,
-  getDocs,
-  doc
+  serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// FIREBASE CONFIGURATION
 
 const firebaseConfig = {
   apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
@@ -192,203 +111,415 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
 const feed = document.getElementById("videoFeed");
+const loginMessage = document.getElementById("loginMessage");
 
-function makeElement(tag, className, text) {
-  const element = document.createElement(tag);
-  element.className = className;
-  element.textContent = text;
-  return element;
+let currentUser = null;
+let currentVideos = [];
+let stopVideoListener = null;
+let stopActionListeners = [];
+
+const profileCache = new Map();
+
+function element(tag, className, text) {
+  const el = document.createElement(tag);
+  el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+function stopActions() {
+  stopActionListeners.forEach(stop => stop());
+  stopActionListeners = [];
+}
+
+async function getProfileName(uid) {
+  if (!uid) return "PENIBON Creator";
+
+  if (profileCache.has(uid)) {
+    return profileCache.get(uid);
+  }
+
+  try {
+    const result = await getDoc(doc(db, "publicProfiles", uid));
+    const name = result.exists()
+      ? (result.data().displayName || "PENIBON Creator")
+      : "PENIBON Creator";
+
+    profileCache.set(uid, name);
+    return name;
+  } catch (error) {
+    console.error("Profile error:", error);
+    return "PENIBON Creator";
+  }
 }
 
 function formatDate(timestamp) {
   if (!timestamp || !timestamp.toDate) return "";
-
   return timestamp.toDate().toLocaleString();
 }
 
-async function displayVideos(snapshot) {
+function requireLogin() {
+  if (!currentUser) {
+    alert("Please log in to your PENIBON account first.");
+    return false;
+  }
+  return true;
+}
 
+function renderVideos() {
+  stopActions();
   feed.replaceChildren();
 
-  if (snapshot.empty) {
-    feed.appendChild(
-      makeElement(
-        "div",
-        "message",
-        "No videos have been published yet. Be the first PENIBON creator!"
-      )
-    );
+  if (!currentVideos.length) {
+    feed.appendChild(element(
+      "div",
+      "message",
+      "No videos published yet. Be the first PENIBON creator!"
+    ));
     return;
   }
 
-  const videos = snapshot.docs.map(item => ({
-    id: item.id,
-    ...item.data()
-  }));
+  currentVideos.forEach(video => {
+    const card = element("article", "video-card");
 
-  // Load creator profiles
-  const creatorIds = [
-    ...new Set(videos.map(video => video.creatorId).filter(Boolean))
-  ];
-
-  const profileResults = await Promise.all(
-    creatorIds.map(async uid => {
-      try {
-        const result = await getDocs(
-          query(
-            collection(db, "publicProfiles")
-          )
-        );
-
-        const profile = result.docs.find(
-          item => item.id === uid
-        );
-
-        return [
-          uid,
-          profile ? profile.data() : null
-        ];
-
-      } catch (error) {
-        console.error("Profile loading error:", error);
-        return [uid, null];
-      }
-    })
-  );
-
-  const profiles = new Map(profileResults);
-
-  for (const video of videos) {
-
-    // Accept only Cloudinary HTTPS video links
-    let videoUrl;
+    let safeUrl;
 
     try {
-      videoUrl = new URL(video.videoUrl);
+      safeUrl = new URL(video.videoUrl);
 
       if (
-        videoUrl.protocol !== "https:" ||
-        videoUrl.hostname !== "res.cloudinary.com"
-      ) {
-        continue;
-      }
+        safeUrl.protocol !== "https:" ||
+        safeUrl.hostname !== "res.cloudinary.com"
+      ) return;
 
     } catch {
-      continue;
+      return;
     }
 
-    const profile = profiles.get(video.creatorId);
-
-    const creatorName =
-      profile?.displayName || "PENIBON Creator";
-
-    const card = document.createElement("article");
-    card.className = "video-card";
-
-    const player = document.createElement("video");
-    player.className = "video-player";
-    player.src = videoUrl.href;
+    const player = element("video", "video-player");
+    player.src = safeUrl.href;
     player.controls = true;
     player.playsInline = true;
     player.preload = "metadata";
 
-    const creator = document.createElement("div");
-    creator.className = "creator";
+    const creator = element("div", "creator");
+    const creatorLink = element("a", "", "👤 Loading creator...");
 
-    const creatorLink = document.createElement("a");
-    creatorLink.className = "creator-link";
     creatorLink.href =
-      "profile.html?uid=" +
-      encodeURIComponent(video.creatorId);
-
-    creatorLink.textContent = "👤 " + creatorName;
+      "profile.html?uid=" + encodeURIComponent(video.creatorId || "");
 
     creator.appendChild(creatorLink);
 
-    const title = makeElement(
+    getProfileName(video.creatorId).then(name => {
+      creatorLink.textContent = "👤 " + name;
+    });
+
+    const title = element(
       "div",
       "video-title",
       video.title || "Untitled video"
     );
 
-    const description = makeElement(
+    const description = element(
       "div",
       "description",
       video.description || ""
     );
 
-    const category = makeElement(
+    const category = element(
       "span",
       "category",
       video.category || "Other"
     );
 
-    const date = makeElement(
+    const date = element(
       "div",
       "date",
       formatDate(video.createdAt)
     );
 
-    card.appendChild(player);
-    card.appendChild(creator);
-    card.appendChild(title);
-    card.appendChild(description);
-    card.appendChild(category);
-    card.appendChild(date);
+    const actions = element("div", "actions");
+
+    const likeButton = element("button", "action-btn", "❤️ Like");
+    const favoriteButton = element("button", "action-btn", "⭐ Save");
+    const likeCount = element("span", "date", "Likes: 0");
+
+    actions.append(likeButton, favoriteButton, likeCount);
+
+    const commentsArea = element("div", "comments");
+    commentsArea.appendChild(element("h3", "", "💬 Comments"));
+
+    const commentForm = element("form", "comment-form");
+    const commentInput = document.createElement("input");
+
+    commentInput.type = "text";
+    commentInput.maxLength = 500;
+    commentInput.placeholder = "Write a comment...";
+    commentInput.required = true;
+
+    const commentButton = document.createElement("button");
+    commentButton.type = "submit";
+    commentButton.textContent = "Send";
+
+    commentForm.append(commentInput, commentButton);
+
+    const commentList = element("div", "comment-list");
+
+    commentsArea.append(commentForm, commentList);
+
+    card.append(
+      player,
+      creator,
+      title,
+      description,
+      category,
+      date,
+      actions,
+      commentsArea
+    );
 
     feed.appendChild(card);
-  }
 
-  if (!feed.children.length) {
-    feed.appendChild(
-      makeElement(
-        "div",
-        "message",
-        "No playable videos are available yet."
-      )
+    // LIVE LIKES
+    const likesQuery = query(
+      collection(db, "likes"),
+      where("videoId", "==", video.id)
     );
-  }
+
+    const stopLikes = onSnapshot(likesQuery, async snapshot => {
+      likeCount.textContent = "Likes: " + snapshot.size;
+
+      const liked = currentUser &&
+        snapshot.docs.some(
+          item => item.data().userId === currentUser.uid
+        );
+
+      likeButton.textContent = liked
+        ? "❤️ Liked"
+        : "❤️ Like";
+
+      likeButton.classList.toggle("active", !!liked);
+    }, error => console.error("Like listener:", error));
+
+    stopActionListeners.push(stopLikes);
+
+    likeButton.addEventListener("click", async () => {
+      if (!requireLogin()) return;
+
+      likeButton.disabled = true;
+
+      try {
+        const likeId = currentUser.uid + "_" + video.id;
+        const likeRef = doc(db, "likes", likeId);
+        const existing = await getDoc(likeRef);
+
+        if (existing.exists()) {
+          await deleteDoc(likeRef);
+        } else {
+          await setDoc(likeRef, {
+            userId: currentUser.uid,
+            videoId: video.id,
+            createdAt: serverTimestamp()
+          });
+        }
+      } catch (error) {
+        alert("Could not update your like: " + error.message);
+      } finally {
+        likeButton.disabled = false;
+      }
+    });
+
+    // PRIVATE FAVOURITES
+    const favoritesQuery = query(
+      collection(db, "favorites"),
+      where("userId", "==", currentUser?.uid || "__no_user__"),
+      where("videoId", "==", video.id)
+    );
+
+    let stopFavorites = () => {};
+
+    function listenFavorites() {
+      stopFavorites();
+
+      if (!currentUser) {
+        favoriteButton.textContent = "⭐ Save";
+        favoriteButton.classList.remove("active");
+        return;
+      }
+
+      const userFavoritesQuery = query(
+        collection(db, "favorites"),
+        where("userId", "==", currentUser.uid),
+        where("videoId", "==", video.id)
+      );
+
+      stopFavorites = onSnapshot(userFavoritesQuery, snapshot => {
+        const saved = !snapshot.empty;
+
+        favoriteButton.textContent = saved
+          ? "⭐ Saved"
+          : "⭐ Save";
+
+        favoriteButton.classList.toggle("active", saved);
+      }, error => console.error("Favourite listener:", error));
+
+      stopActionListeners.push(stopFavorites);
+    }
+
+    listenFavorites();
+
+    favoriteButton.addEventListener("click", async () => {
+      if (!requireLogin()) return;
+
+      favoriteButton.disabled = true;
+
+      try {
+        const favoriteId = currentUser.uid + "_" + video.id;
+        const favoriteRef = doc(db, "favorites", favoriteId);
+        const existing = await getDoc(favoriteRef).catch(() => null);
+
+        // If the record exists, remove it. Otherwise save it.
+        if (existing && existing.exists()) {
+          await deleteDoc(favoriteRef);
+        } else {
+          await setDoc(favoriteRef, {
+            userId: currentUser.uid,
+            videoId: video.id,
+            createdAt: serverTimestamp()
+          });
+        }
+
+      } catch (error) {
+        alert("Could not save favourite: " + error.message);
+      } finally {
+        favoriteButton.disabled = false;
+      }
+    });
+
+    // LIVE COMMENTS
+    const commentsQuery = query(
+      collection(db, "comments"),
+      where("videoId", "==", video.id)
+    );
+
+    const stopComments = onSnapshot(commentsQuery, async snapshot => {
+      commentList.replaceChildren();
+
+      const comments = [...snapshot.docs].sort((a, b) => {
+        const ta = a.data().createdAt?.toMillis?.() || 0;
+        const tb = b.data().createdAt?.toMillis?.() || 0;
+        return tb - ta;
+      });
+
+      for (const commentDoc of comments.slice(0, 30)) {
+        const comment = commentDoc.data();
+        const item = element("div", "comment-item");
+
+        const name = await getProfileName(comment.userId);
+
+        const author = element(
+          "div",
+          "comment-name",
+          "👤 " + name
+        );
+
+        const text = element(
+          "div",
+          "comment-text",
+          comment.text || ""
+        );
+
+        const time = element(
+          "div",
+          "comment-date",
+          formatDate(comment.createdAt)
+        );
+
+        item.append(author, text, time);
+        commentList.appendChild(item);
+      }
+
+      if (comments.length === 0) {
+        commentList.appendChild(
+          element("div", "date", "No comments yet. Be the first!")
+        );
+      }
+    }, error => console.error("Comment listener:", error));
+
+    stopActionListeners.push(stopComments);
+
+    // SEND COMMENT
+    commentForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (!requireLogin()) return;
+
+      const text = commentInput.value.trim();
+
+      if (!text || text.length > 500) return;
+
+      commentButton.disabled = true;
+
+      try {
+        await addDoc(collection(db, "comments"), {
+          userId: currentUser.uid,
+          videoId: video.id,
+          text: text,
+          createdAt: serverTimestamp()
+        });
+
+        commentInput.value = "";
+
+      } catch (error) {
+        alert("Could not post comment: " + error.message);
+      } finally {
+        commentButton.disabled = false;
+      }
+    });
+
+  });
 }
 
-// Listen for new videos in real time
-
-const videosQuery = query(
+// VIDEO FEED
+const videoQuery = query(
   collection(db, "videos"),
   orderBy("createdAt", "desc"),
   limit(50)
 );
 
-onSnapshot(
-  videosQuery,
+stopVideoListener = onSnapshot(
+  videoQuery,
   snapshot => {
-    displayVideos(snapshot).catch(error => {
-      console.error(error);
-      feed.replaceChildren(
-        makeElement(
-          "div",
-          "message",
-          "Unable to display videos. Please refresh and try again."
-        )
-      );
-    });
+    currentVideos = snapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    renderVideos();
   },
   error => {
     console.error(error);
-
     feed.replaceChildren(
-      makeElement(
-        "div",
-        "message",
-        "Could not load videos: " + error.message
-      )
+      element("div", "message", "Unable to load videos: " + error.message)
     );
   }
 );
 
-</script>
+// ACCOUNT STATUS
+onAuthStateChanged(auth, user => {
+  currentUser = user;
 
+  loginMessage.textContent = user
+    ? "✅ Logged in. You can like, comment and save videos."
+    : "👋 You can watch videos without logging in. Log in to like, comment and save favourites.";
+
+  renderVideos();
+});
+
+</script>
 </body>
 </html>
