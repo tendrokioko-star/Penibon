@@ -198,6 +198,7 @@ doc,
 getDoc,
 setDoc,
 deleteDoc,
+addDoc,
 serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -370,11 +371,36 @@ await deleteDoc(myFollowRef);
 
 }else{
 
+// First create the follow connection.
 await setDoc(myFollowRef,{
 followerId:currentUser.uid,
 followingId:otherId,
 createdAt:serverTimestamp()
 });
+
+// Then send an in-app notification.
+try{
+
+await addDoc(collection(db,"notifications"),{
+senderId:currentUser.uid,
+recipientId:otherId,
+type:"follow",
+createdAt:serverTimestamp(),
+read:false
+});
+
+}catch(notificationError){
+
+console.error(
+"Notification could not be created:",
+notificationError
+);
+
+alert(
+"You followed this person, but the notification could not be sent. Please check your connection."
+);
+
+}
 
 }
 
