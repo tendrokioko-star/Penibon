@@ -8,123 +8,36 @@
 
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#0b1020;
-  color:white;
-}
-header{
-  background:#151d35;
-  padding:20px;
-  text-align:center;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:white}
+header{background:#151d35;padding:20px;text-align:center}
 header h1{color:#48d6c5;margin:0}
 .container{max-width:900px;margin:auto;padding:18px}
-.card{
-  background:#151d35;
-  border:1px solid #293653;
-  padding:20px;
-  border-radius:14px;
-  margin-bottom:18px;
-}
+.card{background:#151d35;border:1px solid #293653;padding:20px;border-radius:14px;margin-bottom:18px}
 h2{color:#48d6c5;margin-top:0}
 h3{color:#e2e9f8}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:14px;
-}
-.stat{
-  background:#202c49;
-  padding:17px;
-  border-radius:12px;
-}
-.amount{
-  color:#48d6c5;
-  font-size:23px;
-  font-weight:bold;
-}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.stat{background:#202c49;padding:17px;border-radius:12px}
+.amount{color:#48d6c5;font-size:23px;font-weight:bold}
 p{line-height:1.5}
-button,.action{
-  display:block;
-  width:100%;
-  padding:13px;
-  border:0;
-  border-radius:9px;
-  margin-top:10px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
-  background:#48d6c5;
-  color:#07131c;
-  text-align:center;
-  text-decoration:none;
-}
+button,.action{display:block;width:100%;padding:13px;border:0;border-radius:9px;margin-top:10px;font-size:15px;font-weight:bold;cursor:pointer;background:#48d6c5;color:#07131c;text-align:center;text-decoration:none}
+button:disabled{opacity:.6;cursor:wait}
 .secondary{background:#293653;color:white}
 .logout{background:#a83245;color:white}
 .email,.small{color:#aab6ce}
 .email{overflow-wrap:anywhere}
 .small{font-size:13px}
-input,textarea{
-  width:100%;
-  padding:13px;
-  border-radius:8px;
-  border:1px solid #405274;
-  background:#0b1630;
-  color:white;
-  margin:7px 0 14px;
-  font-size:15px;
-}
+input,textarea{width:100%;padding:13px;border-radius:8px;border:1px solid #405274;background:#0b1630;color:white;margin:7px 0 14px;font-size:15px}
 textarea{min-height:90px;resize:vertical}
 label{display:block;font-weight:bold}
-.profile{
-  display:flex;
-  align-items:center;
-  gap:18px;
-  flex-wrap:wrap;
-}
-.avatar{
-  width:105px;
-  height:105px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid #48d6c5;
-  background:#293653;
-}
+.profile{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.avatar{width:105px;height:105px;border-radius:50%;object-fit:cover;border:3px solid #48d6c5;background:#293653}
 .profile-name{font-size:23px;font-weight:bold}
-.profile-stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  text-align:center;
-  margin-top:22px;
-}
-.profile-stats div{
-  background:#202c49;
-  padding:13px 5px;
-  border-radius:10px;
-}
-.profile-stats strong{
-  display:block;
-  color:#48d6c5;
-  font-size:22px;
-}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center;margin-top:22px}
+.profile-stats div{background:#202c49;padding:13px 5px;border-radius:10px}
+.profile-stats strong{display:block;color:#48d6c5;font-size:22px}
 .profile-stats span{font-size:12px;color:#bdcbe0}
-nav{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-  gap:10px;
-}
-nav a{
-  display:block;
-  background:#202c49;
-  padding:13px 8px;
-  text-align:center;
-  border-radius:9px;
-  color:#48d6c5;
-  text-decoration:none;
-}
+nav{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+nav a{display:block;background:#202c49;padding:13px 8px;text-align:center;border-radius:9px;color:#48d6c5;text-decoration:none}
 #editProfile{display:none}
 #message{color:#48d6c5}
 #dashboard{display:none}
@@ -144,7 +57,6 @@ nav a{
 
 <div class="container" id="dashboard">
 
-<!-- MY PROFILE -->
 <div class="card">
 <h2>👤 My Profile</h2>
 
@@ -162,18 +74,9 @@ alt="Profile picture">
 </div>
 
 <div class="profile-stats">
-<div>
-<strong>0</strong>
-<span>Posts</span>
-</div>
-<div>
-<strong>0</strong>
-<span>Followers</span>
-</div>
-<div>
-<strong>0</strong>
-<span>Following</span>
-</div>
+<div><strong>0</strong><span>Posts</span></div>
+<div><strong>0</strong><span>Followers</span></div>
+<div><strong>0</strong><span>Following</span></div>
 </div>
 
 <h3>About Me</h3>
@@ -182,7 +85,6 @@ alt="Profile picture">
 <button id="editButton">Edit My Profile</button>
 </div>
 
-<!-- EDIT PROFILE -->
 <div class="card" id="editProfile">
 <h2>Edit My Profile ✏️</h2>
 
@@ -198,27 +100,22 @@ placeholder="Tell people about yourself..."></textarea>
 
 <button id="saveProfile">Save Profile</button>
 <button class="secondary" id="cancelEdit">Cancel</button>
-
 <p id="message"></p>
 </div>
 
-<!-- WALLET -->
 <div class="card">
 <h2>My Wallet 💰</h2>
-
 <div class="grid">
 <div class="stat">
 <h3>Welcome Bonus</h3>
 <div class="amount">KSh 0</div>
 <p class="small">KSh 150 bonus after phone and identity verification when the programme is funded.</p>
 </div>
-
 <div class="stat">
 <h3>Creator Earnings</h3>
 <div class="amount">KSh 0</div>
 <p class="small">Your confirmed creator earnings.</p>
 </div>
-
 <div class="stat">
 <h3>Available Balance</h3>
 <div class="amount">KSh 0</div>
@@ -227,49 +124,29 @@ placeholder="Tell people about yourself..."></textarea>
 </div>
 </div>
 
-<!-- CREATOR ACCOUNT -->
 <div class="card">
 <h2>Creator Account 🎬</h2>
-
 <div class="grid">
-<div class="stat">
-<h3>My Videos</h3>
-<div class="amount">0</div>
+<div class="stat"><h3>My Videos</h3><div class="amount">0</div></div>
+<div class="stat"><h3>My Followers</h3><div class="amount">0</div></div>
+<div class="stat"><h3>Minimum Withdrawal</h3><div class="amount">KSh 650</div></div>
 </div>
-
-<div class="stat">
-<h3>My Followers</h3>
-<div class="amount">0</div>
-</div>
-
-<div class="stat">
-<h3>Minimum Withdrawal</h3>
-<div class="amount">KSh 650</div>
-</div>
-</div>
-
 <p class="small">Creator earnings and withdrawals will be connected when the payment system is developed.</p>
-
 <a class="action" href="./creator.html">Open Creator Studio</a>
 </div>
 
-<!-- REFERRALS -->
 <div class="card">
 <h2>Referral Programme 🎁</h2>
-
 <div class="stat">
 <h3>Successful Referral Reward</h3>
 <div class="amount">KSh 20</div>
 <p class="small">For each genuine new user who registers and completes phone and identity verification, subject to programme terms and funding.</p>
 </div>
-
 <p class="small">Referral tracking and reward history are coming soon.</p>
 </div>
 
-<!-- NAVIGATION -->
 <div class="card">
 <h2>Explore PENIBON 🌍</h2>
-
 <nav>
 <a href="./index.html">🏠 Home</a>
 <a href="./videos.html">🎬 Videos</a>
@@ -297,6 +174,14 @@ updateProfile,
 signOut
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
+import {
+getFirestore,
+doc,
+getDoc,
+setDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
 const firebaseConfig = {
 apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
 authDomain: "penibon-b9f0f.firebaseapp.com",
@@ -308,14 +193,16 @@ appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 let currentUser = null;
 let selectedPhoto = null;
+let savedBio = "";
 
 const $ = id => document.getElementById(id);
 
-function bioKey(){
-return "penibon_bio_" + currentUser.uid;
+function userDocument(){
+return doc(db,"users",currentUser.uid);
 }
 
 function photoKey(){
@@ -331,8 +218,7 @@ $("userEmail").textContent =
 currentUser.email || "";
 
 $("bioDisplay").textContent =
-localStorage.getItem(bioKey()) ||
-"Welcome to my PENIBON profile!";
+savedBio || "Welcome to my PENIBON profile!";
 
 $("profilePicture").src =
 localStorage.getItem(photoKey()) ||
@@ -342,11 +228,47 @@ currentUser.photoURL ||
 $("nameInput").value =
 currentUser.displayName || "";
 
-$("bioInput").value =
-localStorage.getItem(bioKey()) || "";
+$("bioInput").value = savedBio;
 }
 
-onAuthStateChanged(auth, user => {
+async function loadProfile(){
+
+const profileRef = userDocument();
+const profileSnapshot = await getDoc(profileRef);
+
+if(profileSnapshot.exists()){
+
+const data = profileSnapshot.data();
+
+savedBio = data.bio || "";
+
+if(data.displayName &&
+data.displayName !== currentUser.displayName){
+
+await updateProfile(currentUser,{
+displayName:data.displayName
+});
+
+}
+
+}else{
+
+savedBio = "";
+
+await setDoc(profileRef,{
+displayName:currentUser.displayName || "PENIBON User",
+email:currentUser.email || "",
+bio:"",
+photoURL:currentUser.photoURL || "",
+createdAt:serverTimestamp()
+});
+
+}
+
+displayProfile();
+}
+
+onAuthStateChanged(auth,async user=>{
 
 if(!user){
 window.location.replace("account.html");
@@ -355,30 +277,44 @@ return;
 
 currentUser = user;
 
+$("loading").style.display = "block";
+$("dashboard").style.display = "none";
+
+try{
+
+await loadProfile();
+
 $("loading").style.display = "none";
 $("dashboard").style.display = "block";
 
-displayProfile();
+}catch(error){
+
+$("loading").innerHTML =
+"<p>Could not load your profile: " +
+error.message +
+"</p><p>Please check your internet connection and Firestore rules.</p>";
+
+}
 
 });
 
-$("editButton").addEventListener("click", () => {
+$("editButton").addEventListener("click",()=>{
 $("editProfile").style.display = "block";
 $("message").textContent = "";
 $("editProfile").scrollIntoView({behavior:"smooth"});
 });
 
-$("cancelEdit").addEventListener("click", () => {
+$("cancelEdit").addEventListener("click",()=>{
 $("editProfile").style.display = "none";
 selectedPhoto = null;
 $("photoInput").value = "";
 });
 
-$("photoInput").addEventListener("change", event => {
+$("photoInput").addEventListener("change",event=>{
 
 const file = event.target.files[0];
 
-if(!file) return;
+if(!file)return;
 
 if(!file.type.startsWith("image/")){
 alert("Please choose an image.");
@@ -392,11 +328,11 @@ return;
 
 const reader = new FileReader();
 
-reader.onload = () => {
+reader.onload = ()=>{
 
 const image = new Image();
 
-image.onload = () => {
+image.onload = ()=>{
 
 const canvas = document.createElement("canvas");
 const max = 400;
@@ -422,9 +358,7 @@ canvas.height = height;
 const ctx = canvas.getContext("2d");
 ctx.drawImage(image,0,0,width,height);
 
-selectedPhoto =
-canvas.toDataURL("image/jpeg",0.75);
-
+selectedPhoto = canvas.toDataURL("image/jpeg",0.75);
 $("profilePicture").src = selectedPhoto;
 
 };
@@ -437,7 +371,12 @@ reader.readAsDataURL(file);
 
 });
 
-$("saveProfile").addEventListener("click", async () => {
+$("saveProfile").addEventListener("click",async()=>{
+
+if(!currentUser){
+alert("Please sign in again.");
+return;
+}
 
 const name = $("nameInput").value.trim();
 const bio = $("bioInput").value.trim();
@@ -456,17 +395,27 @@ await updateProfile(currentUser,{
 displayName:name
 });
 
+await setDoc(userDocument(),{
+displayName:name,
+email:currentUser.email || "",
+bio:bio,
+photoURL:currentUser.photoURL || "",
+updatedAt:serverTimestamp()
+},{merge:true});
+
+savedBio = bio;
+
 if(selectedPhoto){
 localStorage.setItem(photoKey(),selectedPhoto);
 }
-
-localStorage.setItem(bioKey(),bio);
 
 currentUser = auth.currentUser;
 
 displayProfile();
 
-$("message").textContent = "Profile saved successfully! ❤️";
+$("message").textContent =
+"Profile saved successfully! ❤️";
+
 $("editProfile").style.display = "none";
 
 selectedPhoto = null;
@@ -475,7 +424,7 @@ $("photoInput").value = "";
 }catch(error){
 
 $("message").textContent =
-"Error: " + error.message;
+"Could not save: " + error.message;
 
 }
 
@@ -484,12 +433,14 @@ $("saveProfile").disabled = false;
 });
 
 $("logoutButton").addEventListener("click",async()=>{
+
 try{
 await signOut(auth);
 window.location.replace("account.html");
 }catch(error){
 alert("Logout failed: " + error.message);
 }
+
 });
 
 </script>
