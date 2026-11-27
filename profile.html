@@ -35,6 +35,7 @@ button{padding:13px 17px;border:0;border-radius:8px;background:#168bd2;color:whi
 #message{color:#42d6ff;font-size:14px}
 .muted{color:#b9c8df;font-size:13px}
 footer{text-align:center;color:#91a6c6;padding:20px}
+button:disabled{opacity:.6;cursor:wait}
 </style>
 </head>
 <body>
@@ -122,6 +123,8 @@ footer{text-align:center;color:#91a6c6;padding:20px}
       <a href="./dashboard.html">Dashboard</a>
       <a href="./creator.html">Creator Studio</a>
       <a href="./people.html">Find People</a>
+      <a href="./connections.html">My Connections</a>
+      <a href="./notifications.html">Notifications 🔔</a>
     </div>
   </div>
 
@@ -143,7 +146,7 @@ import {
 
 import {
  getFirestore,doc,getDoc,setDoc,collection,query,where,
- getDocs,deleteDoc,serverTimestamp
+ getDocs,deleteDoc,addDoc,serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
@@ -267,17 +270,33 @@ $("followButton").addEventListener("click",async()=>{
   if(snap.exists()){
    await deleteDoc(ref);
   }else{
+   // Create the follow connection first.
    await setDoc(ref,{
     followerId:currentUser.uid,
     followingId:targetUid,
     createdAt:serverTimestamp()
    });
+
+   // Then notify the person being followed.
+   try{
+    await addDoc(collection(db,"notifications"),{
+     senderId:currentUser.uid,
+     recipientId:targetUid,
+     type:"follow",
+     createdAt:serverTimestamp(),
+     read:false
+    });
+   }catch(notificationError){
+    console.error("Notification error:",notificationError);
+    alert("You followed this person, but the notification could not be sent. Please check your connection.");
+   }
   }
 
   await updateFollowButton();
   await loadCounts();
 
  }catch(error){
+  console.error(error);
   alert("Could not update follow: "+error.message);
  }
 
