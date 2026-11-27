@@ -41,6 +41,30 @@ nav a{display:block;background:#202c49;padding:13px 8px;text-align:center;border
 #editProfile{display:none}
 #message{color:#48d6c5}
 #dashboard{display:none}
+
+.notification-link{
+position:relative;
+}
+
+.notification-badge{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+min-width:21px;
+height:21px;
+padding:0 6px;
+margin-left:5px;
+border-radius:20px;
+background:#e63955;
+color:white;
+font-size:12px;
+font-weight:bold;
+vertical-align:middle;
+}
+
+.notification-badge:empty{
+display:none;
+}
 </style>
 </head>
 
@@ -163,6 +187,11 @@ placeholder="Tell people about yourself..."></textarea>
 <a href="./discover.html">✨ Discover</a>
 <a href="./people.html">👥 Find People</a>
 <a href="./creator.html">📹 Creator Studio</a>
+<a href="./connections.html">🤝 My Connections</a>
+<a href="./notifications.html" class="notification-link">
+🔔 Notifications
+<span id="notificationBadge" class="notification-badge"></span>
+</a>
 </nav>
 </div>
 
@@ -193,7 +222,8 @@ serverTimestamp,
 collection,
 query,
 where,
-getDocs
+getDocs,
+onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -212,6 +242,7 @@ const db = getFirestore(app);
 let currentUser = null;
 let selectedPhoto = null;
 let savedBio = "";
+let unsubscribeNotifications = null;
 
 const $ = id => document.getElementById(id);
 
@@ -294,6 +325,49 @@ $("followingCount").textContent = following;
 $("creatorFollowers").textContent = followers;
 }
 
+function startNotificationBadge(user){
+
+if(unsubscribeNotifications){
+unsubscribeNotifications();
+unsubscribeNotifications = null;
+}
+
+const badge = $("notificationBadge");
+badge.textContent = "";
+
+const notificationsQuery = query(
+collection(db,"notifications"),
+where("recipientId","==",user.uid)
+);
+
+unsubscribeNotifications = onSnapshot(
+notificationsQuery,
+
+snapshot=>{
+
+const unreadCount = snapshot.docs.filter(
+item => item.data().read === false
+).length;
+
+badge.textContent =
+unreadCount > 0
+? (unreadCount > 99 ? "99+" : unreadCount)
+: "";
+
+},
+
+error=>{
+
+console.error("Notification badge error:",error);
+
+badge.textContent = "";
+
+}
+
+);
+
+}
+
 async function loadProfile(){
 
 const profileRef = userDocument();
@@ -339,8 +413,15 @@ displayProfile();
 onAuthStateChanged(auth,async user=>{
 
 if(!user){
+
+if(unsubscribeNotifications){
+unsubscribeNotifications();
+unsubscribeNotifications = null;
+}
+
 window.location.replace("account.html");
 return;
+
 }
 
 currentUser = user;
@@ -351,6 +432,8 @@ $("dashboard").style.display = "none";
 try{
 
 await loadProfile();
+
+startNotificationBadge(user);
 
 $("loading").style.display = "none";
 $("dashboard").style.display = "block";
@@ -506,10 +589,19 @@ $("saveProfile").disabled = false;
 $("logoutButton").addEventListener("click",async()=>{
 
 try{
+
+if(unsubscribeNotifications){
+unsubscribeNotifications();
+unsubscribeNotifications = null;
+}
+
 await signOut(auth);
 window.location.replace("account.html");
+
 }catch(error){
+
 alert("Logout failed: " + error.message);
+
 }
 
 });
