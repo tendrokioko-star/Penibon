@@ -1,1 +1,403 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications - PENIBON</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+background:#0b1020;
+color:white;
+font-family:Arial,sans-serif
+}
+
+header{
+background:#151d35;
+padding:18px;
+display:flex;
+justify-content:space-between;
+align-items:center
+}
+
+header h2{color:#48d6c5;margin:0}
+
+a{color:#48d6c5;text-decoration:none}
+
+main{
+max-width:650px;
+margin:25px auto;
+padding:15px
+}
+
+.card{
+background:#151d35;
+border:1px solid #293653;
+border-radius:13px;
+padding:15px;
+margin:12px 0
+}
+
+.notification{
+display:flex;
+align-items:center;
+gap:12px
+}
+
+.avatar{
+width:48px;
+height:48px;
+border-radius:50%;
+background:#293653;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+flex-shrink:0
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover
+}
+
+.details{flex:1;min-width:0}
+
+.details p{
+margin:5px 0;
+line-height:1.4
+}
+
+.time{
+color:#aab6ce;
+font-size:12px
+}
+
+.unread{
+border-left:4px solid #48d6c5
+}
+
+.actions{
+display:flex;
+gap:8px;
+margin-top:12px
+}
+
+button{
+border:0;
+border-radius:8px;
+padding:10px;
+font-weight:bold;
+cursor:pointer
+}
+
+.read{
+background:#293653;
+color:white
+}
+
+.delete{
+background:#a83245;
+color:white
+}
+
+#message{
+text-align:center;
+color:#aab6ce;
+padding:25px
+}
+
+#count{color:#48d6c5}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>🔔 PENIBON</h2>
+<a href="./dashboard.html">← Dashboard</a>
+</header>
+
+<main>
+
+<h2>Notifications 🔔</h2>
+
+<p id="count">Loading notifications...</p>
+
+<div id="notifications"></div>
+
+<div id="message">Please wait...</div>
+
+</main>
+
+<script type="module">
+
+import {
+initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+query,
+where,
+getDocs,
+doc,
+getDoc,
+updateDoc,
+deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyBjN2BDH1ol2ziowFQegJRnyZINCZhijHU",
+authDomain: "penibon-b9f0f.firebaseapp.com",
+projectId: "penibon-b9f0f",
+storageBucket: "penibon-b9f0f.firebasestorage.app",
+messagingSenderId: "770060676311",
+appId: "1:770060676311:web:7b8ef4506e64465d1e1492"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+const box = document.getElementById("notifications");
+const message = document.getElementById("message");
+const count = document.getElementById("count");
+
+function formatDate(timestamp){
+
+if(!timestamp || !timestamp.toDate){
+return "Just now";
+}
+
+return timestamp.toDate().toLocaleString();
+
+}
+
+async function loadNotifications(){
+
+if(!currentUser)return;
+
+box.innerHTML = "";
+message.style.display = "block";
+message.textContent = "Loading notifications...";
+
+try{
+
+const q = query(
+collection(db,"notifications"),
+where("recipientId","==",currentUser.uid)
+);
+
+const snapshot = await getDocs(q);
+
+const unread = snapshot.docs.filter(
+item => item.data().read === false
+).length;
+
+count.textContent =
+snapshot.size + " notifications • " +
+unread + " unread";
+
+if(snapshot.empty){
+
+message.textContent =
+"You have no notifications yet. 💙";
+
+return;
+
+}
+
+const items = [...snapshot.docs].sort((a,b)=>{
+
+const timeA = a.data().createdAt?.toMillis?.() || 0;
+const timeB = b.data().createdAt?.toMillis?.() || 0;
+
+return timeB-timeA;
+
+});
+
+let displayed = 0;
+
+for(const notificationDoc of items){
+
+const data = notificationDoc.data();
+
+const senderSnap = await getDoc(
+doc(db,"publicProfiles",data.senderId)
+);
+
+const sender = senderSnap.exists()
+? senderSnap.data()
+: {};
+
+const name = sender.displayName || "PENIBON User";
+
+const card = document.createElement("div");
+
+card.className =
+"card notification" +
+(data.read ? "" : " unread");
+
+const avatar = document.createElement("div");
+avatar.className = "avatar";
+
+if(sender.photoURL){
+
+const img = document.createElement("img");
+img.src = sender.photoURL;
+img.alt = name;
+avatar.appendChild(img);
+
+}else{
+
+avatar.textContent = "👤";
+
+}
+
+const details = document.createElement("div");
+details.className = "details";
+
+const profileLink = document.createElement("a");
+
+profileLink.href =
+"./profile.html?uid=" +
+encodeURIComponent(data.senderId);
+
+profileLink.textContent = name;
+
+const paragraph = document.createElement("p");
+
+if(data.type === "follow"){
+paragraph.append(profileLink);
+paragraph.append(
+document.createTextNode(" started following you. 🎉")
+);
+}else{
+paragraph.textContent = "You have a new notification.";
+}
+
+const time = document.createElement("div");
+time.className = "time";
+time.textContent = formatDate(data.createdAt);
+
+details.append(paragraph,time);
+
+const content = document.createElement("div");
+content.style.flex = "1";
+content.style.minWidth = "0";
+content.appendChild(details);
+
+const actions = document.createElement("div");
+actions.className = "actions";
+
+const readButton = document.createElement("button");
+readButton.className = "read";
+readButton.textContent =
+data.read ? "Read ✓" : "Mark read";
+
+readButton.disabled = data.read;
+
+readButton.onclick = async()=>{
+
+try{
+
+await updateDoc(
+doc(db,"notifications",notificationDoc.id),
+{read:true}
+);
+
+await loadNotifications();
+
+}catch(error){
+
+alert("Could not mark as read: "+error.message);
+
+}
+
+};
+
+const deleteButton = document.createElement("button");
+deleteButton.className = "delete";
+deleteButton.textContent = "Delete";
+
+deleteButton.onclick = async()=>{
+
+if(!confirm("Delete this notification?"))return;
+
+try{
+
+await deleteDoc(
+doc(db,"notifications",notificationDoc.id)
+);
+
+await loadNotifications();
+
+}catch(error){
+
+alert("Could not delete notification: "+error.message);
+
+}
+
+};
+
+actions.append(readButton,deleteButton);
+details.appendChild(actions);
+
+card.append(avatar,content);
+
+box.appendChild(card);
+
+displayed++;
+
+}
+
+message.style.display = displayed ? "none" : "block";
+
+if(!displayed){
+message.textContent = "No notifications to display.";
+}
+
+}catch(error){
+
+console.error(error);
+
+message.textContent =
+"Could not load notifications: " + error.message;
+
+}
+
+}
+
+onAuthStateChanged(auth,user=>{
+
+if(!user){
+
+window.location.href = "./account.html";
+return;
+
+}
+
+currentUser = user;
+loadNotifications();
+
+});
+
+</script>
+
+</body>
+</html>
