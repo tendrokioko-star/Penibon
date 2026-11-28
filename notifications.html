@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10152b">
 <title>Notifications - PENIBON</title>
 
 <style>
@@ -21,12 +22,20 @@ background:#151d35;
 padding:18px;
 display:flex;
 justify-content:space-between;
-align-items:center
+align-items:center;
+flex-wrap:wrap;
+gap:10px
 }
 
-header h2{color:#48d6c5;margin:0}
+header h2{
+color:#48d6c5;
+margin:0
+}
 
-a{color:#48d6c5;text-decoration:none}
+a{
+color:#48d6c5;
+text-decoration:none
+}
 
 main{
 max-width:650px;
@@ -44,7 +53,7 @@ margin:12px 0
 
 .notification{
 display:flex;
-align-items:center;
+align-items:flex-start;
 gap:12px
 }
 
@@ -57,7 +66,8 @@ display:flex;
 align-items:center;
 justify-content:center;
 overflow:hidden;
-flex-shrink:0
+flex-shrink:0;
+font-size:22px
 }
 
 .avatar img{
@@ -66,11 +76,14 @@ height:100%;
 object-fit:cover
 }
 
-.details{flex:1;min-width:0}
+.details{
+flex:1;
+min-width:0
+}
 
 .details p{
 margin:5px 0;
-line-height:1.4;
+line-height:1.5;
 overflow-wrap:anywhere
 }
 
@@ -117,15 +130,40 @@ color:white
 #message{
 text-align:center;
 color:#aab6ce;
-padding:25px
+padding:25px;
+line-height:1.5
 }
 
-#count{color:#48d6c5}
+#count{
+color:#48d6c5
+}
 
 .live{
 font-size:12px;
 color:#48d6c5;
 margin-top:5px
+}
+
+.activity{
+background:#101a30;
+padding:10px;
+border-radius:9px;
+margin-top:10px;
+line-height:1.5;
+overflow-wrap:anywhere;
+font-size:14px
+}
+
+.video-title{
+color:#48d6c5;
+font-weight:bold;
+margin-top:8px;
+font-size:14px
+}
+
+@media(max-width:450px){
+main{padding:10px}
+.card{padding:12px}
 }
 </style>
 </head>
@@ -142,6 +180,7 @@ margin-top:5px
 <h2>Notifications 🔔</h2>
 
 <p id="count">Connecting...</p>
+
 <div class="live">🟢 Live notifications enabled</div>
 
 <div id="notifications"></div>
@@ -194,6 +233,10 @@ const box = document.getElementById("notifications");
 const message = document.getElementById("message");
 const count = document.getElementById("count");
 
+// =====================================
+// DATE
+// =====================================
+
 function formatDate(timestamp){
 
 if(!timestamp || !timestamp.toDate){
@@ -204,21 +247,184 @@ return timestamp.toDate().toLocaleString();
 
 }
 
+// =====================================
+// SAFE ELEMENT CREATION
+// =====================================
+
+function makeElement(tag,className,text){
+
+const el = document.createElement(tag);
+
+if(className){
+el.className = className;
+}
+
+if(text !== undefined){
+el.textContent = text;
+}
+
+return el;
+
+}
+
+// =====================================
+// ERROR
+// =====================================
+
 function showError(error){
 
 console.error(error);
 
 message.style.display = "block";
+
 message.textContent =
 "Could not load notifications: " + error.message;
 
 }
 
+// =====================================
+// LOAD VIDEO INFORMATION
+// =====================================
+
+async function getVideoInformation(videoId){
+
+if(!videoId){
+return null;
+}
+
+try{
+
+const videoSnap = await getDoc(
+doc(db,"videos",videoId)
+);
+
+if(!videoSnap.exists()){
+return null;
+}
+
+return videoSnap.data();
+
+}catch(error){
+
+console.error("Video information error:",error);
+
+return null;
+
+}
+
+}
+
+// =====================================
+// LOAD COMMENT INFORMATION
+// =====================================
+
+async function getCommentInformation(commentId){
+
+if(!commentId){
+return null;
+}
+
+try{
+
+const commentSnap = await getDoc(
+doc(db,"comments",commentId)
+);
+
+if(!commentSnap.exists()){
+return null;
+}
+
+return commentSnap.data();
+
+}catch(error){
+
+console.error("Comment information error:",error);
+
+return null;
+
+}
+
+}
+
+// =====================================
+// LOAD SENDER PROFILE
+// =====================================
+
+async function getSenderInformation(senderId){
+
+if(!senderId){
+return {};
+}
+
+try{
+
+const senderSnap = await getDoc(
+doc(db,"publicProfiles",senderId)
+);
+
+if(senderSnap.exists()){
+return senderSnap.data();
+}
+
+}catch(error){
+
+console.error("Sender profile error:",error);
+
+}
+
+return {};
+
+}
+
+// =====================================
+// BUILD NOTIFICATION CONTENT
+// =====================================
+
+async function getNotificationInformation(data){
+
+const sender = await getSenderInformation(
+data.senderId
+);
+
+let video = null;
+let comment = null;
+
+if(
+data.type === "like" ||
+data.type === "comment"
+){
+
+video = await getVideoInformation(
+data.videoId
+);
+
+}
+
+if(data.type === "comment"){
+
+comment = await getCommentInformation(
+data.commentId
+);
+
+}
+
+return {
+sender,
+video,
+comment
+};
+
+}
+
+// =====================================
+// RENDER NOTIFICATIONS
+// =====================================
+
 async function renderNotifications(snapshot){
 
 const version = ++renderVersion;
 
-box.innerHTML = "";
+box.replaceChildren();
 
 const unread = snapshot.docs.filter(
 item => item.data().read === false
@@ -231,6 +437,7 @@ unread + " unread";
 if(snapshot.empty){
 
 message.style.display = "block";
+
 message.textContent =
 "You have no notifications yet. 💙";
 
@@ -239,12 +446,16 @@ return;
 }
 
 message.style.display = "block";
+
 message.textContent = "Updating notifications...";
 
 const items = [...snapshot.docs].sort((a,b)=>{
 
-const timeA = a.data().createdAt?.toMillis?.() || 0;
-const timeB = b.data().createdAt?.toMillis?.() || 0;
+const timeA =
+a.data().createdAt?.toMillis?.() || 0;
+
+const timeB =
+b.data().createdAt?.toMillis?.() || 0;
 
 return timeB-timeA;
 
@@ -253,65 +464,65 @@ return timeB-timeA;
 try{
 
 const renderedItems = await Promise.all(
+
 items.map(async notificationDoc=>{
 
 const data = notificationDoc.data();
 
-let sender = {};
-
-try{
-
-const senderSnap = await getDoc(
-doc(db,"publicProfiles",data.senderId)
-);
-
-if(senderSnap.exists()){
-sender = senderSnap.data();
-}
-
-}catch(error){
-
-console.error("Could not load sender profile:",error);
-
-}
+const info = await getNotificationInformation(data);
 
 return {
 notificationDoc,
 data,
-sender
+sender:info.sender,
+video:info.video,
+comment:info.comment
 };
 
 })
+
 );
 
 if(version !== renderVersion)return;
 
-box.innerHTML = "";
+box.replaceChildren();
 
 for(const item of renderedItems){
 
 const notificationDoc = item.notificationDoc;
 const data = item.data;
 const sender = item.sender;
+const video = item.video;
+const comment = item.comment;
 
-const name = sender.displayName || "PENIBON User";
+const name =
+sender.displayName || "PENIBON User";
 
-const card = document.createElement("div");
+// =====================================
+// CARD
+// =====================================
 
-card.className =
+const card = makeElement(
+"div",
 "card notification" +
-(data.read ? "" : " unread");
+(data.read ? "" : " unread")
+);
 
-const avatar = document.createElement("div");
-avatar.className = "avatar";
+// =====================================
+// AVATAR
+// =====================================
+
+const avatar = makeElement("div","avatar");
 
 if(sender.photoURL){
 
 const img = document.createElement("img");
+
 img.src = sender.photoURL;
 img.alt = name;
 
 img.onerror = ()=>{
+avatar.replaceChildren();
 avatar.textContent = "👤";
 };
 
@@ -323,51 +534,163 @@ avatar.textContent = "👤";
 
 }
 
-const details = document.createElement("div");
-details.className = "details";
+// =====================================
+// DETAILS
+// =====================================
 
-const profileLink = document.createElement("a");
+const details = makeElement("div","details");
+
+const profileLink = makeElement(
+"a",
+"",
+name
+);
 
 profileLink.href =
 "./profile.html?uid=" +
-encodeURIComponent(data.senderId);
+encodeURIComponent(data.senderId || "");
 
-profileLink.textContent = name;
+const paragraph = makeElement("p");
 
-const paragraph = document.createElement("p");
+// FOLLOW NOTIFICATION
 
 if(data.type === "follow"){
 
 paragraph.append(profileLink);
 
 paragraph.append(
-document.createTextNode(" started following you. 🎉")
+document.createTextNode(
+" started following you. 🎉"
+)
 );
+
+// LIKE NOTIFICATION
+
+}else if(data.type === "like"){
+
+paragraph.append(profileLink);
+
+paragraph.append(
+document.createTextNode(
+" liked your video. ❤️"
+)
+);
+
+// COMMENT NOTIFICATION
+
+}else if(data.type === "comment"){
+
+paragraph.append(profileLink);
+
+paragraph.append(
+document.createTextNode(
+" commented on your video. 💬"
+)
+);
+
+// UNKNOWN NOTIFICATION
 
 }else{
 
-paragraph.textContent =
-"You have a new notification.";
+paragraph.append(profileLink);
+
+paragraph.append(
+document.createTextNode(
+" sent you a notification. 🔔"
+)
+);
 
 }
 
-const time = document.createElement("div");
-time.className = "time";
-time.textContent = formatDate(data.createdAt);
+details.appendChild(paragraph);
 
-details.append(paragraph,time);
+// =====================================
+// VIDEO DETAILS
+// =====================================
 
-const actions = document.createElement("div");
-actions.className = "actions";
+if(
+(data.type === "like" || data.type === "comment")
+){
 
-const readButton = document.createElement("button");
+if(video && video.title){
 
-readButton.className = "read";
+const videoTitle = makeElement(
+"div",
+"video-title",
+"🎬 " + video.title
+);
 
-readButton.textContent =
-data.read ? "Read ✓" : "Mark read";
+details.appendChild(videoTitle);
 
-readButton.disabled = data.read;
+}else{
+
+details.appendChild(
+makeElement(
+"div",
+"video-title",
+"🎬 Your video"
+)
+);
+
+}
+
+}
+
+// =====================================
+// COMMENT TEXT
+// =====================================
+
+if(data.type === "comment"){
+
+if(comment && comment.text){
+
+const commentBox = makeElement(
+"div",
+"activity",
+"💬 " + comment.text
+);
+
+details.appendChild(commentBox);
+
+}else{
+
+details.appendChild(
+makeElement(
+"div",
+"activity",
+"💬 A comment was added to your video."
+)
+);
+
+}
+
+}
+
+// =====================================
+// TIME
+// =====================================
+
+const time = makeElement(
+"div",
+"time",
+formatDate(data.createdAt)
+);
+
+details.appendChild(time);
+
+// =====================================
+// ACTIONS
+// =====================================
+
+const actions = makeElement("div","actions");
+
+const readButton = makeElement(
+"button",
+"read",
+data.read ? "Read ✓" : "Mark read"
+);
+
+readButton.disabled = !!data.read;
 
 readButton.onclick = async()=>{
 
@@ -377,29 +700,37 @@ try{
 
 await updateDoc(
 doc(db,"notifications",notificationDoc.id),
-{read:true}
+{
+read:true
+}
 );
-
-// Firebase automatically updates the page.
 
 }catch(error){
 
 readButton.disabled = false;
 
-alert("Could not mark as read: " + error.message);
+alert(
+"Could not mark as read: " +
+error.message
+);
 
 }
 
 };
 
-const deleteButton = document.createElement("button");
+// DELETE BUTTON
 
-deleteButton.className = "delete";
-deleteButton.textContent = "Delete";
+const deleteButton = makeElement(
+"button",
+"delete",
+"Delete"
+);
 
 deleteButton.onclick = async()=>{
 
-if(!confirm("Delete this notification?"))return;
+if(!confirm("Delete this notification?")){
+return;
+}
 
 deleteButton.disabled = true;
 
@@ -409,22 +740,30 @@ await deleteDoc(
 doc(db,"notifications",notificationDoc.id)
 );
 
-// Firebase automatically removes it from the page.
-
 }catch(error){
 
 deleteButton.disabled = false;
 
-alert("Could not delete notification: " + error.message);
+alert(
+"Could not delete notification: " +
+error.message
+);
 
 }
 
 };
 
-actions.append(readButton,deleteButton);
+actions.append(
+readButton,
+deleteButton
+);
+
 details.appendChild(actions);
 
-card.append(avatar,details);
+card.append(
+avatar,
+details
+);
 
 box.appendChild(card);
 
@@ -446,21 +785,28 @@ showError(error);
 
 }
 
+// =====================================
+// START LIVE NOTIFICATIONS
+// =====================================
+
 function startNotifications(user){
 
 if(unsubscribeNotifications){
 
 unsubscribeNotifications();
+
 unsubscribeNotifications = null;
 
 }
 
 currentUser = user;
 
-box.innerHTML = "";
+box.replaceChildren();
 
 message.style.display = "block";
-message.textContent = "Connecting to live notifications...";
+
+message.textContent =
+"Connecting to live notifications...";
 
 const q = query(
 collection(db,"notifications"),
@@ -468,6 +814,7 @@ where("recipientId","==",user.uid)
 );
 
 unsubscribeNotifications = onSnapshot(
+
 q,
 
 snapshot=>{
@@ -486,16 +833,24 @@ showError(error);
 
 }
 
+// =====================================
+// AUTHENTICATION
+// =====================================
+
 onAuthStateChanged(auth,user=>{
 
 if(!user){
 
 if(unsubscribeNotifications){
+
 unsubscribeNotifications();
+
 unsubscribeNotifications = null;
+
 }
 
 window.location.href = "./account.html";
+
 return;
 
 }
