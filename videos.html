@@ -52,6 +52,7 @@ footer{text-align:center;padding:25px;color:#aeb8d0;background:#151d35;font-size
     <a href="videos.html">Videos</a>
     <a href="creator.html">Creator Studio</a>
     <a href="dashboard.html">Dashboard</a>
+    <a href="notifications.html">🔔 Notifications</a>
   </nav>
 </header>
 
@@ -168,6 +169,32 @@ function requireLogin() {
     return false;
   }
   return true;
+}
+
+// =====================================
+// SEND LIKE OR COMMENT NOTIFICATION
+// =====================================
+async function sendVideoNotification(creatorId, type, videoId) {
+  if (!currentUser || !creatorId) return;
+
+  // Do not notify someone about their own activity.
+  if (creatorId === currentUser.uid) return;
+
+  try {
+    await addDoc(collection(db, "notifications"), {
+      senderId: currentUser.uid,
+      recipientId: creatorId,
+      type: type,
+      videoId: videoId,
+      createdAt: serverTimestamp(),
+      read: false
+    });
+
+    console.log(type + " notification sent.");
+
+  } catch (error) {
+    console.error("Notification could not be sent:", error);
+  }
 }
 
 /* RECORD ONE VIEW PER ACCOUNT PER VIDEO */
@@ -320,7 +347,9 @@ function renderVideos() {
 
     feed.appendChild(card);
 
+    // =====================================
     // LIVE LIKES
+    // =====================================
     const likesQuery = query(
       collection(db, "likes"),
       where("videoId", "==", video.id)
@@ -343,6 +372,7 @@ function renderVideos() {
 
     stopActionListeners.push(stopLikes);
 
+    // LIKE AND NOTIFY CREATOR
     likeButton.addEventListener("click", async () => {
       if (!requireLogin()) return;
 
@@ -361,7 +391,14 @@ function renderVideos() {
             videoId: video.id,
             createdAt: serverTimestamp()
           });
+
+          await sendVideoNotification(
+            video.creatorId,
+            "like",
+            video.id
+          );
         }
+
       } catch (error) {
         alert("Could not update your like: " + error.message);
       } finally {
@@ -369,7 +406,9 @@ function renderVideos() {
       }
     });
 
+    // =====================================
     // PRIVATE FAVOURITES
+    // =====================================
     let stopFavorites = null;
 
     function listenFavorites() {
@@ -432,7 +471,9 @@ function renderVideos() {
       }
     });
 
+    // =====================================
     // LIVE COMMENTS
+    // =====================================
     const commentsQuery = query(
       collection(db, "comments"),
       where("videoId", "==", video.id)
@@ -484,7 +525,9 @@ function renderVideos() {
 
     stopActionListeners.push(stopComments);
 
-    // SEND COMMENT
+    // =====================================
+    // SEND COMMENT AND NOTIFY CREATOR
+    // =====================================
     commentForm.addEventListener("submit", async event => {
       event.preventDefault();
 
@@ -506,6 +549,12 @@ function renderVideos() {
 
         commentInput.value = "";
 
+        await sendVideoNotification(
+          video.creatorId,
+          "comment",
+          video.id
+        );
+
       } catch (error) {
         alert("Could not post comment: " + error.message);
       } finally {
@@ -516,7 +565,9 @@ function renderVideos() {
   });
 }
 
+// =====================================
 // VIDEO FEED
+// =====================================
 const videoQuery = query(
   collection(db, "videos"),
   orderBy("createdAt", "desc"),
@@ -541,7 +592,9 @@ onSnapshot(
   }
 );
 
+// =====================================
 // ACCOUNT STATUS
+// =====================================
 onAuthStateChanged(auth, user => {
   currentUser = user;
 
