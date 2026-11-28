@@ -58,6 +58,7 @@ footer{text-align:center;padding:25px;color:#aeb8d0;background:#151d35;font-size
 
 <main>
   <h1>🎬 PENIBON Videos</h1>
+
   <p class="intro">
     Watch, like, comment and save your favourite videos.
     Discover creativity from the PENIBON community.
@@ -128,7 +129,11 @@ const profileCache = new Map();
 function element(tag, className, text) {
   const el = document.createElement(tag);
   el.className = className;
-  if (text !== undefined) el.textContent = text;
+
+  if (text !== undefined) {
+    el.textContent = text;
+  }
+
   return el;
 }
 
@@ -145,13 +150,18 @@ async function getProfileName(uid) {
   }
 
   try {
-    const result = await getDoc(doc(db, "publicProfiles", uid));
+    const result = await getDoc(
+      doc(db, "publicProfiles", uid)
+    );
+
     const name = result.exists()
       ? (result.data().displayName || "PENIBON Creator")
       : "PENIBON Creator";
 
     profileCache.set(uid, name);
+
     return name;
+
   } catch (error) {
     console.error("Profile error:", error);
     return "PENIBON Creator";
@@ -160,6 +170,7 @@ async function getProfileName(uid) {
 
 function formatDate(timestamp) {
   if (!timestamp || !timestamp.toDate) return "";
+
   return timestamp.toDate().toLocaleString();
 }
 
@@ -168,41 +179,65 @@ function requireLogin() {
     alert("Please log in to your PENIBON account first.");
     return false;
   }
+
   return true;
 }
 
 // =====================================
-// SEND LIKE OR COMMENT NOTIFICATION
+// SEND VIDEO NOTIFICATIONS
 // =====================================
-async function sendVideoNotification(creatorId, type, videoId) {
+
+async function sendVideoNotification(
+  creatorId,
+  type,
+  videoId,
+  commentId = null
+) {
   if (!currentUser || !creatorId) return;
 
-  // Do not notify someone about their own activity.
+  // Do not notify users about their own activity.
   if (creatorId === currentUser.uid) return;
 
   try {
-    await addDoc(collection(db, "notifications"), {
+    const notification = {
       senderId: currentUser.uid,
       recipientId: creatorId,
       type: type,
       videoId: videoId,
       createdAt: serverTimestamp(),
       read: false
-    });
+    };
+
+    // Include the comment ID for comment notifications.
+    if (commentId) {
+      notification.commentId = commentId;
+    }
+
+    await addDoc(
+      collection(db, "notifications"),
+      notification
+    );
 
     console.log(type + " notification sent.");
 
   } catch (error) {
-    console.error("Notification could not be sent:", error);
+    console.error(
+      "Notification could not be sent:",
+      error
+    );
   }
 }
 
-/* RECORD ONE VIEW PER ACCOUNT PER VIDEO */
+// =====================================
+// RECORD ONE VIEW PER ACCOUNT PER VIDEO
+// =====================================
+
 async function recordVideoView(video) {
   if (!currentUser || !video.creatorId) return;
 
   const viewerId = currentUser.uid;
   const viewId = video.id + "_" + viewerId;
+
   const viewRef = doc(db, "videoViews", viewId);
 
   try {
@@ -218,25 +253,37 @@ async function recordVideoView(video) {
         });
       }
     });
+
   } catch (error) {
-    console.error("Could not record video view:", error);
+    console.error(
+      "Could not record video view:",
+      error
+    );
   }
 }
+
+// =====================================
+// RENDER VIDEOS
+// =====================================
 
 function renderVideos() {
   stopActions();
   feed.replaceChildren();
 
   if (!currentVideos.length) {
-    feed.appendChild(element(
-      "div",
-      "message",
-      "No videos published yet. Be the first PENIBON creator!"
-    ));
+    feed.appendChild(
+      element(
+        "div",
+        "message",
+        "No videos published yet. Be the first PENIBON creator!"
+      )
+    );
+
     return;
   }
 
   currentVideos.forEach(video => {
+
     const card = element("article", "video-card");
 
     let safeUrl;
@@ -247,39 +294,54 @@ function renderVideos() {
       if (
         safeUrl.protocol !== "https:" ||
         safeUrl.hostname !== "res.cloudinary.com"
-      ) return;
+      ) {
+        return;
+      }
 
     } catch {
       return;
     }
 
     const player = element("video", "video-player");
+
     player.src = safeUrl.href;
     player.controls = true;
     player.playsInline = true;
     player.preload = "metadata";
 
     // RECORD VIEW WHEN PLAYBACK STARTS
+
     let viewAttempted = false;
 
     player.addEventListener("play", async () => {
       if (!currentUser || viewAttempted) return;
 
       viewAttempted = true;
+
       await recordVideoView(video);
     });
 
+    // CREATOR
+
     const creator = element("div", "creator");
-    const creatorLink = element("a", "", "👤 Loading creator...");
+
+    const creatorLink = element(
+      "a",
+      "",
+      "👤 Loading creator..."
+    );
 
     creatorLink.href =
-      "profile.html?uid=" + encodeURIComponent(video.creatorId || "");
+      "profile.html?uid=" +
+      encodeURIComponent(video.creatorId || "");
 
     creator.appendChild(creatorLink);
 
     getProfileName(video.creatorId).then(name => {
       creatorLink.textContent = "👤 " + name;
     });
+
+    // VIDEO INFORMATION
 
     const title = element(
       "div",
@@ -305,18 +367,47 @@ function renderVideos() {
       formatDate(video.createdAt)
     );
 
+    // ACTIONS
+
     const actions = element("div", "actions");
 
-    const likeButton = element("button", "action-btn", "❤️ Like");
-    const favoriteButton = element("button", "action-btn", "⭐ Save");
-    const likeCount = element("span", "date", "Likes: 0");
+    const likeButton = element(
+      "button",
+      "action-btn",
+      "❤️ Like"
+    );
 
-    actions.append(likeButton, favoriteButton, likeCount);
+    const favoriteButton = element(
+      "button",
+      "action-btn",
+      "⭐ Save"
+    );
+
+    const likeCount = element(
+      "span",
+      "date",
+      "Likes: 0"
+    );
+
+    actions.append(
+      likeButton,
+      favoriteButton,
+      likeCount
+    );
+
+    // COMMENTS
 
     const commentsArea = element("div", "comments");
-    commentsArea.appendChild(element("h3", "", "💬 Comments"));
 
-    const commentForm = element("form", "comment-form");
+    commentsArea.appendChild(
+      element("h3", "", "💬 Comments")
+    );
+
+    const commentForm = element(
+      "form",
+      "comment-form"
+    );
+
     const commentInput = document.createElement("input");
 
     commentInput.type = "text";
@@ -325,14 +416,24 @@ function renderVideos() {
     commentInput.required = true;
 
     const commentButton = document.createElement("button");
+
     commentButton.type = "submit";
     commentButton.textContent = "Send";
 
-    commentForm.append(commentInput, commentButton);
+    commentForm.append(
+      commentInput,
+      commentButton
+    );
 
-    const commentList = element("div", "comment-list");
+    const commentList = element(
+      "div",
+      "comment-list"
+    );
 
-    commentsArea.append(commentForm, commentList);
+    commentsArea.append(
+      commentForm,
+      commentList
+    );
 
     card.append(
       player,
@@ -350,76 +451,115 @@ function renderVideos() {
     // =====================================
     // LIVE LIKES
     // =====================================
+
     const likesQuery = query(
       collection(db, "likes"),
       where("videoId", "==", video.id)
     );
 
-    const stopLikes = onSnapshot(likesQuery, snapshot => {
-      likeCount.textContent = "Likes: " + snapshot.size;
+    const stopLikes = onSnapshot(
+      likesQuery,
+      snapshot => {
 
-      const liked = currentUser &&
-        snapshot.docs.some(
-          item => item.data().userId === currentUser.uid
+        likeCount.textContent =
+          "Likes: " + snapshot.size;
+
+        const liked = currentUser &&
+          snapshot.docs.some(
+            item => item.data().userId === currentUser.uid
+          );
+
+        likeButton.textContent = liked
+          ? "❤️ Liked"
+          : "❤️ Like";
+
+        likeButton.classList.toggle(
+          "active",
+          !!liked
         );
 
-      likeButton.textContent = liked
-        ? "❤️ Liked"
-        : "❤️ Like";
-
-      likeButton.classList.toggle("active", !!liked);
-    }, error => console.error("Like listener:", error));
+      },
+      error => console.error("Like listener:", error)
+    );
 
     stopActionListeners.push(stopLikes);
 
+    // =====================================
     // LIKE AND NOTIFY CREATOR
-    likeButton.addEventListener("click", async () => {
-      if (!requireLogin()) return;
+    // =====================================
 
-      likeButton.disabled = true;
+    likeButton.addEventListener(
+      "click",
+      async () => {
 
-      try {
-        const likeId = currentUser.uid + "_" + video.id;
-        const likeRef = doc(db, "likes", likeId);
-        const existing = await getDoc(likeRef);
+        if (!requireLogin()) return;
 
-        if (existing.exists()) {
-          await deleteDoc(likeRef);
-        } else {
-          await setDoc(likeRef, {
-            userId: currentUser.uid,
-            videoId: video.id,
-            createdAt: serverTimestamp()
-          });
+        likeButton.disabled = true;
 
-          await sendVideoNotification(
-            video.creatorId,
-            "like",
-            video.id
+        try {
+          const likeId =
+            currentUser.uid + "_" + video.id;
+
+          const likeRef = doc(
+            db,
+            "likes",
+            likeId
           );
-        }
 
-      } catch (error) {
-        alert("Could not update your like: " + error.message);
-      } finally {
-        likeButton.disabled = false;
+          const existing = await getDoc(likeRef);
+
+          if (existing.exists()) {
+
+            await deleteDoc(likeRef);
+
+          } else {
+
+            await setDoc(likeRef, {
+              userId: currentUser.uid,
+              videoId: video.id,
+              createdAt: serverTimestamp()
+            });
+
+            // Notify creator after successful like.
+            await sendVideoNotification(
+              video.creatorId,
+              "like",
+              video.id
+            );
+          }
+
+        } catch (error) {
+
+          alert(
+            "Could not update your like: " +
+            error.message
+          );
+
+        } finally {
+          likeButton.disabled = false;
+        }
       }
-    });
+    );
 
     // =====================================
     // PRIVATE FAVOURITES
     // =====================================
+
     let stopFavorites = null;
 
     function listenFavorites() {
+
       if (stopFavorites) {
         stopFavorites();
         stopFavorites = null;
       }
 
       if (!currentUser) {
+
         favoriteButton.textContent = "⭐ Save";
+
         favoriteButton.classList.remove("active");
+
         return;
       }
 
@@ -429,138 +569,222 @@ function renderVideos() {
         where("videoId", "==", video.id)
       );
 
-      stopFavorites = onSnapshot(userFavoritesQuery, snapshot => {
-        const saved = !snapshot.empty;
+      stopFavorites = onSnapshot(
+        userFavoritesQuery,
+        snapshot => {
 
-        favoriteButton.textContent = saved
-          ? "⭐ Saved"
-          : "⭐ Save";
+          const saved = !snapshot.empty;
 
-        favoriteButton.classList.toggle("active", saved);
-      }, error => console.error("Favourite listener:", error));
+          favoriteButton.textContent = saved
+            ? "⭐ Saved"
+            : "⭐ Save";
+
+          favoriteButton.classList.toggle(
+            "active",
+            saved
+          );
+
+        },
+        error => console.error(
+          "Favourite listener:",
+          error
+        )
+      );
 
       stopActionListeners.push(stopFavorites);
     }
 
     listenFavorites();
 
-    favoriteButton.addEventListener("click", async () => {
-      if (!requireLogin()) return;
+    favoriteButton.addEventListener(
+      "click",
+      async () => {
 
-      favoriteButton.disabled = true;
+        if (!requireLogin()) return;
 
-      try {
-        const favoriteId = currentUser.uid + "_" + video.id;
-        const favoriteRef = doc(db, "favorites", favoriteId);
-        const existing = await getDoc(favoriteRef);
+        favoriteButton.disabled = true;
 
-        if (existing.exists()) {
-          await deleteDoc(favoriteRef);
-        } else {
-          await setDoc(favoriteRef, {
-            userId: currentUser.uid,
-            videoId: video.id,
-            createdAt: serverTimestamp()
-          });
+        try {
+          const favoriteId =
+            currentUser.uid + "_" + video.id;
+
+          const favoriteRef = doc(
+            db,
+            "favorites",
+            favoriteId
+          );
+
+          const existing = await getDoc(favoriteRef);
+
+          if (existing.exists()) {
+
+            await deleteDoc(favoriteRef);
+
+          } else {
+
+            await setDoc(favoriteRef, {
+              userId: currentUser.uid,
+              videoId: video.id,
+              createdAt: serverTimestamp()
+            });
+          }
+
+        } catch (error) {
+
+          alert(
+            "Could not save favourite: " +
+            error.message
+          );
+
+        } finally {
+          favoriteButton.disabled = false;
         }
-
-      } catch (error) {
-        alert("Could not save favourite: " + error.message);
-      } finally {
-        favoriteButton.disabled = false;
       }
-    });
+    );
 
     // =====================================
     // LIVE COMMENTS
     // =====================================
+
     const commentsQuery = query(
       collection(db, "comments"),
       where("videoId", "==", video.id)
     );
 
-    const stopComments = onSnapshot(commentsQuery, async snapshot => {
-      commentList.replaceChildren();
+    const stopComments = onSnapshot(
+      commentsQuery,
+      async snapshot => {
 
-      const comments = [...snapshot.docs].sort((a, b) => {
-        const ta = a.data().createdAt?.toMillis?.() || 0;
-        const tb = b.data().createdAt?.toMillis?.() || 0;
-        return tb - ta;
-      });
+        commentList.replaceChildren();
 
-      for (const commentDoc of comments.slice(0, 30)) {
-        const comment = commentDoc.data();
-        const item = element("div", "comment-item");
+        const comments = [...snapshot.docs].sort(
+          (a, b) => {
 
-        const name = await getProfileName(comment.userId);
+            const ta =
+              a.data().createdAt?.toMillis?.() || 0;
 
-        const author = element(
-          "div",
-          "comment-name",
-          "👤 " + name
+            const tb =
+              b.data().createdAt?.toMillis?.() || 0;
+
+            return tb - ta;
+          }
         );
 
-        const text = element(
-          "div",
-          "comment-text",
-          comment.text || ""
-        );
+        for (const commentDoc of comments.slice(0, 30)) {
 
-        const time = element(
-          "div",
-          "comment-date",
-          formatDate(comment.createdAt)
-        );
+          const comment = commentDoc.data();
 
-        item.append(author, text, time);
-        commentList.appendChild(item);
-      }
+          const item = element(
+            "div",
+            "comment-item"
+          );
 
-      if (comments.length === 0) {
-        commentList.appendChild(
-          element("div", "date", "No comments yet. Be the first!")
-        );
-      }
-    }, error => console.error("Comment listener:", error));
+          const name = await getProfileName(
+            comment.userId
+          );
+
+          const author = element(
+            "div",
+            "comment-name",
+            "👤 " + name
+          );
+
+          const text = element(
+            "div",
+            "comment-text",
+            comment.text || ""
+          );
+
+          const time = element(
+            "div",
+            "comment-date",
+            formatDate(comment.createdAt)
+          );
+
+          item.append(
+            author,
+            text,
+            time
+          );
+
+          commentList.appendChild(item);
+        }
+
+        if (comments.length === 0) {
+
+          commentList.appendChild(
+            element(
+              "div",
+              "date",
+              "No comments yet. Be the first!"
+            )
+          );
+        }
+
+      },
+      error => console.error(
+        "Comment listener:",
+        error
+      )
+    );
 
     stopActionListeners.push(stopComments);
 
     // =====================================
     // SEND COMMENT AND NOTIFY CREATOR
     // =====================================
-    commentForm.addEventListener("submit", async event => {
-      event.preventDefault();
 
-      if (!requireLogin()) return;
+    commentForm.addEventListener(
+      "submit",
+      async event => {
 
-      const text = commentInput.value.trim();
+        event.preventDefault();
 
-      if (!text || text.length > 500) return;
+        if (!requireLogin()) return;
 
-      commentButton.disabled = true;
+        const text = commentInput.value.trim();
 
-      try {
-        await addDoc(collection(db, "comments"), {
-          userId: currentUser.uid,
-          videoId: video.id,
-          text: text,
-          createdAt: serverTimestamp()
-        });
+        if (!text || text.length > 500) return;
 
-        commentInput.value = "";
+        commentButton.disabled = true;
 
-        await sendVideoNotification(
-          video.creatorId,
-          "comment",
-          video.id
-        );
+        try {
 
-      } catch (error) {
-        alert("Could not post comment: " + error.message);
-      } finally {
-        commentButton.disabled = false;
+          // SAVE COMMENT FIRST AND GET ITS ID.
+
+          const commentRef = await addDoc(
+            collection(db, "comments"),
+            {
+              userId: currentUser.uid,
+              videoId: video.id,
+              text: text,
+              createdAt: serverTimestamp()
+            }
+          );
+
+          commentInput.value = "";
+
+          // SEND NOTIFICATION TO VIDEO CREATOR.
+
+          await sendVideoNotification(
+            video.creatorId,
+            "comment",
+            video.id,
+            commentRef.id
+          );
+
+        } catch (error) {
+
+          alert(
+            "Could not post comment: " +
+            error.message
+          );
+
+        } finally {
+          commentButton.disabled = false;
+        }
       }
-    });
+    );
 
   });
 }
@@ -568,6 +792,7 @@ function renderVideos() {
 // =====================================
 // VIDEO FEED
 // =====================================
+
 const videoQuery = query(
   collection(db, "videos"),
   orderBy("createdAt", "desc"),
@@ -577,17 +802,25 @@ const videoQuery = query(
 onSnapshot(
   videoQuery,
   snapshot => {
+
     currentVideos = snapshot.docs.map(item => ({
       id: item.id,
       ...item.data()
     }));
 
     renderVideos();
+
   },
   error => {
+
     console.error(error);
+
     feed.replaceChildren(
-      element("div", "message", "Unable to load videos: " + error.message)
+      element(
+        "div",
+        "message",
+        "Unable to load videos: " + error.message
+      )
     );
   }
 );
@@ -595,7 +828,9 @@ onSnapshot(
 // =====================================
 // ACCOUNT STATUS
 // =====================================
+
 onAuthStateChanged(auth, user => {
+
   currentUser = user;
 
   loginMessage.textContent = user
@@ -603,6 +838,7 @@ onAuthStateChanged(auth, user => {
     : "👋 You can watch videos without logging in. Log in to have your views counted and to like, comment and save favourites.";
 
   renderVideos();
+
 });
 
 </script>
